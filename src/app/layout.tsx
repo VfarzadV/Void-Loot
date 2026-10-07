@@ -5,7 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 
 export const metadata: Metadata = {
   title: "Nexus Zone",
-  description: "Modern Gaming Platform",
+  description: "Modern Gaming Platform Powered by RAWG",
 };
 
 export default function RootLayout({

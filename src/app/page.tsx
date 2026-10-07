@@ -1,32 +1,27 @@
-import Hero, { Game } from "@/components/home/Hero";
+import Hero from "@/components/home/Hero";
+import Genres from "@/components/home/Genres";
+import TrendingGames from "@/components/home/TrendingGames";
+import FeaturedGame from "@/components/home/FeaturedGame";
+import ShopCategories from "@/components/home/ShopCategories";
+import PopularHardware from "@/components/home/PopularHardware";
+import FlashSale from "@/components/home/FlashSale";
 
-async function getFeaturedGames(): Promise<Game[]> {
-  try {
-    const res = await fetch(
-      `https://api.rawg.io/api/games?key=${process.env.RAWG_API_KEY}&dates=2023-01-01,2024-12-31&ordering=-added&page_size=3`,
-      {
-        next: { revalidate: 3600 },
-      },
-    );
-
-    if (!res.ok) {
-      throw new Error("خطا در دریافت اطلاعات از API");
-    }
-
-    const data = await res.json();
-    return data.results;
-  } catch (error) {
-    console.error("Error fetching games:", error);
-    return [];
-  }
-}
-
-export default async function Home() {
-  const featuredGames = await getFeaturedGames();
-
+export default function Home() {
   return (
     <div className="flex flex-col w-full pb-20">
-      <Hero featuredGames={featuredGames} />
+      <Hero
+        slugs={[
+          "red-dead-redemption-2",
+          "the-last-of-us-part-2",
+          "god-of-war-ragnarok",
+        ]}
+      />
+      <Genres />
+      <TrendingGames />
+      <FeaturedGame slug="cyberpunk-2077" />
+      <ShopCategories />
+      <PopularHardware />
+      <FlashSale />
     </div>
   );
 }
