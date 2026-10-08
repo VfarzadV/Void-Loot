@@ -52,7 +52,7 @@ export default function PlatformShowcase({
   if (games.length === 0) return null;
 
   return (
-    <section className="w-full px-8 lg:px-16 py-10 relative z-10">
+    <section className="w-full px-8 lg:px-16 relative z-10">
       <div className="flex items-end justify-between mb-6 border-b border-white/5 pb-3">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary-600 to-primary-900 p-px shadow-[0_0_15px_rgba(170,79,255,0.3)]">

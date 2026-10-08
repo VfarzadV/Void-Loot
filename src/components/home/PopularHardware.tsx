@@ -40,7 +40,7 @@ export default function PopularHardware() {
 
   if (isLoading) {
     return (
-      <section className="w-full px-8 lg:px-16 py-20 flex justify-center min-h-100">
+      <section className="w-full px-8 lg:px-16  flex justify-center min-h-100">
         <div className="w-8 h-8 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
       </section>
     );
@@ -49,7 +49,7 @@ export default function PopularHardware() {
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full px-8 lg:px-16 py-20 relative z-10 flex flex-col gap-10">
+    <section className="w-full px-8 lg:px-16  relative z-10 flex flex-col gap-10">
       <div className="flex items-end justify-between">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">

@@ -100,14 +100,14 @@ export default function Genres() {
   if (genres.length === 0) return null;
 
   return (
-    <section className="w-full px-8 lg:px-16 py-24 relative z-10">
-      <div className="flex items-end justify-between mb-12">
+    <section className="w-full px-6 lg:px-12 relative z-10">
+      <div className="flex items-end justify-between mb-8">
         <div className="flex flex-col gap-2">
-          <div className="flex items-center gap-2 text-primary-400 text-sm font-bold tracking-widest uppercase">
+          <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <span className="w-8 h-0.5 bg-primary-500 rounded-full"></span>
             Categories
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-base-50 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-black text-base-50 tracking-tight">
             Explore by{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-400 to-primary-600">
               Genre
@@ -115,7 +115,7 @@ export default function Genres() {
           </h2>
         </div>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
         {genres.map((genre) => {
           const ui = GENRE_UI_MAP[genre.slug] || {
             icon: Gamepad,
@@ -129,7 +129,7 @@ export default function Genres() {
             <Link
               href={`/categories/${genre.id}`}
               key={genre.id}
-              className={`group relative overflow-hidden rounded-2xl glass-panel min-h-60 p-8 transition-all duration-500 hover:-translate-y-2 border border-base-800/80 bg-base-950 ${ui.accent} ${ui.glow}`}
+              className={`group relative overflow-hidden rounded-2xl glass-panel min-h-52 p-6 transition-all duration-500 hover:-translate-y-1 border border-base-800/80 bg-base-950 ${ui.accent} ${ui.glow}`}
             >
               <Image
                 src={genre.image_background}
@@ -145,13 +145,13 @@ export default function Genres() {
               <div className="relative z-10 flex flex-col h-full gap-4 justify-between">
                 <div className="flex items-start justify-between">
                   <div
-                    className={`p-4 rounded-xl bg-base-950/60 border border-white/10 backdrop-blur-md transition-colors ${ui.iconColor}`}
+                    className={`p-3.5 rounded-xl bg-base-950/60 border border-white/10 backdrop-blur-md transition-colors ${ui.iconColor}`}
                   >
-                    <IconComponent size={32} strokeWidth={1.5} />
+                    <IconComponent size={26} strokeWidth={1.5} />
                   </div>
                 </div>
                 <div className="mt-auto">
-                  <h3 className="text-2xl font-bold text-base-50 mb-1 group-hover:text-white transition-colors drop-shadow-md">
+                  <h3 className="text-xl font-bold text-base-50 mb-1 group-hover:text-white transition-colors drop-shadow-md">
                     {genre.name}
                   </h3>
                   <p className="text-sm text-base-300 leading-relaxed group-hover:text-base-200 transition-colors drop-shadow">

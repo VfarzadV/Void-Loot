@@ -45,7 +45,7 @@ export default function GamingNews() {
 
   if (isLoading) {
     return (
-      <section className="w-full px-8 lg:px-16 py-16 relative z-10">
+      <section className="w-full px-8 lg:px-16  relative z-10">
         <div className="h-100 w-full bg-base-900/40 animate-pulse rounded-3xl border border-white/5"></div>
       </section>
     );
@@ -55,7 +55,7 @@ export default function GamingNews() {
   const sideNews = news.slice(1, 3);
 
   return (
-    <section className="w-full px-8 lg:px-16 py-16 relative z-10">
+    <section className="w-full px-8 lg:px-16  relative z-10">
       <div className="flex items-end justify-between mb-8 border-b border-white/5 pb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary-600/20 to-primary-900/10 border border-primary-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(170,79,255,0.2)]">
@@ -85,7 +85,7 @@ export default function GamingNews() {
         {featuredNews && (
           <Link
             href={`/games/${featuredNews.id}`}
-            className="group lg:col-span-2 relative h-75 sm:h-100 rounded-3xl overflow-hidden bg-base-950 border border-base-800/60 transition-all duration-500 hover:border-primary-500/60 hover:shadow-[0_15px_40px_rgba(170,79,255,0.25)] hover:-translate-y-1 block"
+            className="group lg:col-span-2 relative h-70 sm:h-85 rounded-3xl overflow-hidden bg-base-950 border border-base-800/60 transition-all duration-500 hover:border-primary-500/60 hover:shadow-[0_15px_40px_rgba(170,79,255,0.25)] hover:-translate-y-1 block"
           >
             <Image
               src={featuredNews.background_image || "/images/placeholder.jpg"}
@@ -135,7 +135,7 @@ export default function GamingNews() {
             <Link
               key={newsItem.id}
               href={`/games/${newsItem.id}`}
-              className="group relative h-35 sm:h-47 rounded-3xl overflow-hidden bg-base-950 border border-base-800/60 transition-all duration-500 hover:border-primary-500/50 hover:shadow-[0_10px_30px_rgba(170,79,255,0.2)] hover:-translate-y-1 block"
+              className="group relative h-32.5 sm:h-39.5 rounded-3xl overflow-hidden bg-base-950 border border-base-800/60 transition-all duration-500 hover:border-primary-500/50 hover:shadow-[0_10px_30px_rgba(170,79,255,0.2)] hover:-translate-y-1 block"
             >
               <Image
                 src={newsItem.background_image || "/images/placeholder.jpg"}

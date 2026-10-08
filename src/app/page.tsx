@@ -1,19 +1,26 @@
+import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
 import Genres from "@/components/home/Genres";
 import TrendingGames from "@/components/home/TrendingGames";
-import FeaturedGame from "@/components/home/FeaturedGame";
-import ShopCategories from "@/components/home/ShopCategories";
-import PopularHardware from "@/components/home/PopularHardware";
-import FlashSale from "@/components/home/FlashSale";
-import PlatformShowcase from "@/components/home/PlatformShowcase";
-import BrandsRow from "@/components/home/BrandsRow";
-import GiftCards from "@/components/home/GiftCards";
-import GamingNews from "@/components/home/GamingNews";
-import StoreFeatures from "@/components/home/StoreFeatures";
+const FeaturedGame = dynamic(() => import("@/components/home/FeaturedGame"));
+const ShopCategories = dynamic(
+  () => import("@/components/home/ShopCategories"),
+);
+const PopularHardware = dynamic(
+  () => import("@/components/home/PopularHardware"),
+);
+const FlashSale = dynamic(() => import("@/components/home/FlashSale"));
+const PlatformShowcase = dynamic(
+  () => import("@/components/home/PlatformShowcase"),
+);
+const BrandsRow = dynamic(() => import("@/components/home/BrandsRow"));
+const GiftCards = dynamic(() => import("@/components/home/GiftCards"));
+const GamingNews = dynamic(() => import("@/components/home/GamingNews"));
+const StoreFeatures = dynamic(() => import("@/components/home/StoreFeatures"));
 
 export default function Home() {
   return (
-    <div className="flex flex-col w-full pb-20">
+    <div className="flex flex-col w-full pb-12 gap-y-20 pt-4">
       <Hero
         slugs={[
           "red-dead-redemption-2",

@@ -55,7 +55,7 @@ const FEATURES = [
 
 export default function StoreFeatures() {
   return (
-    <section className="w-full px-8 lg:px-16 py-10 relative z-10">
+    <section className="w-full px-8 lg:px-16  relative z-10">
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {FEATURES.map((feature) => {
           const Icon = feature.icon;

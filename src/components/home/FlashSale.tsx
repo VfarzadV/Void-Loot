@@ -55,7 +55,7 @@ export default function FlashSale() {
   if (deals.length === 0) return null;
 
   return (
-    <section className="w-full px-8 lg:px-16 py-20 relative z-10 flex flex-col gap-10">
+    <section className="w-full px-8 lg:px-16 relative z-10 flex flex-col gap-10">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 bg-linear-to-r from-purple-950/60 via-base-950 to-base-950 p-8 rounded-2xl border border-purple-500/30 relative overflow-hidden">
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col gap-2 relative z-10">

@@ -61,8 +61,8 @@ export default function TrendingGames() {
   if (games.length === 0) return null;
 
   return (
-    <section className="w-full px-8 lg:px-16 py-16 relative z-10">
-      <div className="flex items-end justify-between mb-8">
+    <section className="w-full px-6 lg:px-12 relative z-10">
+      <div className="flex items-end justify-between mb-6">
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <Flame size={14} className="text-orange-500 animate-pulse" />
@@ -86,7 +86,7 @@ export default function TrendingGames() {
           />
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {games.map((game) => (
           <Link
             href={`/games/${game.id}`}

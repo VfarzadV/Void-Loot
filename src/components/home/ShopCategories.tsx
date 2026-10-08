@@ -12,14 +12,14 @@ import {
 
 export default function ShopCategories() {
   return (
-    <section className="w-full px-8 lg:px-16 py-20 relative z-10 flex flex-col gap-12">
+    <section className="w-full px-6 lg:px-12  relative z-10 flex flex-col gap-8">
       <div className="flex items-end justify-between">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <span className="w-8 h-0.5 bg-primary-500 rounded-full"></span>
             Nexus Hardware & Gear
           </div>
-          <h2 className="text-4xl md:text-5xl font-black text-base-50 tracking-tight">
+          <h2 className="text-3xl md:text-4xl font-black text-base-50 tracking-tight">
             Featured{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-400 to-primary-600">
               Store Categories
@@ -37,7 +37,7 @@ export default function ShopCategories() {
           />
         </Link>
       </div>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         {/* PlayStation Banner */}
         <Link
           href="/shop/playstation"
@@ -86,7 +86,7 @@ export default function ShopCategories() {
           </div>
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
             title: "Gaming Rigs & Cases",

@@ -85,8 +85,10 @@ export default function Footer() {
                 size={32}
                 strokeWidth={2.5}
               />
-              Nexus
-              <span className="text-primary-500 drop-shadow-[0_0_10px_rgba(170,79,255,0.5)]">{`{}`}</span>
+              Void
+              <span className="text-primary-500 drop-shadow-[0_0_10px_rgba(170,79,255,0.5)]">
+                Loot
+              </span>
             </Link>
             <p className="text-sm text-base-400 leading-relaxed max-w-sm">
               The ultimate destination for next-gen gamers. Explore massive game
@@ -190,7 +192,7 @@ export default function Footer() {
         </div>
         <div className="w-full pt-8 border-t border-base-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-base-500 font-medium">
-            © {new Date().getFullYear()} Nexus Zone. All rights reserved.
+            © {new Date().getFullYear()} Void Loot. All rights reserved.
             Designed by Farzad.
           </p>
           <div className="flex items-center gap-6 text-xs text-base-500 font-medium">

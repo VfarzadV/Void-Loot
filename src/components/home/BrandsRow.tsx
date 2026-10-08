@@ -19,7 +19,7 @@ const BRANDS = [
 
 export default function BrandsRow() {
   return (
-    <section className="w-full px-8 lg:px-16 py-10 relative z-10">
+    <section className="w-full px-8 lg:px-16 relative z-10">
       <div className="flex items-end justify-between mb-8 border-b border-white/5 pb-3">
         <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
           Shop by <span className="text-primary-400">Brand</span>
