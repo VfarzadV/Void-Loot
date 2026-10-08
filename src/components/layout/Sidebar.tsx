@@ -34,7 +34,7 @@ const NavItem = ({
       className={`transition-transform duration-300 group-hover:scale-110 ${active ? "drop-shadow-[0_0_8px_rgba(170,79,255,0.6)]" : ""}`}
     />
     {active && (
-      <span className="absolute -left-0 w-1.5 h-8 bg-primary-500 rounded-r-full shadow-[0_0_10px_rgba(170,79,255,0.8)]" />
+      <span className="absolute left-0 w-1.5 h-8 bg-primary-500 rounded-r-full shadow-[0_0_10px_rgba(170,79,255,0.8)]" />
     )}
   </Link>
 );
@@ -48,7 +48,7 @@ export default function Sidebar() {
       >
         <Hexagon size={36} strokeWidth={2.5} />
       </Link>
-      <nav className="flex flex-col gap-4 flex-grow">
+      <nav className="flex flex-col gap-4 grow">
         <NavItem href="/" icon={Home} active={true} />
         <NavItem href="/shop" icon={LayoutGrid} />
         <NavItem href="/games" icon={Gamepad2} />

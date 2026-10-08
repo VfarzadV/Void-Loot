@@ -40,7 +40,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
 
   if (isLoading) {
     return (
-      <section className="w-full h-[600px] my-24 bg-base-950 flex items-center justify-center relative overflow-hidden border-y border-white/5">
+      <section className="w-full h-150 my-24 bg-base-950 flex items-center justify-center relative overflow-hidden border-y border-white/5">
         <div className="absolute inset-0 bg-base-900/20 animate-pulse"></div>
         <div className="flex items-center gap-3 text-yellow-500/50 relative z-10">
           <Trophy className="animate-bounce" size={32} />
@@ -53,7 +53,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
   }
   if (!game) return null;
   return (
-    <section className="relative w-full min-h-[600px] my-24 flex items-center border-y border-white/5">
+    <section className="relative w-full min-h-150 my-24 flex items-center border-y border-white/5">
       <div className="absolute inset-0 z-0">
         <Image
           src={game.background_image}
@@ -62,9 +62,9 @@ export default function FeaturedGame({ slug }: { slug: string }) {
           unoptimized
           className="object-cover opacity-30 object-top"
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-base-950 via-base-950/80 to-transparent" />
-        <div className="absolute inset-0 bg-gradient-to-t from-base-950 via-transparent to-base-950" />
-        <div className="absolute inset-0 bg-gradient-to-b from-base-950 via-transparent to-transparent opacity-80" />
+        <div className="absolute inset-0 bg-linear-to-r from-base-950 via-base-950/80 to-transparent" />
+        <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-base-950" />
+        <div className="absolute inset-0 bg-linear-to-b from-base-950 via-transparent to-transparent opacity-80" />
       </div>
       <div className="container mx-auto px-8 lg:px-16 relative z-10 w-full flex justify-start">
         <div className="max-w-2xl flex flex-col gap-6 glass-panel p-8 md:p-12 border-l-4 border-l-yellow-500/80 bg-base-950/40 backdrop-blur-xl hover:bg-base-950/50 transition-colors duration-500">
@@ -109,7 +109,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
           <div className="flex flex-wrap items-center gap-4 mt-6 pt-6 border-t border-base-800/50">
             <Link
               href={`/games/${game.id}`}
-              className="group flex items-center gap-3 bg-gradient-to-r from-yellow-500 to-yellow-400 text-yellow-950 px-8 py-3.5 rounded-xl font-bold transition-all duration-300 shadow-[0_0_20px_rgba(234,179,8,0.2)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] hover:scale-105"
+              className="group flex items-center gap-3 bg-linear-to-r from-yellow-500 to-yellow-400 text-yellow-950 px-8 py-3.5 rounded-xl font-bold transition-all duration-300 shadow-[0_0_20px_rgba(234,179,8,0.2)] hover:shadow-[0_0_30px_rgba(234,179,8,0.5)] hover:scale-105"
             >
               <Download
                 size={18}

@@ -26,7 +26,7 @@ export default function Navbar() {
         href="/contact"
         className="hidden sm:inline-flex relative group px-6 py-2.5 rounded-xl font-bold text-sm text-white overflow-hidden"
       >
-        <span className="absolute inset-0 w-full h-full bg-gradient-to-r from-primary-600 to-primary-400 group-hover:scale-105 transition-transform duration-300"></span>
+        <span className="absolute inset-0 w-full h-full bg-linear-to-r from-primary-600 to-primary-400 group-hover:scale-105 transition-transform duration-300"></span>
         <span className="relative z-10 flex items-center gap-2">
           Contact us
         </span>

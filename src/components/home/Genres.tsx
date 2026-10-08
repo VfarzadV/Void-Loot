@@ -104,12 +104,12 @@ export default function Genres() {
       <div className="flex items-end justify-between mb-12">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-sm font-bold tracking-widest uppercase">
-            <span className="w-8 h-[2px] bg-primary-500 rounded-full"></span>
+            <span className="w-8 h-0.5 bg-primary-500 rounded-full"></span>
             Categories
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-base-50 tracking-tight">
             Explore by{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary-400 to-primary-600">
+            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-400 to-primary-600">
               Genre
             </span>
           </h2>
@@ -129,7 +129,7 @@ export default function Genres() {
             <Link
               href={`/categories/${genre.id}`}
               key={genre.id}
-              className={`group relative overflow-hidden rounded-2xl glass-panel min-h-[240px] p-8 transition-all duration-500 hover:-translate-y-2 border border-base-800/80 bg-base-950 ${ui.accent} ${ui.glow}`}
+              className={`group relative overflow-hidden rounded-2xl glass-panel min-h-60 p-8 transition-all duration-500 hover:-translate-y-2 border border-base-800/80 bg-base-950 ${ui.accent} ${ui.glow}`}
             >
               <Image
                 src={genre.image_background}
@@ -138,9 +138,9 @@ export default function Genres() {
                 unoptimized
                 className="object-cover opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-700 ease-out"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-base-950 via-base-950/70 to-transparent" />
+              <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/70 to-transparent" />
               <div
-                className={`absolute inset-0 bg-gradient-to-br ${ui.color} opacity-10 group-hover:opacity-30 transition-opacity duration-500 mix-blend-overlay`}
+                className={`absolute inset-0 bg-linear-to-br ${ui.color} opacity-10 group-hover:opacity-30 transition-opacity duration-500 mix-blend-overlay`}
               />
               <div className="relative z-10 flex flex-col h-full gap-4 justify-between">
                 <div className="flex items-start justify-between">

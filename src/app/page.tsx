@@ -5,6 +5,11 @@ import FeaturedGame from "@/components/home/FeaturedGame";
 import ShopCategories from "@/components/home/ShopCategories";
 import PopularHardware from "@/components/home/PopularHardware";
 import FlashSale from "@/components/home/FlashSale";
+import PlatformShowcase from "@/components/home/PlatformShowcase";
+import BrandsRow from "@/components/home/BrandsRow";
+import GiftCards from "@/components/home/GiftCards";
+import GamingNews from "@/components/home/GamingNews";
+import StoreFeatures from "@/components/home/StoreFeatures";
 
 export default function Home() {
   return (
@@ -22,6 +27,16 @@ export default function Home() {
       <ShopCategories />
       <PopularHardware />
       <FlashSale />
+      <PlatformShowcase
+        platformId={2}
+        title="PlayStation Hits"
+        icon="playstation"
+      />
+      <PlatformShowcase platformId={1} title="PC Master Race" icon="pc" />
+      <BrandsRow />
+      <GiftCards />
+      <GamingNews />
+      <StoreFeatures />
     </div>
   );
 }

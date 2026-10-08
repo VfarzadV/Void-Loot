@@ -131,8 +131,8 @@ export default function Hero({ slugs }: { slugs: string[] }) {
             className="object-cover"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-r from-base-950 via-base-950/80 to-base-950/90" />
-        <div className="absolute inset-0 bg-gradient-to-t from-base-950 via-transparent to-base-950" />
+        <div className="absolute inset-0 bg-linear-to-r from-base-950 via-base-950/80 to-base-950/90" />
+        <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-base-950" />
       </div>
       <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-40">
         <div
@@ -154,7 +154,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
             <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
             RAWG Top Trending
           </div>
-          <div className="min-h-[140px] flex flex-col justify-center">
+          <div className="min-h-35 flex flex-col justify-center">
             <h1
               key={activeGame.name}
               className="text-5xl lg:text-6xl font-black text-base-50 leading-[1.1] tracking-tight"
@@ -164,7 +164,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
           </div>
           <p
             key={activeGame.description}
-            className="text-base-400 max-w-md leading-relaxed text-sm border-l-2 border-base-800 pl-4 mt-2 min-h-[60px]"
+            className="text-base-400 max-w-md leading-relaxed text-sm border-l-2 border-base-800 pl-4 mt-2 min-h-15"
           >
             {activeGame.description}
           </p>
@@ -230,19 +230,19 @@ export default function Hero({ slugs }: { slugs: string[] }) {
           </div>
         </div>
         <div
-          className="relative w-full h-[400px] lg:h-[600px] flex items-center justify-center perspective-[1200px]"
+          className="relative w-full h-100 lg:h-150 flex items-center justify-center perspective-distant"
           onMouseEnter={() => setIsLayoutHovered(true)}
           onMouseLeave={() => setIsLayoutHovered(false)}
         >
           <div
-            className={`absolute w-[350px] h-[350px] rounded-full transition-all duration-700 ease-out ${isLayoutHovered ? "bg-primary-500/30 blur-[130px] scale-110" : "bg-primary-600/20 blur-[100px]"}`}
+            className={`absolute w-87.5 h-87.5 rounded-full transition-all duration-700 ease-out ${isLayoutHovered ? "bg-primary-500/30 blur-[130px] scale-110" : "bg-primary-600/20 blur-[100px]"}`}
           />
           {games.map((game, index) => {
             const positionIndex =
               (index - currentIndex + games.length) % games.length;
             const isHovered = hoveredCard === index;
             const sizeClass =
-              positionIndex === 0 ? "w-64 h-[400px]" : "w-48 h-72";
+              positionIndex === 0 ? "w-64 h-100" : "w-48 h-72";
             let stateStyle = "";
             let overlayOpacity = "opacity-60";
             if (!isLayoutHovered) {
@@ -305,7 +305,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                   className={`absolute inset-0 bg-black transition-opacity duration-500 ${overlayOpacity}`}
                 />
                 <div
-                  className={`absolute bottom-0 left-0 w-full p-6 pt-24 bg-gradient-to-t from-black/90 via-black/40 to-transparent transition-all duration-500 ${isLayoutHovered || isHovered || positionIndex === 0 ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+                  className={`absolute bottom-0 left-0 w-full p-6 pt-24 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-all duration-500 ${isLayoutHovered || isHovered || positionIndex === 0 ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
                 >
                   <h3 className="text-white font-bold text-lg drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
                     {game.name}
@@ -322,7 +322,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
         >
           01
         </span>
-        <div className="w-20 h-[3px] bg-base-800 rounded-full overflow-hidden relative cursor-pointer">
+        <div className="w-20 h-0.75 bg-base-800 rounded-full overflow-hidden relative cursor-pointer">
           <div
             className="absolute top-0 left-0 h-full bg-primary-500 transition-all duration-700 ease-out"
             style={{
