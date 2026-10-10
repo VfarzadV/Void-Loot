@@ -2,7 +2,6 @@ import Image from "next/image";
 import Link from "next/link";
 import {
   Search,
-  ShoppingBag,
   Monitor,
   Headphones,
   Cpu,
@@ -12,6 +11,7 @@ import {
   Smartphone,
   Gamepad2,
 } from "lucide-react";
+import AddToCartButton from "@/components/cart/AddToCartButton";
 
 interface Product {
   id: number;
@@ -233,12 +233,14 @@ export default async function ShopPage({
                       <span className="text-xl font-black text-white">
                         ${product.price.toFixed(2)}
                       </span>
-                      <button className="flex items-center justify-center w-10 h-10 rounded-xl bg-base-900 border border-white/10 text-base-300 transition-all hover:bg-primary-600 hover:text-white hover:border-primary-500 hover:shadow-[0_0_15px_rgba(170,79,255,0.4)] group/btn">
-                        <ShoppingBag
-                          size={18}
-                          className="group-hover/btn:scale-110 transition-transform"
-                        />
-                      </button>
+                      <AddToCartButton
+                        product={{
+                          id: product.id,
+                          title: product.title,
+                          price: product.price,
+                          image: product.thumbnail,
+                        }}
+                      />
                     </div>
                   </div>
                 </div>

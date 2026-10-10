@@ -1,8 +1,13 @@
 "use client";
 import Link from "next/link";
 import { ShoppingCart, Search, Bell } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
 
 export default function Navbar() {
+  const { toggleCart, items } = useCartStore();
+
+  const totalItems = items.reduce((total, item) => total + item.quantity, 0);
+
   return (
     <header className="w-full h-20 px-6 lg:px-12 flex items-center justify-between z-40 sticky top-0 bg-base-950/80 backdrop-blur-xl border-b border-white/5">
       <Link
@@ -22,15 +27,22 @@ export default function Navbar() {
           <Bell size={20} />
         </button>
         <div className="w-px h-5 bg-white/10 hidden sm:block"></div>
-        <button className="relative text-base-400 hover:text-white transition-colors group">
+
+        <button
+          onClick={toggleCart}
+          className="relative text-base-400 hover:text-white transition-colors group"
+        >
           <ShoppingCart
             size={22}
             className="group-hover:scale-110 transition-transform"
           />
-          <span className="absolute -top-1.5 -right-2 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(170,79,255,0.5)]">
-            0
-          </span>
+          {totalItems > 0 && (
+            <span className="absolute -top-1.5 -right-2 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(170,79,255,0.5)] animate-in zoom-in">
+              {totalItems}
+            </span>
+          )}
         </button>
+
         <div className="w-px h-5 bg-white/10"></div>
         <div className="flex items-center gap-3">
           <Link

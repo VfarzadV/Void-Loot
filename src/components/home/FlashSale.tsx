@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { Zap, Clock, Star } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
 
 interface DealProduct {
   id: number;
@@ -51,6 +52,7 @@ export default function FlashSale() {
     }
     fetchDeals();
   }, []);
+  const addItem = useCartStore((state) => state.addItem);
 
   if (deals.length === 0) return null;
 
@@ -153,7 +155,18 @@ export default function FlashSale() {
                     ${salePrice}
                   </span>
                 </div>
-                <button className="bg-linear-to-r from-purple-600 to-pink-600 hover:from-purple-500 hover:to-pink-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(236,72,153,0.5)]">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    addItem({
+                      id: deal.id,
+                      title: deal.title,
+                      price: deal.price,
+                      image: deal.thumbnail,
+                    });
+                  }}
+                  className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
+                >
                   Add to Cart
                 </button>
               </div>

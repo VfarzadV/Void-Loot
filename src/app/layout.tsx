@@ -3,6 +3,7 @@ import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
+import CartDrawer from "@/components/cart/CartDrawer";
 
 export const metadata: Metadata = {
   title: "Void Loot",
@@ -20,6 +21,7 @@ export default function RootLayout({
         <Sidebar />
         <div className="flex-1 ml-20 flex flex-col min-h-screen relative">
           <Navbar />
+          <CartDrawer />
           <main className="grow px-2 md:px-0">{children}</main>
           <Footer />
         </div>

@@ -7,9 +7,9 @@ import {
   Gamepad2,
   Monitor,
   Layers,
-  ShoppingBag,
   Trophy,
 } from "lucide-react";
+import AddToCartFullButton from "@/components/cart/AddToCartFullButton";
 
 interface Genre {
   id: number;
@@ -420,14 +420,14 @@ export default async function GameDetailsPage({
                 ${mockPrice}
               </span>
             </div>
-
-            <button className="w-full py-4 rounded-xl font-black text-white bg-linear-to-r from-primary-600 to-primary-400 hover:from-primary-500 hover:to-primary-300 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all flex items-center justify-center gap-2 group">
-              <ShoppingBag
-                size={20}
-                className="group-hover:scale-110 transition-transform"
-              />{" "}
-              Add to Cart
-            </button>
+            <AddToCartFullButton
+              product={{
+                id: game.id,
+                title: game.name,
+                price: Number(mockPrice),
+                image: game.background_image || "/images/placeholder.jpg",
+              }}
+            />
             <div className="flex flex-col gap-3 pt-2">
               <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
                 Available Platforms

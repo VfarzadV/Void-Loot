@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { ArrowRight, Monitor, Gamepad, ShoppingBag, Star } from "lucide-react";
+import { ArrowRight, Monitor, Gamepad, Star } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
 
 interface PlatformShowcaseProps {
-  platformId: number; // 1 for PC, 2 for PlayStation
+  platformId: number;
   title: string;
   icon: "pc" | "playstation";
 }
@@ -25,7 +26,7 @@ export default function PlatformShowcase({
 }: PlatformShowcaseProps) {
   const [games, setGames] = useState<RawgGame[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-
+  const addItem = useCartStore((state) => state.addItem);
   const IconComponent = icon === "playstation" ? Gamepad : Monitor;
 
   useEffect(() => {
@@ -121,8 +122,20 @@ export default function PlatformShowcase({
                   <span className="text-sm font-black text-white">
                     ${mockPrice}
                   </span>
-                  <button className="w-7 h-7 rounded-lg bg-base-900 flex items-center justify-center transition-all border border-white/5 text-base-400 hover:text-white hover:bg-primary-600 hover:border-primary-500 hover:shadow-[0_0_10px_rgba(170,79,255,0.4)]">
-                    <ShoppingBag size={12} />
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      addItem({
+                        id: game.id,
+                        title: game.name,
+                        price: parseFloat(mockPrice),
+                        image:
+                          game.background_image || "/images/placeholder.jpg",
+                      });
+                    }}
+                    className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
+                  >
+                    Add to Cart
                   </button>
                 </div>
               </div>

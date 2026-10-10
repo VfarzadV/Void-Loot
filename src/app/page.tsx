@@ -2,6 +2,7 @@ import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
 import Genres from "@/components/home/Genres";
 import TrendingGames from "@/components/home/TrendingGames";
+import GlobalNetwork from "@/components/sections/GlobalNetwork";
 const FeaturedGame = dynamic(() => import("@/components/home/FeaturedGame"));
 const ShopCategories = dynamic(
   () => import("@/components/home/ShopCategories"),
@@ -55,6 +56,7 @@ export default function Home() {
       <LaserDivider />
       <GamingNews />
       <StoreFeatures />
+      <GlobalNetwork />
     </div>
   );
 }
