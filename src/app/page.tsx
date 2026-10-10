@@ -17,10 +17,14 @@ const BrandsRow = dynamic(() => import("@/components/home/BrandsRow"));
 const GiftCards = dynamic(() => import("@/components/home/GiftCards"));
 const GamingNews = dynamic(() => import("@/components/home/GamingNews"));
 const StoreFeatures = dynamic(() => import("@/components/home/StoreFeatures"));
+const LaserDivider = dynamic(() => import("@/components/home/LaserDivider"));
+const ParallaxBanner = dynamic(
+  () => import("@/components/home/ParallaxBanner"),
+);
 
 export default function Home() {
   return (
-    <div className="flex flex-col w-full pb-12 gap-y-20 pt-4">
+    <div className="flex flex-col w-full pb-12 gap-y-20 pt-4 overflow-x-hidden">
       <Hero
         slugs={[
           "red-dead-redemption-2",
@@ -29,19 +33,26 @@ export default function Home() {
         ]}
       />
       <Genres />
+      <LaserDivider />
       <TrendingGames />
+      <LaserDivider />
       <FeaturedGame slug="cyberpunk-2077" />
+      <LaserDivider />
       <ShopCategories />
+      <ParallaxBanner />
       <PopularHardware />
       <FlashSale />
+      <LaserDivider />
       <PlatformShowcase
         platformId={2}
         title="PlayStation Hits"
         icon="playstation"
       />
       <PlatformShowcase platformId={1} title="PC Master Race" icon="pc" />
+      <LaserDivider />
       <BrandsRow />
       <GiftCards />
+      <LaserDivider />
       <GamingNews />
       <StoreFeatures />
     </div>

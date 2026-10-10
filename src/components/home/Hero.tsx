@@ -119,7 +119,16 @@ export default function Hero({ slugs }: { slugs: string[] }) {
   const activeGame = games[currentIndex];
 
   return (
-    <section className="relative w-full min-h-[75vh] flex items-center overflow-hidden px-6 lg:px-12 ">
+    <section className="relative w-full min-h-[75vh] flex items-center overflow-hidden px-6 lg:px-12 py-8">
+      <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0 overflow-hidden select-none">
+        <h2
+          key={`watermark-${activeGame.id}`}
+          className="text-[120px] lg:text-[220px] font-black text-white/3 whitespace-nowrap tracking-tighter mix-blend-overlay animate-pulse"
+          style={{ animationDuration: "4s" }}
+        >
+          {activeGame.name.toUpperCase()}
+        </h2>
+      </div>
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
         <div className="absolute inset-0 opacity-20 transition-all duration-1000 ease-out transform scale-110 filter blur-[90px]">
           <Image
@@ -229,113 +238,118 @@ export default function Hero({ slugs }: { slugs: string[] }) {
             </div>
           </div>
         </div>
-        <div
-          className="relative w-full h-84 lg:h-120 flex items-center justify-center perspective-distant"
-          onMouseEnter={() => setIsLayoutHovered(true)}
-          onMouseLeave={() => setIsLayoutHovered(false)}
-        >
+        <div className="flex flex-col items-center w-full mt-6 lg:mt-0">
           <div
-            className={`absolute w-80 h-80 rounded-full transition-all duration-700 ease-out ${isLayoutHovered ? "bg-primary-500/30 blur-[130px] scale-110" : "bg-primary-600/20 blur-[100px]"}`}
-          />
-          {games.map((game, index) => {
-            const positionIndex =
-              (index - currentIndex + games.length) % games.length;
-            const isHovered = hoveredCard === index;
-            const sizeClass =
-              positionIndex === 0 ? "w-56 h-84" : "w-40 h-64";
-            let stateStyle = "";
-            let overlayOpacity = "opacity-60";
-            if (!isLayoutHovered) {
-              if (positionIndex === 2)
-                stateStyle =
-                  "-translate-x-8 translate-y-4 -rotate-6 scale-90 blur-[2px] brightness-75 z-10";
-              else if (positionIndex === 0) {
-                stateStyle = "rotate-0 z-30 shadow-[0_0_30px_rgba(0,0,0,0.8)]";
-                overlayOpacity = "opacity-20";
-              } else if (positionIndex === 1)
-                stateStyle =
-                  "translate-x-8 translate-y-4 rotate-6 scale-90 blur-[2px] brightness-75 z-20";
-            } else {
-              if (positionIndex === 2)
-                stateStyle =
-                  "-translate-x-20 -translate-y-2 -rotate-12 scale-100 blur-0 brightness-90 z-10";
-              else if (positionIndex === 0) {
-                stateStyle =
-                  "-translate-y-4 scale-105 border-primary-400/50 shadow-[0_20px_50px_rgba(170,79,255,0.2)] brightness-90 z-30";
-                overlayOpacity = "opacity-40";
-              } else if (positionIndex === 1)
-                stateStyle =
-                  "translate-x-20 -translate-y-2 rotate-12 scale-100 blur-0 brightness-90 z-20";
-            }
-            if (isHovered) {
-              if (positionIndex === 2)
-                stateStyle =
-                  "!-translate-x-24 !-translate-y-6 !rotate-0 !scale-110 !z-50 !blur-0 !brightness-110 !border-primary-400/80 shadow-[0_20px_50px_rgba(170,79,255,0.6)]";
-              else if (positionIndex === 0)
-                stateStyle =
-                  "!-translate-y-8 !rotate-0 !scale-110 !z-50 !blur-0 !brightness-110 !border-primary-400/80 shadow-[0_20px_50px_rgba(170,79,255,0.6)]";
-              else if (positionIndex === 1)
-                stateStyle =
-                  "!translate-x-24 !-translate-y-6 !rotate-0 !scale-110 !z-50 !blur-0 !brightness-110 !border-primary-400/80 shadow-[0_20px_50px_rgba(170,79,255,0.6)]";
-              overlayOpacity = "!opacity-0";
-            }
-            return (
-              <Link
-                href={`/games/${game.id}`}
-                key={game.id}
-                onClick={(e) => {
-                  if (positionIndex !== 0) {
-                    e.preventDefault();
-                    setCurrentIndex(index);
-                  }
-                }}
-                onMouseEnter={() => setHoveredCard(index)}
-                onMouseLeave={() => setHoveredCard(null)}
-                className={`absolute rounded-2xl overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] bg-base-950 block border-2 border-transparent ${sizeClass} ${stateStyle}`}
-              >
-                <Image
-                  src={game.background_image}
-                  alt={game.name}
-                  fill
-                  unoptimized
-                  priority
-                  className={`object-cover transition-transform duration-700 ${isHovered || positionIndex === 0 ? "scale-105" : "scale-100"}`}
-                />
-                <div
-                  className={`absolute inset-0 bg-black transition-opacity duration-500 ${overlayOpacity}`}
-                />
-                <div
-                  className={`absolute bottom-0 left-0 w-full p-4 pt-14 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-all duration-500 ${isLayoutHovered || isHovered || positionIndex === 0 ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+            className="relative w-full h-100 lg:h-125 flex items-center justify-center perspective-distant"
+            onMouseEnter={() => setIsLayoutHovered(true)}
+            onMouseLeave={() => setIsLayoutHovered(false)}
+          >
+            <div
+              className={`absolute w-80 h-80 rounded-full transition-all duration-700 ease-out ${isLayoutHovered ? "bg-primary-500/30 blur-[150px] scale-125" : "bg-primary-600/20 blur-[120px]"}`}
+            />
+            {games.map((game, index) => {
+              const positionIndex =
+                (index - currentIndex + games.length) % games.length;
+              const isHovered = hoveredCard === index;
+              const sizeClass =
+                positionIndex === 0
+                  ? "w-64 lg:w-[320px] h-96 lg:h-[460px]"
+                  : "w-48 lg:w-56 h-72 lg:h-96";
+              let stateStyle = "";
+              let overlayOpacity = "opacity-60";
+              if (!isLayoutHovered) {
+                if (positionIndex === 2)
+                  stateStyle =
+                    "-translate-x-16 lg:-translate-x-32 translate-y-6 -rotate-6 scale-90 blur-[2px] brightness-75 z-10";
+                else if (positionIndex === 0) {
+                  stateStyle =
+                    "rotate-0 z-30 shadow-[0_0_40px_rgba(0,0,0,0.8)]";
+                  overlayOpacity = "opacity-20";
+                } else if (positionIndex === 1)
+                  stateStyle =
+                    "translate-x-16 lg:translate-x-32 translate-y-6 rotate-6 scale-90 blur-[2px] brightness-75 z-20";
+              } else {
+                if (positionIndex === 2)
+                  stateStyle =
+                    "-translate-x-28 lg:-translate-x-48 -translate-y-2 -rotate-12 scale-100 blur-0 brightness-90 z-10";
+                else if (positionIndex === 0) {
+                  stateStyle =
+                    "-translate-y-4 scale-105 border-primary-400/50 shadow-[0_20px_50px_rgba(170,79,255,0.3)] brightness-90 z-30";
+                  overlayOpacity = "opacity-40";
+                } else if (positionIndex === 1)
+                  stateStyle =
+                    "translate-x-28 lg:translate-x-48 -translate-y-2 rotate-12 scale-100 blur-0 brightness-90 z-20";
+              }
+              if (isHovered) {
+                if (positionIndex === 2)
+                  stateStyle =
+                    "!-translate-x-32 lg:!-translate-x-52 !-translate-y-6 !rotate-0 !scale-110 !z-50 !blur-0 !brightness-110 !border-primary-400/80 shadow-[0_20px_50px_rgba(170,79,255,0.6)]";
+                else if (positionIndex === 0)
+                  stateStyle =
+                    "!-translate-y-8 !rotate-0 !scale-110 !z-50 !blur-0 !brightness-110 !border-primary-400/80 shadow-[0_20px_50px_rgba(170,79,255,0.6)]";
+                else if (positionIndex === 1)
+                  stateStyle =
+                    "!translate-x-32 lg:!translate-x-52 !-translate-y-6 !rotate-0 !scale-110 !z-50 !blur-0 !brightness-110 !border-primary-400/80 shadow-[0_20px_50px_rgba(170,79,255,0.6)]";
+                overlayOpacity = "!opacity-0";
+              }
+              return (
+                <Link
+                  href={`/games/${game.id}`}
+                  key={game.id}
+                  onClick={(e) => {
+                    if (positionIndex !== 0) {
+                      e.preventDefault();
+                      setCurrentIndex(index);
+                    }
+                  }}
+                  onMouseEnter={() => setHoveredCard(index)}
+                  onMouseLeave={() => setHoveredCard(null)}
+                  className={`absolute rounded-2xl overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] bg-base-950 block border-2 border-transparent ${sizeClass} ${stateStyle}`}
                 >
-                  <h3 className="text-white font-bold text-base drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
-                    {game.name}
-                  </h3>
-                </div>
-              </Link>
-            );
-          })}
+                  <Image
+                    src={game.background_image}
+                    alt={game.name}
+                    fill
+                    unoptimized
+                    priority
+                    className={`object-cover transition-transform duration-700 ${isHovered || positionIndex === 0 ? "scale-105" : "scale-100"}`}
+                  />
+                  <div
+                    className={`absolute inset-0 bg-black transition-opacity duration-500 ${overlayOpacity}`}
+                  />
+                  <div
+                    className={`absolute bottom-0 left-0 w-full p-4 pt-14 bg-linear-to-t from-black/90 via-black/40 to-transparent transition-all duration-500 ${isLayoutHovered || isHovered || positionIndex === 0 ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0"}`}
+                  >
+                    <h3 className="text-white font-bold text-base drop-shadow-[0_2px_4px_rgba(0,0,0,1)]">
+                      {game.name}
+                    </h3>
+                  </div>
+                </Link>
+              );
+            })}
+          </div>
+          <div className="flex items-center gap-3 text-base-400 font-mono text-xs z-10 mt-6 lg:mt-8">
+            <span
+              className={`transition-colors duration-300 ${currentIndex === 0 ? "text-primary-400 font-bold" : ""}`}
+            >
+              01
+            </span>
+            <div className="w-16 h-0.75 bg-base-800 rounded-full overflow-hidden relative cursor-pointer">
+              <div
+                className="absolute top-0 left-0 h-full bg-primary-500 transition-all duration-700 ease-out"
+                style={{
+                  width: "33.33%",
+                  transform: `translateX(${currentIndex * 100}%)`,
+                }}
+              ></div>
+            </div>
+            <span
+              className={`transition-colors duration-300 ${currentIndex === 2 ? "text-primary-400 font-bold" : ""}`}
+            >
+              03
+            </span>
+          </div>
         </div>
-      </div>
-      <div className="absolute bottom-6 left-6 lg:left-12 flex items-center gap-3 text-base-400 font-mono text-xs z-10">
-        <span
-          className={`transition-colors duration-300 ${currentIndex === 0 ? "text-primary-400 font-bold" : ""}`}
-        >
-          01
-        </span>
-        <div className="w-16 h-0.75 bg-base-800 rounded-full overflow-hidden relative cursor-pointer">
-          <div
-            className="absolute top-0 left-0 h-full bg-primary-500 transition-all duration-700 ease-out"
-            style={{
-              width: "33.33%",
-              transform: `translateX(${currentIndex * 100}%)`,
-            }}
-          ></div>
-        </div>
-        <span
-          className={`transition-colors duration-300 ${currentIndex === 2 ? "text-primary-400 font-bold" : ""}`}
-        >
-          03
-        </span>
       </div>
     </section>
   );
