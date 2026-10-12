@@ -1,6 +1,7 @@
 "use client";
 import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { toast } from "sonner";
 
 interface AddToCartButtonProps {
   product: {
@@ -15,12 +16,13 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const addItem = useCartStore((state) => state.addItem);
 
   const handleAddToCart = (e: React.MouseEvent) => {
-    e.preventDefault(); // جلوگیری از رفتن به لینک محصول هنگام کلیک روی دکمه
+    e.preventDefault();
     addItem(product);
+    toast.success(`${product.title} added to loot!`);
   };
 
   return (
-    <button 
+    <button
       onClick={handleAddToCart}
       className="flex items-center justify-center w-10 h-10 rounded-xl bg-base-900 border border-white/10 text-base-300 transition-all hover:bg-primary-600 hover:text-white hover:border-primary-500 hover:shadow-[0_0_15px_rgba(170,79,255,0.4)] group/btn z-20 relative"
       title="Add to Cart"

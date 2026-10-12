@@ -127,7 +127,7 @@ export default function Genres() {
           const IconComponent = ui.icon;
           return (
             <Link
-              href={`/categories/${genre.id}`}
+              href={`/games?search=${genre.slug}`}
               key={genre.id}
               className={`group relative overflow-hidden rounded-2xl glass-panel min-h-52 p-6 transition-all duration-500 hover:-translate-y-1 border border-base-800/80 bg-base-950 ${ui.accent} ${ui.glow}`}
             >

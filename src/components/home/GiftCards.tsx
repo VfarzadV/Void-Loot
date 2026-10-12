@@ -1,41 +1,44 @@
 "use client";
-
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ShoppingBag } from "lucide-react";
+import { useCartStore } from "@/store/useCartStore";
+import { toast } from "sonner";
 
 const GIFT_CARDS = [
   {
-    id: 1,
+    id: 901,
     title: "PSN Gift Card",
     value: "$50",
-    price: "$49.99",
+    price: 49.99,
     image: "/images/GiftCard.png",
   },
   {
-    id: 2,
+    id: 902,
     title: "PSN Gift Card",
     value: "$60",
-    price: "$59.99",
+    price: 59.99,
     image: "/images/GiftCard.png",
   },
   {
-    id: 3,
+    id: 903,
     title: "PSN Gift Card",
     value: "$75",
-    price: "$74.99",
+    price: 74.99,
     image: "/images/GiftCard.png",
   },
   {
-    id: 4,
+    id: 904,
     title: "PSN Gift Card",
     value: "$100",
-    price: "$98.99",
+    price: 98.99,
     image: "/images/GiftCard.png",
   },
 ];
 
 export default function GiftCards() {
+  const addItem = useCartStore((state) => state.addItem);
+
   return (
     <section className="w-full px-8 lg:px-16 relative z-10">
       <div className="flex items-end justify-between mb-6 border-b border-white/5 pb-3">
@@ -43,7 +46,7 @@ export default function GiftCards() {
           Digital <span className="text-primary-400">Gift Cards</span>
         </h2>
         <Link
-          href="/shop/digital"
+          href="/shop"
           className="hidden md:flex items-center gap-1.5 text-primary-400 hover:text-primary-300 text-xs font-bold tracking-wider uppercase transition-colors group"
         >
           View All{" "}
@@ -53,6 +56,7 @@ export default function GiftCards() {
           />
         </Link>
       </div>
+
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {GIFT_CARDS.map((card) => (
           <div
@@ -77,9 +81,21 @@ export default function GiftCards() {
             </div>
             <div className="w-full pt-4 border-t border-base-800/50 flex items-center justify-between">
               <span className="text-lg font-black text-white">
-                {card.price}
+                ${card.price}
               </span>
-              <button className="w-8 h-8 rounded-lg bg-base-900 flex items-center justify-center transition-all border border-white/5 text-base-400 hover:text-white hover:bg-primary-600 hover:border-primary-500 hover:shadow-[0_0_10px_rgba(170,79,255,0.4)]">
+              <button
+                onClick={(e) => {
+                  e.preventDefault();
+                  addItem({
+                    id: card.id,
+                    title: `${card.title} ${card.value}`,
+                    price: card.price,
+                    image: card.image,
+                  });
+                  toast.success(`${card.title} ${card.value} added to loot!`);
+                }}
+                className="w-8 h-8 rounded-lg bg-base-900 flex items-center justify-center transition-all border border-white/5 text-base-400 hover:text-white hover:bg-primary-600 hover:border-primary-500 hover:shadow-[0_0_10px_rgba(170,79,255,0.4)]"
+              >
                 <ShoppingBag size={14} />
               </button>
             </div>

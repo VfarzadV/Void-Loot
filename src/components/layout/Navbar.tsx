@@ -1,10 +1,17 @@
 "use client";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { ShoppingCart, Search, Bell } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 
 export default function Navbar() {
   const { toggleCart, items } = useCartStore();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => setIsMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
@@ -27,7 +34,6 @@ export default function Navbar() {
           <Bell size={20} />
         </button>
         <div className="w-px h-5 bg-white/10 hidden sm:block"></div>
-
         <button
           onClick={toggleCart}
           className="relative text-base-400 hover:text-white transition-colors group"
@@ -36,13 +42,12 @@ export default function Navbar() {
             size={22}
             className="group-hover:scale-110 transition-transform"
           />
-          {totalItems > 0 && (
+          {isMounted && totalItems > 0 && (
             <span className="absolute -top-1.5 -right-2 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(170,79,255,0.5)] animate-in zoom-in">
               {totalItems}
             </span>
           )}
         </button>
-
         <div className="w-px h-5 bg-white/10"></div>
         <div className="flex items-center gap-3">
           <Link

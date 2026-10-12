@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Form from "next/form";
 import {
   Search,
   ChevronLeft,
@@ -67,11 +68,7 @@ export default async function GamesPage({
               : "Explore thousands of games powered by RAWG database."}
           </p>
         </div>
-        <form
-          action="/games"
-          method="GET"
-          className="relative w-full md:w-80 group"
-        >
+        <Form action="/games" className="relative w-full md:w-80 group">
           <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
@@ -91,7 +88,7 @@ export default async function GamesPage({
               Clear
             </Link>
           )}
-        </form>
+        </Form>
       </div>
       {games.length === 0 ? (
         <div className="w-full py-20 flex flex-col items-center text-center">

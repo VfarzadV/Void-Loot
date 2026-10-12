@@ -3,7 +3,8 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { Trophy, Calendar, Download, Plus } from "lucide-react";
+import { Trophy, Calendar, Download, Plus, Heart } from "lucide-react";
+import { toast } from "sonner";
 
 interface RawgGame {
   id: number;
@@ -17,6 +18,7 @@ interface RawgGame {
 export default function FeaturedGame({ slug }: { slug: string }) {
   const [game, setGame] = useState<RawgGame | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [isWishlisted, setIsWishlisted] = useState(false);
 
   useEffect(() => {
     async function fetchFeaturedGame() {
@@ -117,12 +119,23 @@ export default function FeaturedGame({ slug }: { slug: string }) {
               />
               Get it Now
             </Link>
-            <button className="group flex items-center gap-3 bg-base-900/50 hover:bg-base-800/80 border border-base-700/50 text-base-50 px-6 py-3 rounded-xl font-bold transition-all duration-300 backdrop-blur-md">
-              <Plus
-                size={18}
-                className="text-base-400 group-hover:text-yellow-400 transition-colors"
-              />
-              Add to Wishlist
+            <button
+              onClick={() => {
+                setIsWishlisted(!isWishlisted);
+                if (!isWishlisted)
+                  toast.success(`${game.name} added to your wishlist!`);
+              }}
+              className={`group flex items-center gap-3 bg-base-900/50 hover:bg-base-800/80 border border-base-700/50 px-6 py-3 rounded-xl font-bold transition-all duration-300 backdrop-blur-md ${isWishlisted ? "text-rose-400 border-rose-500/50" : "text-base-50"}`}
+            >
+              {isWishlisted ? (
+                <Heart size={18} className="fill-rose-400 text-rose-400" />
+              ) : (
+                <Plus
+                  size={18}
+                  className="text-base-400 group-hover:text-yellow-400 transition-colors"
+                />
+              )}
+              {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
             </button>
           </div>
         </div>

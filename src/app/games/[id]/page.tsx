@@ -10,6 +10,7 @@ import {
   Trophy,
 } from "lucide-react";
 import AddToCartFullButton from "@/components/cart/AddToCartFullButton";
+import { notFound } from "next/navigation";
 
 interface Genre {
   id: number;
@@ -107,8 +108,8 @@ export async function generateMetadata({
   const { id } = await params;
   const game = await getGameDetails(id);
 
-  if (!game) {
-    return { title: "Game Not Found | Void Loot" };
+if (!game) {
+    notFound();
   }
 
   return {

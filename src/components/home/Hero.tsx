@@ -1,8 +1,8 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import {
   ChevronRight,
   Play,
@@ -40,6 +40,7 @@ export interface HeroGame {
 }
 
 export default function Hero({ slugs }: { slugs: string[] }) {
+  const router = useRouter();
   const [games, setGames] = useState<HeroGame[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -90,25 +91,44 @@ export default function Hero({ slugs }: { slugs: string[] }) {
         setIsLoading(false);
       }
     }
+
     fetchRAWG();
   }, [slugs]);
 
   useEffect(() => {
     if (isLoading || games.length === 0 || isLayoutHovered) return;
+
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % games.length);
     }, 5000);
+
     return () => clearInterval(interval);
   }, [isLoading, games.length, isLayoutHovered]);
 
   if (isLoading) {
     return (
-      <section className="w-full min-h-[75vh] flex items-center justify-center bg-base-950">
-        <div className="flex flex-col items-center gap-4">
-          <div className="w-12 h-12 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin"></div>
-          <p className="text-primary-400 font-mono text-sm animate-pulse">
-            Loading Games...
-          </p>
+      <section className="relative w-full min-h-[75vh] flex items-center overflow-hidden px-6 lg:px-12 py-8">
+        <div className="container mx-auto grid lg:grid-cols-2 gap-10 items-center relative z-10 w-full animate-pulse">
+          <div className="flex flex-col items-start gap-4 p-6 lg:p-8 border-l-4 border-base-800 bg-base-900/20 backdrop-blur-md rounded-2xl w-full">
+            <div className="w-32 h-6 bg-base-800/60 rounded-full"></div>
+            <div className="w-full h-12 md:h-16 bg-base-800/60 rounded-xl mt-2"></div>
+            <div className="w-3/4 h-12 md:h-16 bg-base-800/60 rounded-xl mb-2"></div>
+            <div className="w-full h-4 bg-base-800/50 rounded"></div>
+            <div className="w-5/6 h-4 bg-base-800/50 rounded"></div>
+            <div className="w-2/3 h-4 bg-base-800/50 rounded"></div>
+            <div className="flex gap-3 mt-6">
+              <div className="w-36 h-12 bg-base-800/60 rounded-xl"></div>
+              <div className="w-40 h-12 bg-base-800/60 rounded-xl"></div>
+            </div>
+          </div>
+          <div className="flex flex-col items-center w-full mt-6 lg:mt-0 relative h-100 lg:h-125 justify-center">
+            <div className="absolute w-80 h-80 rounded-full bg-primary-900/10 blur-[100px]"></div>
+            <div className="w-64 lg:w-[320px] h-96 lg:h-115 bg-base-900/40 border border-white/5 rounded-2xl z-30 shadow-2xl relative overflow-hidden">
+              <div className="absolute bottom-0 left-0 w-full h-1/3 bg-linear-to-t from-base-950/80 to-transparent"></div>
+            </div>
+            <div className="absolute translate-x-28 lg:translate-x-48 -translate-y-2 rotate-12 w-48 lg:w-56 h-72 lg:h-96 bg-base-900/20 border border-white/5 rounded-2xl z-20"></div>
+            <div className="absolute -translate-x-28 lg:-translate-x-48 -translate-y-2 -rotate-12 w-48 lg:w-56 h-72 lg:h-96 bg-base-900/20 border border-white/5 rounded-2xl z-10"></div>
+          </div>
         </div>
       </section>
     );
@@ -210,13 +230,16 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                 className="group-hover:translate-x-1 transition-transform"
               />
             </Link>
-            <button className="group flex items-center gap-3 bg-base-900/50 hover:bg-base-800/80 border border-base-700/50 text-base-50 px-6 py-3 rounded-xl font-bold transition-all duration-300 backdrop-blur-md">
+            <Link
+              href="/media"
+              className="group flex items-center gap-3 bg-base-900/50 hover:bg-base-800/80 border border-base-700/50 text-base-50 px-6 py-3 rounded-xl font-bold transition-all duration-300 backdrop-blur-md"
+            >
               <Play
                 size={18}
                 className="text-primary-400 group-hover:scale-110 transition-transform"
               />
               Watch Trailer
-            </button>
+            </Link>
           </div>
           <div className="flex items-center gap-4 mt-2 pt-4 border-t border-base-800/50 w-full">
             <div className="flex -space-x-2">
@@ -293,18 +316,18 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                 overlayOpacity = "!opacity-0";
               }
               return (
-                <Link
-                  href={`/games/${game.id}`}
+                <div
                   key={game.id}
-                  onClick={(e) => {
+                  onClick={() => {
                     if (positionIndex !== 0) {
-                      e.preventDefault();
                       setCurrentIndex(index);
+                    } else {
+                      router.push(`/games/${game.id}`);
                     }
                   }}
                   onMouseEnter={() => setHoveredCard(index)}
                   onMouseLeave={() => setHoveredCard(null)}
-                  className={`absolute rounded-2xl overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] bg-base-950 block border-2 border-transparent ${sizeClass} ${stateStyle}`}
+                  className={`absolute cursor-pointer rounded-2xl overflow-hidden transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)] bg-base-950 block border-2 border-transparent ${sizeClass} ${stateStyle}`}
                 >
                   <Image
                     src={game.background_image}
@@ -324,7 +347,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                       {game.name}
                     </h3>
                   </div>
-                </Link>
+                </div>
               );
             })}
           </div>

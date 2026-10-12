@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import Form from "next/form";
 import {
   Search,
   Monitor,
@@ -83,11 +84,7 @@ export default async function ShopPage({
               : "Upgrade your setup with premium hardware and tech peripherals powered by API."}
           </p>
         </div>
-        <form
-          action="/shop"
-          method="GET"
-          className="relative w-full md:w-80 group"
-        >
+        <Form action="/shop" className="relative w-full md:w-80 group">
           <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
@@ -107,7 +104,7 @@ export default async function ShopPage({
               Clear
             </Link>
           )}
-        </form>
+        </Form>
       </div>
       <div className="flex flex-col lg:flex-row gap-10">
         <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-8">

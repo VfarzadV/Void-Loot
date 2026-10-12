@@ -42,8 +42,30 @@ export default function PopularHardware() {
 
   if (isLoading) {
     return (
-      <section className="w-full px-8 lg:px-16  flex justify-center min-h-100">
-        <div className="w-8 h-8 border-4 border-purple-500/20 border-t-purple-500 rounded-full animate-spin"></div>
+      <section className="w-full px-8 lg:px-16 relative z-10 flex flex-col gap-10">
+        <div className="flex items-end justify-between">
+          <div className="flex flex-col gap-3">
+            <div className="w-32 h-4 bg-base-900/60 rounded-full animate-pulse"></div>
+            <div className="w-64 md:w-96 h-10 bg-base-900/60 rounded-xl animate-pulse"></div>
+          </div>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          {[...Array(4)].map((_, i) => (
+            <div
+              key={i}
+              className="flex flex-col overflow-hidden rounded-2xl bg-base-950 border border-purple-500/10 p-5 h-[340px] animate-pulse"
+            >
+              <div className="w-full aspect-4/3 rounded-xl bg-base-900/40 mb-4"></div>
+              <div className="w-16 h-3 bg-base-900/60 rounded mb-2"></div>
+              <div className="w-full h-5 bg-base-900/60 rounded mb-2"></div>
+              <div className="w-24 h-4 bg-base-900/60 rounded mt-auto"></div>
+              <div className="pt-4 mt-3 border-t border-purple-500/10 flex justify-between items-center">
+                <div className="w-16 h-6 bg-base-900/60 rounded"></div>
+                <div className="w-24 h-8 bg-base-900/60 rounded-xl"></div>
+              </div>
+            </div>
+          ))}
+        </div>
       </section>
     );
   }

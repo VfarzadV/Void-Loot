@@ -4,6 +4,7 @@ import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
+import { Toaster } from "sonner"; 
 
 export const metadata: Metadata = {
   title: "Void Loot",
@@ -18,6 +19,7 @@ export default function RootLayout({
   return (
     <html lang="en" dir="ltr">
       <body className="bg-base-950 text-base-50 min-h-screen flex">
+        <Toaster theme="dark" position="bottom-right" richColors /> 
         <Sidebar />
         <div className="flex-1 ml-20 flex flex-col min-h-screen relative">
           <Navbar />
