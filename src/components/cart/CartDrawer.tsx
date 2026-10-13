@@ -3,11 +3,13 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useRouter } from "next/navigation";
 
 export default function CartDrawer() {
   const { isOpen, toggleCart, items, removeItem, updateQuantity, clearCart } =
     useCartStore();
   const [isMounted, setIsMounted] = useState(false);
+  const router = useRouter();
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
@@ -30,16 +32,20 @@ export default function CartDrawer() {
         />
       )}
       <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
         className={`fixed top-0 right-0 h-full w-full sm:w-100 glass-panel bg-base-950/95 border-l border-white/10 z-50 transform transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between p-6 border-b border-white/5 shrink-0">
           <h2 className="text-xl font-black text-white flex items-center gap-2">
-            <ShoppingBag size={20} className="text-primary-500" /> My Loot
+            <ShoppingBag size={20} className="text-primary-500" aria-hidden="true" /> My Loot
           </h2>
           <button
             onClick={toggleCart}
+            aria-label="Close Cart"
             className="p-2 rounded-xl bg-base-900 border border-white/5 text-base-400 hover:text-white hover:bg-rose-500/20 hover:border-rose-500/50 transition-colors"
           >
             <X size={18} />
@@ -121,7 +127,13 @@ export default function CartDrawer() {
                 ${totalPrice.toFixed(2)}
               </span>
             </div>
-            <button className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all group">
+            <button
+              onClick={() => {
+                toggleCart();
+                router.push("/checkout");
+              }}
+              className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all group"
+            >
               Proceed to Checkout{" "}
               <ArrowRight
                 size={18}

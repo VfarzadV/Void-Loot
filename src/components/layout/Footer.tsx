@@ -69,10 +69,25 @@ const DiscordIcon = ({ size = 18 }) => (
 );
 
 export default function Footer() {
+  const PLATFORM_LINKS = [
+    { label: "Browse Games", href: "/games" },
+    { label: "Trending Store", href: "/shop" },
+    { label: "Flash Deals", href: "/deals" },
+    { label: "Void Community", href: "/community" },
+  ];
+
+  const SUPPORT_LINKS = [
+    { label: "Help Center (FAQ)", href: "/faq" },
+    { label: "Order Tracking", href: "/tracking" },
+    { label: "Hardware Compare", href: "/hardware/compare" },
+    { label: "Contact Us", href: "/support" },
+  ];
+
   return (
     <footer className="w-full relative z-10 bg-base-950 pt-20 pb-8 border-t border-white/5 overflow-hidden mt-10">
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-px bg-linear-to-r from-transparent via-primary-500/50 to-transparent"></div>
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-1/4 h-32 bg-primary-500/10 blur-[100px] pointer-events-none z-0"></div>
+      
       <div className="w-full px-8 lg:px-16 flex flex-col gap-16 relative z-10">
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-10 lg:gap-8">
           <div className="lg:col-span-4 flex flex-col gap-6">
@@ -109,58 +124,51 @@ export default function Footer() {
               )}
             </div>
           </div>
+          
           <div className="lg:col-span-2 flex flex-col gap-6">
             <h4 className="text-base font-bold text-white uppercase tracking-wider">
               Platform
             </h4>
             <ul className="flex flex-col gap-3">
-              {[
-                "Browse Games",
-                "Trending Store",
-                "Gaming News",
-                "Gift Cards",
-              ].map((link, i) => (
+              {PLATFORM_LINKS.map((link, i) => (
                 <li key={i}>
                   <Link
-                    href="#"
+                    href={link.href}
                     className="text-sm text-base-400 hover:text-primary-400 transition-colors flex items-center gap-2 group"
                   >
                     <ChevronRight
                       size={14}
                       className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary-500"
                     />
-                    {link}
+                    {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
+          
           <div className="lg:col-span-2 flex flex-col gap-6">
             <h4 className="text-base font-bold text-white uppercase tracking-wider">
               Support
             </h4>
             <ul className="flex flex-col gap-3">
-              {[
-                "Help Center",
-                "Order Tracking",
-                "Returns & Refunds",
-                "Contact Us",
-              ].map((link, i) => (
+              {SUPPORT_LINKS.map((link, i) => (
                 <li key={i}>
                   <Link
-                    href="#"
+                    href={link.href}
                     className="text-sm text-base-400 hover:text-primary-400 transition-colors flex items-center gap-2 group"
                   >
                     <ChevronRight
                       size={14}
                       className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all text-primary-500"
                     />
-                    {link}
+                    {link.label}
                   </Link>
                 </li>
               ))}
             </ul>
           </div>
+          
           <div className="lg:col-span-4 flex flex-col gap-6">
             <h4 className="text-base font-bold text-white uppercase tracking-wider">
               Stay Connected
@@ -190,6 +198,7 @@ export default function Footer() {
             </form>
           </div>
         </div>
+        
         <div className="w-full pt-8 border-t border-base-800/50 flex flex-col md:flex-row items-center justify-between gap-4">
           <p className="text-xs text-base-500 font-medium">
             © {new Date().getFullYear()} Void Loot. All rights reserved.

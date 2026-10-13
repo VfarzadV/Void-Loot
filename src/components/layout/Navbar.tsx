@@ -1,17 +1,101 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import { ShoppingCart, Search, Bell } from "lucide-react";
+import { useRouter } from "next/navigation";
+import {
+  ShoppingCart,
+  Search,
+  Bell,
+  X,
+  Package,
+  Tag,
+  ShieldAlert,
+  CheckCheck,
+} from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+
+const MOCK_NOTIFICATIONS = [
+  {
+    id: 1,
+    title: "Order Shipped",
+    desc: "Your package #ORD-992 is on the way.",
+    time: "2h ago",
+    icon: Package,
+    color: "text-emerald-400",
+    bg: "bg-emerald-500/10",
+    unread: true,
+  },
+  {
+    id: 2,
+    title: "Flash Sale Alert",
+    desc: "Cyberpunk 2077 is 50% off today!",
+    time: "5h ago",
+    icon: Tag,
+    color: "text-rose-400",
+    bg: "bg-rose-500/10",
+    unread: true,
+  },
+  {
+    id: 3,
+    title: "Security Notice",
+    desc: "New login detected from Windows PC.",
+    time: "1d ago",
+    icon: ShieldAlert,
+    color: "text-amber-400",
+    bg: "bg-amber-500/10",
+    unread: false,
+  },
+];
 
 export default function Navbar() {
   const { toggleCart, items } = useCartStore();
   const [isMounted, setIsMounted] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const searchInputRef = useRef<HTMLInputElement>(null);
+  const router = useRouter();
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+  const notifRef = useRef<HTMLDivElement>(null);
+
+  const unreadCount = notifications.filter((n) => n.unread).length;
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
+
+  useEffect(() => {
+    if (isSearchOpen && searchInputRef.current) {
+      searchInputRef.current.focus();
+    }
+  }, [isSearchOpen]);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        notifRef.current &&
+        !notifRef.current.contains(event.target as Node)
+      ) {
+        setIsNotifOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+
+  const handleSearchSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchQuery.trim()) {
+      router.push(`/games?search=${encodeURIComponent(searchQuery.trim())}`);
+      setIsSearchOpen(false);
+      setSearchQuery("");
+    }
+  };
+
+  const markAllAsRead = () => {
+    setNotifications(notifications.map((n) => ({ ...n, unread: false })));
+  };
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
 
@@ -27,20 +111,133 @@ export default function Navbar() {
         </span>
       </Link>
       <div className="flex items-center gap-4 sm:gap-6">
-        <button className="text-base-400 hover:text-white transition-colors hidden sm:block">
-          <Search size={20} />
-        </button>
-        <button className="text-base-400 hover:text-white transition-colors hidden sm:block">
-          <Bell size={20} />
-        </button>
+        <div className="relative  items-center hidden sm:flex">
+          <form
+            onSubmit={handleSearchSubmit}
+            className={`flex items-center transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${
+              isSearchOpen ? "w-64 opacity-100 mr-2" : "w-0 opacity-0 mr-0"
+            }`}
+          >
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search games..."
+              className="w-full bg-base-900/50 border border-primary-500/50 rounded-full py-2 pl-4 pr-10 text-sm text-white focus:outline-none focus:bg-base-900 focus:border-primary-400 shadow-[inset_0_2px_10px_rgba(0,0,0,0.1),0_0_15px_rgba(170,79,255,0.15)] transition-all"
+            />
+            {isSearchOpen && (
+              <button
+                type="button"
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery("");
+                }}
+                className="absolute right-3 text-base-400 hover:text-rose-400 transition-colors"
+              >
+                <X size={16} />
+              </button>
+            )}
+          </form>
+          {!isSearchOpen && (
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="text-base-400 hover:text-white transition-colors"
+              title="Search"
+            >
+              <Search size={20} />
+            </button>
+          )}
+        </div>
+        <div className="relative hidden sm:block" ref={notifRef}>
+          <button
+            onClick={() => setIsNotifOpen(!isNotifOpen)}
+            className={`relative transition-colors ${isNotifOpen ? "text-white" : "text-base-400 hover:text-white"}`}
+          >
+            <Bell
+              size={20}
+              className={`${unreadCount > 0 && !isNotifOpen ? "animate-[ring_4s_ease-in-out_infinite]" : ""}`}
+            />
+            {isMounted && unreadCount > 0 && (
+              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-base-950"></span>
+            )}
+          </button>
+          {isNotifOpen && (
+            <div className="absolute right-0 top-10 w-80 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
+              <div className="flex items-center justify-between p-4 border-b border-white/5 bg-base-900/30">
+                <h3 className="text-sm font-black text-white">Notifications</h3>
+                {unreadCount > 0 && (
+                  <button
+                    onClick={markAllAsRead}
+                    className="flex items-center gap-1 text-[10px] font-bold text-primary-400 hover:text-primary-300 transition-colors uppercase tracking-wider"
+                  >
+                    <CheckCheck size={12} /> Mark all read
+                  </button>
+                )}
+              </div>
+              <div className="max-h-75 overflow-y-auto flex flex-col hide-scrollbar">
+                {notifications.length === 0 ? (
+                  <div className="p-6 text-center text-xs text-base-400">
+                    No new notifications.
+                  </div>
+                ) : (
+                  notifications.map((notif) => {
+                    const Icon = notif.icon;
+                    return (
+                      <div
+                        key={notif.id}
+                        className={`flex gap-3 p-4 border-b border-white/5 transition-colors hover:bg-base-900/50 cursor-pointer ${notif.unread ? "bg-primary-900/5" : ""}`}
+                      >
+                        <div
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notif.bg} ${notif.color}`}
+                        >
+                          <Icon size={18} />
+                        </div>
+                        <div className="flex flex-col gap-1 grow">
+                          <div className="flex items-center justify-between">
+                            <span
+                              className={`text-sm font-bold ${notif.unread ? "text-white" : "text-base-300"}`}
+                            >
+                              {notif.title}
+                            </span>
+                            {notif.unread && (
+                              <div className="w-1.5 h-1.5 bg-primary-500 rounded-full shadow-[0_0_5px_rgba(170,79,255,0.8)]"></div>
+                            )}
+                          </div>
+                          <p className="text-xs text-base-400 leading-snug">
+                            {notif.desc}
+                          </p>
+                          <span className="text-[10px] text-base-500 font-medium mt-1">
+                            {notif.time}
+                          </span>
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+              <div className="p-3 bg-base-900/30 border-t border-white/5 text-center">
+                <Link
+                  href="/profile"
+                  className="text-xs font-bold text-base-400 hover:text-white transition-colors"
+                >
+                  View all activity
+                </Link>
+              </div>
+            </div>
+          )}
+        </div>
         <div className="w-px h-5 bg-white/10 hidden sm:block"></div>
         <button
           onClick={toggleCart}
+          aria-label="Open Cart"
+          aria-controls="cart-drawer"
           className="relative text-base-400 hover:text-white transition-colors group"
         >
           <ShoppingCart
             size={22}
             className="group-hover:scale-110 transition-transform"
+            aria-hidden="true"
           />
           {isMounted && totalItems > 0 && (
             <span className="absolute -top-1.5 -right-2 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(170,79,255,0.5)] animate-in zoom-in">

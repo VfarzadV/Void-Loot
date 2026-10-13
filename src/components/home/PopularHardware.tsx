@@ -53,7 +53,7 @@ export default function PopularHardware() {
           {[...Array(4)].map((_, i) => (
             <div
               key={i}
-              className="flex flex-col overflow-hidden rounded-2xl bg-base-950 border border-purple-500/10 p-5 h-[340px] animate-pulse"
+              className="flex flex-col overflow-hidden rounded-2xl bg-base-950 border border-purple-500/10 p-5 h-85 animate-pulse"
             >
               <div className="w-full aspect-4/3 rounded-xl bg-base-900/40 mb-4"></div>
               <div className="w-16 h-3 bg-base-900/60 rounded mb-2"></div>
