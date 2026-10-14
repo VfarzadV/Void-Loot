@@ -30,6 +30,7 @@ export default function AddToCartFullButton({
     >
       <ShoppingBag
         size={20}
+        aria-hidden="true"
         className="group-hover:scale-110 transition-transform"
       />
       Add to Cart

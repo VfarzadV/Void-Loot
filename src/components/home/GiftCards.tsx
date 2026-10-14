@@ -84,6 +84,8 @@ export default function GiftCards() {
                 ${card.price}
               </span>
               <button
+                type="button"
+                aria-label={`Add ${card.title} ${card.value} to cart`}
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({
@@ -96,7 +98,7 @@ export default function GiftCards() {
                 }}
                 className="w-8 h-8 rounded-lg bg-base-900 flex items-center justify-center transition-all border border-white/5 text-base-400 hover:text-white hover:bg-primary-600 hover:border-primary-500 hover:shadow-[0_0_10px_rgba(170,79,255,0.4)]"
               >
-                <ShoppingBag size={14} />
+                <ShoppingBag size={14} aria-hidden="true" />
               </button>
             </div>
           </div>

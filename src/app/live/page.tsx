@@ -270,6 +270,7 @@ export default function LivePage() {
             <button
               key={cat}
               onClick={() => setActiveCategory(cat)}
+              aria-pressed={activeCategory === cat}
               className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
                 activeCategory === cat
                   ? "bg-red-500/20 border-red-500 text-white shadow-[0_0_10px_rgba(239,68,68,0.3)]"
@@ -310,14 +311,16 @@ export default function LivePage() {
           </div>
           <button
             onClick={() => setIsTheater(!isTheater)}
+            aria-label={isTheater ? "Exit theater mode" : "Enter theater mode"}
+            aria-pressed={isTheater}
             className="absolute bottom-6 right-6 p-2 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-primary-600 hover:border-primary-500 transition-all z-20"
             title={isTheater ? "Exit Theater Mode" : "Theater Mode"}
           >
             {isTheater ? <Minimize size={18} /> : <Maximize size={18} />}
           </button>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-            <button className="w-16 h-16 rounded-full bg-red-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 transition-transform">
-              <Play size={24} className="ml-1" fill="currentColor" />
+            <button type="button" aria-label={`Play ${FEATURED_STREAM.title}`} className="w-16 h-16 rounded-full bg-red-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 transition-transform">
+              <Play size={24} className="ml-1" fill="currentColor" aria-hidden="true" />
             </button>
           </div>
           <div className="absolute bottom-6 left-6 flex flex-col sm:flex-row items-start sm:items-end gap-4 z-20 pr-16">
@@ -345,6 +348,7 @@ export default function LivePage() {
                 <div className="flex items-center gap-2 ml-2">
                   <button
                     onClick={() => setIsFollowing(!isFollowing)}
+                    aria-pressed={isFollowing}
                     className={`flex items-center gap-1.5 px-3 py-1 rounded-md text-xs font-bold transition-all ${
                       isFollowing
                         ? "bg-base-800 text-white border border-white/10"
@@ -363,6 +367,8 @@ export default function LivePage() {
                   </button>
                   <button
                     onClick={() => setIsLiked(!isLiked)}
+                    aria-label={isLiked ? "Unlike stream" : "Like stream"}
+                    aria-pressed={isLiked}
                     className={`p-1.5 rounded-md transition-colors ${
                       isLiked
                         ? "text-rose-500 bg-rose-500/20"
@@ -396,6 +402,9 @@ export default function LivePage() {
           </div>
           <div
             ref={chatContainerRef}
+            role="log"
+            aria-label="Stream chat messages"
+            aria-live="polite"
             className="flex flex-col gap-3 p-4 flex-1 overflow-y-auto min-h-0 text-xs font-medium"
           >
             {messages.map((msg) => (
@@ -409,11 +418,13 @@ export default function LivePage() {
             ))}
           </div>
           <form
+            aria-label="Send a chat message"
             onSubmit={handleSendMessage}
             className="p-3 border-t border-white/5 bg-base-900/50 shrink-0"
           >
             <input
               type="text"
+              aria-label="Chat message"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               placeholder="Send a message..."

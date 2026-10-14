@@ -96,6 +96,7 @@ export default function ComparePage() {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
         <div className="flex flex-col gap-6">
           <select
+            aria-label="First hardware product"
             value={item1.id}
             onChange={(e) =>
               setItem1(
@@ -131,13 +132,14 @@ export default function ComparePage() {
             <span className="text-xl font-bold text-primary-400 mb-6">
               ${item1.price}
             </span>
-            <button className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
+            <button type="button" className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
               View Product
             </button>
           </div>
         </div>
         <div className="flex flex-col gap-6">
           <select
+            aria-label="Second hardware product"
             value={item2.id}
             onChange={(e) =>
               setItem2(
@@ -173,7 +175,7 @@ export default function ComparePage() {
             <span className="text-xl font-bold text-primary-400 mb-6">
               ${item2.price}
             </span>
-            <button className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
+            <button type="button" className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
               View Product
             </button>
           </div>

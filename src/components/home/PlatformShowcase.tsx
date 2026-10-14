@@ -1,8 +1,7 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Monitor, Gamepad, Star } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 
@@ -11,7 +10,6 @@ interface PlatformShowcaseProps {
   title: string;
   icon: "pc" | "playstation";
 }
-
 interface RawgGame {
   id: number;
   name: string;
@@ -19,38 +17,30 @@ interface RawgGame {
   metacritic: number | null;
 }
 
+const fetchPlatformGames = async (platformId: number): Promise<RawgGame[]> => {
+  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  const res = await fetch(
+    `https://api.rawg.io/api/games?key=${apiKey}&parent_platforms=${platformId}&ordering=-metacritic&page_size=6`,
+  );
+  if (!res.ok) throw new Error("Failed to fetch platform games");
+  const data = await res.json();
+  return data.results;
+};
+
 export default function PlatformShowcase({
   platformId,
   title,
   icon,
 }: PlatformShowcaseProps) {
-  const [games, setGames] = useState<RawgGame[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const addItem = useCartStore((state) => state.addItem);
   const IconComponent = icon === "playstation" ? Gamepad : Monitor;
 
-  useEffect(() => {
-    async function fetchPlatformGames() {
-      const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-      try {
-        const res = await fetch(
-          `https://api.rawg.io/api/games?key=${apiKey}&parent_platforms=${platformId}&ordering=-metacritic&page_size=6`,
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setGames(data.results);
-        }
-      } catch (error) {
-        console.error("Failed to fetch platform games:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchPlatformGames();
-  }, [platformId]);
+  const { data: games = [], isLoading } = useQuery({
+    queryKey: ["platformGames", platformId],
+    queryFn: () => fetchPlatformGames(platformId),
+  });
 
-  if (isLoading) return null;
-  if (games.length === 0) return null;
+  if (isLoading || games.length === 0) return null;
 
   return (
     <section className="w-full px-8 lg:px-16 relative z-10">

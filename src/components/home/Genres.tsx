@@ -1,8 +1,7 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
 import {
   Swords,
   Crosshair,
@@ -75,27 +74,21 @@ interface RawgGenre {
   image_background: string;
 }
 
-export default function Genres() {
-  const [genres, setGenres] = useState<RawgGenre[]>([]);
+const fetchGenres = async (): Promise<RawgGenre[]> => {
+  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  const res = await fetch(`https://api.rawg.io/api/genres?key=${apiKey}`);
+  if (!res.ok) throw new Error("Failed to fetch genres");
+  const data = await res.json();
+  return data.results
+    .filter((g: RawgGenre) => GENRE_UI_MAP[g.slug])
+    .slice(0, 6);
+};
 
-  useEffect(() => {
-    async function fetchRawgGenres() {
-      const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-      try {
-        const res = await fetch(`https://api.rawg.io/api/genres?key=${apiKey}`);
-        if (res.ok) {
-          const data = await res.json();
-          const mappedGenres = data.results.filter(
-            (g: RawgGenre) => GENRE_UI_MAP[g.slug],
-          );
-          setGenres(mappedGenres.slice(0, 6));
-        }
-      } catch (error) {
-        console.error("RAWG Genres Error", error);
-      }
-    }
-    fetchRawgGenres();
-  }, []);
+export default function Genres() {
+  const { data: genres = [] } = useQuery({
+    queryKey: ["genresList"],
+    queryFn: fetchGenres,
+  });
 
   if (genres.length === 0) return null;
 

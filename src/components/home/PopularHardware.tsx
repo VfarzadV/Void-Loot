@@ -1,10 +1,9 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Star, ArrowRight, Heart } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useQuery } from "@tanstack/react-query";
 
 interface Product {
   id: number;
@@ -16,29 +15,19 @@ interface Product {
   stock: number;
 }
 
-export default function PopularHardware() {
-  const [products, setProducts] = useState<Product[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const addItem = useCartStore((state) => state.addItem);
+const fetchPopularHardware = async (): Promise<Product[]> => {
+  const res = await fetch("https://dummyjson.com/products/category/laptops?limit=4");
+  if (!res.ok) throw new Error("Failed to fetch popular hardware");
+  const data = await res.json();
+  return data.products;
+};
 
-  useEffect(() => {
-    async function fetchProducts() {
-      try {
-        const res = await fetch(
-          "https://dummyjson.com/products/category/laptops?limit=4",
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setProducts(data.products);
-        }
-      } catch (error) {
-        console.error("Failed to fetch popular hardware:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchProducts();
-  }, []);
+export default function PopularHardware() {
+  const addItem = useCartStore((state) => state.addItem);
+  const { data: products = [], isLoading } = useQuery({
+    queryKey: ["popularHardware"],
+    queryFn: fetchPopularHardware,
+  });
 
   if (isLoading) {
     return (
@@ -73,7 +62,7 @@ export default function PopularHardware() {
   if (products.length === 0) return null;
 
   return (
-    <section className="w-full px-8 lg:px-16  relative z-10 flex flex-col gap-10">
+    <section className="w-full px-8 lg:px-16 relative z-10 flex flex-col gap-10">
       <div className="flex items-end justify-between">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
@@ -106,8 +95,8 @@ export default function PopularHardware() {
           >
             <div className="relative w-full aspect-4/3 rounded-xl bg-white/5 border border-purple-500/20 overflow-hidden flex items-center justify-center mb-4">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.1)_0%,transparent_70%)]" />
-              <button className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-base-950/60 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white hover:bg-purple-600/40 transition-colors backdrop-blur-md z-10">
-                <Heart size={16} />
+              <button type="button" aria-label={`Add ${product.title} to wishlist`} className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-base-950/60 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white hover:bg-purple-600/40 transition-colors backdrop-blur-md z-10">
+                <Heart size={16} aria-hidden="true" />
               </button>
               <Image
                 src={product.thumbnail}

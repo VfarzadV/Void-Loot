@@ -99,7 +99,7 @@ export default function CommunityPage() {
             share your ultimate gaming setups.
           </p>
         </div>
-        <button className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all shrink-0">
+        <button type="button" className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all shrink-0">
           <Plus size={18} /> Create Post
         </button>
       </div>
@@ -111,6 +111,7 @@ export default function CommunityPage() {
               className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
             />
             <input
+              aria-label="Search community posts"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
@@ -126,6 +127,7 @@ export default function CommunityPage() {
               <button
                 key={cat}
                 onClick={() => setActiveCategory(cat)}
+                aria-pressed={activeCategory === cat}
                 className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold ${
                   activeCategory === cat
                     ? "bg-primary-500/10 text-primary-400 border border-primary-500/30 shadow-[inset_0_0_15px_rgba(170,79,255,0.1)]"
@@ -148,13 +150,13 @@ export default function CommunityPage() {
         <div className="lg:col-span-6 flex flex-col gap-6">
           <div className="flex items-center justify-between bg-base-950/40 p-4 rounded-2xl border border-white/5">
             <div className="flex gap-2">
-              <button className="px-4 py-2 rounded-lg bg-base-900 text-white text-xs font-bold border border-white/10 flex items-center gap-2">
+              <button type="button" aria-pressed="true" className="px-4 py-2 rounded-lg bg-base-900 text-white text-xs font-bold border border-white/10 flex items-center gap-2">
                 <Flame size={14} className="text-orange-500" /> Hot
               </button>
-              <button className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors">
+              <button type="button" aria-pressed="false" className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors">
                 New
               </button>
-              <button className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors">
+              <button type="button" aria-pressed="false" className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors">
                 Top
               </button>
             </div>
@@ -215,13 +217,13 @@ export default function CommunityPage() {
                   ))}
                 </div>
                 <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-                  <button className="flex items-center gap-1.5 text-base-400 hover:text-primary-400 transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-primary-500/30">
-                    <ThumbsUp size={16} /> {post.upvotes}
+                  <button type="button" aria-label={`Like ${post.title}; ${post.upvotes} likes`} className="flex items-center gap-1.5 text-base-400 hover:text-primary-400 transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-primary-500/30">
+                    <ThumbsUp size={16} aria-hidden="true" /> {post.upvotes}
                   </button>
-                  <button className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10">
+                  <button type="button" className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10">
                     <MessageCircle size={16} /> {post.comments} Comments
                   </button>
-                  <button className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold ml-auto">
+                  <button type="button" className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold ml-auto">
                     <Share2 size={16} /> Share
                   </button>
                 </div>

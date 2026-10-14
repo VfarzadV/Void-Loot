@@ -1,6 +1,8 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
   ShoppingCart,
@@ -11,8 +13,12 @@ import {
   Tag,
   ShieldAlert,
   CheckCheck,
+  LogOut,
+  User,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useAuthStore } from "@/store/useAuthStore";
+import { toast } from "sonner";
 
 const MOCK_NOTIFICATIONS = [
   {
@@ -49,15 +55,19 @@ const MOCK_NOTIFICATIONS = [
 
 export default function Navbar() {
   const { toggleCart, items } = useCartStore();
+  const { user, isAuthenticated, logout } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
   const router = useRouter();
-  const [isNotifOpen, setIsNotifOpen] = useState(false);
-  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
-  const notifRef = useRef<HTMLDivElement>(null);
 
+  const [isNotifOpen, setIsNotifOpen] = useState(false);
+  const [isProfileOpen, setIsProfileOpen] = useState(false);
+  const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+
+  const notifRef = useRef<HTMLDivElement>(null);
+  const profileRef = useRef<HTMLDivElement>(null);
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   useEffect(() => {
@@ -66,19 +76,18 @@ export default function Navbar() {
   }, []);
 
   useEffect(() => {
-    if (isSearchOpen && searchInputRef.current) {
-      searchInputRef.current.focus();
-    }
+    if (isSearchOpen && searchInputRef.current) searchInputRef.current.focus();
   }, [isSearchOpen]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (
-        notifRef.current &&
-        !notifRef.current.contains(event.target as Node)
-      ) {
+      if (notifRef.current && !notifRef.current.contains(event.target as Node))
         setIsNotifOpen(false);
-      }
+      if (
+        profileRef.current &&
+        !profileRef.current.contains(event.target as Node)
+      )
+        setIsProfileOpen(false);
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
@@ -93,8 +102,11 @@ export default function Navbar() {
     }
   };
 
-  const markAllAsRead = () => {
-    setNotifications(notifications.map((n) => ({ ...n, unread: false })));
+  const handleLogout = () => {
+    logout();
+    setIsProfileOpen(false);
+    toast.success("Logged out successfully. See you soon in the Void!");
+    router.push("/");
   };
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
@@ -110,13 +122,12 @@ export default function Navbar() {
           Loot
         </span>
       </Link>
+
       <div className="flex items-center gap-4 sm:gap-6">
-        <div className="relative  items-center hidden sm:flex">
+        <div className="relative items-center hidden sm:flex">
           <form
             onSubmit={handleSearchSubmit}
-            className={`flex items-center transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${
-              isSearchOpen ? "w-64 opacity-100 mr-2" : "w-0 opacity-0 mr-0"
-            }`}
+            className={`flex items-center transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${isSearchOpen ? "w-64 opacity-100 mr-2" : "w-0 opacity-0 mr-0"}`}
           >
             <input
               ref={searchInputRef}
@@ -149,6 +160,7 @@ export default function Navbar() {
             </button>
           )}
         </div>
+
         <div className="relative hidden sm:block" ref={notifRef}>
           <button
             onClick={() => setIsNotifOpen(!isNotifOpen)}
@@ -168,7 +180,11 @@ export default function Navbar() {
                 <h3 className="text-sm font-black text-white">Notifications</h3>
                 {unreadCount > 0 && (
                   <button
-                    onClick={markAllAsRead}
+                    onClick={() =>
+                      setNotifications(
+                        notifications.map((n) => ({ ...n, unread: false })),
+                      )
+                    }
                     className="flex items-center gap-1 text-[10px] font-bold text-primary-400 hover:text-primary-300 transition-colors uppercase tracking-wider"
                   >
                     <CheckCheck size={12} /> Mark all read
@@ -216,28 +232,19 @@ export default function Navbar() {
                   })
                 )}
               </div>
-              <div className="p-3 bg-base-900/30 border-t border-white/5 text-center">
-                <Link
-                  href="/profile"
-                  className="text-xs font-bold text-base-400 hover:text-white transition-colors"
-                >
-                  View all activity
-                </Link>
-              </div>
             </div>
           )}
         </div>
+
         <div className="w-px h-5 bg-white/10 hidden sm:block"></div>
+
         <button
           onClick={toggleCart}
-          aria-label="Open Cart"
-          aria-controls="cart-drawer"
           className="relative text-base-400 hover:text-white transition-colors group"
         >
           <ShoppingCart
             size={22}
             className="group-hover:scale-110 transition-transform"
-            aria-hidden="true"
           />
           {isMounted && totalItems > 0 && (
             <span className="absolute -top-1.5 -right-2 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(170,79,255,0.5)] animate-in zoom-in">
@@ -245,22 +252,71 @@ export default function Navbar() {
             </span>
           )}
         </button>
+
         <div className="w-px h-5 bg-white/10"></div>
-        <div className="flex items-center gap-3">
-          <Link
-            href="/login"
-            className="text-sm font-bold text-base-300 hover:text-white transition-colors hidden sm:block"
-          >
-            Log In
-          </Link>
-          <Link
-            href="/register"
-            className="relative group px-4 py-2 rounded-xl font-bold text-sm text-white overflow-hidden shadow-[0_0_15px_rgba(170,79,255,0.2)] hover:shadow-[0_0_25px_rgba(170,79,255,0.4)] transition-shadow"
-          >
-            <span className="absolute inset-0 w-full h-full bg-linear-to-r from-primary-600 to-primary-400 group-hover:scale-105 transition-transform duration-300"></span>
-            <span className="relative z-10">Sign Up</span>
-          </Link>
-        </div>
+
+        {isMounted && isAuthenticated && user ? (
+          <div className="relative" ref={profileRef}>
+            <button
+              onClick={() => setIsProfileOpen(!isProfileOpen)}
+              className="flex items-center gap-3 hover:opacity-80 transition-opacity"
+            >
+              <div className="hidden sm:flex flex-col items-end text-right">
+                <span className="text-xs font-bold text-white">
+                  {user.name}
+                </span>
+                <span className="text-[10px] text-primary-400 font-mono">
+                  LVL {user.level}
+                </span>
+              </div>
+              <div className="relative w-9 h-9 rounded-xl overflow-hidden border-2 border-primary-500/50 shadow-[0_0_10px_rgba(170,79,255,0.3)]">
+                <Image
+                  src={user.avatar}
+                  alt={user.name}
+                  fill
+                  unoptimized
+                  className="object-cover"
+                />
+              </div>
+            </button>
+
+            {isProfileOpen && (
+              <div className="absolute right-0 top-12 w-48 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
+                <div className="p-2 flex flex-col gap-1">
+                  <Link
+                    href="/profile"
+                    onClick={() => setIsProfileOpen(false)}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-base-300 hover:text-white hover:bg-base-900 rounded-lg transition-colors"
+                  >
+                    <User size={16} /> My Profile
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors w-full text-left"
+                  >
+                    <LogOut size={16} /> Sign Out
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="flex items-center gap-3">
+            <Link
+              href="/login"
+              className="text-sm font-bold text-base-300 hover:text-white transition-colors hidden sm:block"
+            >
+              Log In
+            </Link>
+            <Link
+              href="/register"
+              className="relative group px-4 py-2 rounded-xl font-bold text-sm text-white overflow-hidden shadow-[0_0_15px_rgba(170,79,255,0.2)] hover:shadow-[0_0_25px_rgba(170,79,255,0.4)] transition-shadow"
+            >
+              <span className="absolute inset-0 w-full h-full bg-linear-to-r from-primary-600 to-primary-400 group-hover:scale-105 transition-transform duration-300"></span>
+              <span className="relative z-10">Sign Up</span>
+            </Link>
+          </div>
+        )}
       </div>
     </header>
   );

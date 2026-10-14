@@ -79,8 +79,8 @@ export default function ProfilePage() {
           className="object-cover opacity-60 group-hover:scale-105 transition-transform duration-700"
         />
         <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/40 to-transparent" />
-        <button className="absolute top-4 right-4 bg-black/50 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white hover:bg-primary-600 hover:border-primary-500 transition-all z-10">
-          <Edit2 size={16} />
+        <button type="button" aria-label="Edit profile banner" className="absolute top-4 right-4 bg-black/50 backdrop-blur-md p-2 rounded-xl border border-white/10 text-white hover:bg-primary-600 hover:border-primary-500 transition-all z-10">
+          <Edit2 size={16} aria-hidden="true" />
         </button>
         <div className="absolute -bottom-16 left-8 md:left-12 flex items-end gap-6 z-20">
           <div className="relative w-32 h-32 md:w-40 md:h-40 rounded-3xl overflow-hidden border-4 border-base-950 bg-base-900 shadow-[0_0_30px_rgba(170,79,255,0.4)] group-hover:border-primary-500/50 transition-colors duration-500">
@@ -120,6 +120,7 @@ export default function ProfilePage() {
                 <button
                   key={tab.id}
                   onClick={() => setActiveTab(tab.id)}
+                  aria-pressed={isActive}
                   className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold ${
                     isActive
                       ? "bg-primary-500/10 text-primary-400 border border-primary-500/30 shadow-[inset_0_0_15px_rgba(170,79,255,0.1)]"
@@ -136,7 +137,7 @@ export default function ProfilePage() {
               );
             })}
             <div className="w-full h-px bg-white/5 my-2"></div>
-            <button className="flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold text-base-400 hover:bg-rose-500/10 hover:text-rose-400 border border-transparent hover:border-rose-500/30">
+            <button type="button" className="flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold text-base-400 hover:bg-rose-500/10 hover:text-rose-400 border border-transparent hover:border-rose-500/30">
               <LogOut size={18} /> Sign Out
             </button>
           </div>
@@ -259,30 +260,33 @@ export default function ProfilePage() {
               >
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label htmlFor="profile-display-name" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                       Display Name
                     </label>
                     <input
+                      id="profile-display-name"
                       type="text"
                       defaultValue={USER_DATA.name}
                       className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label htmlFor="profile-username" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                       Gamer Tag (Username)
                     </label>
                     <input
+                      id="profile-username"
                       type="text"
                       defaultValue={USER_DATA.username}
                       className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]"
                     />
                   </div>
                   <div className="flex flex-col gap-2 md:col-span-2">
-                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label htmlFor="profile-email" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                       Email Address
                     </label>
                     <input
+                      id="profile-email"
                       type="email"
                       defaultValue={USER_DATA.email}
                       className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]"
@@ -303,7 +307,7 @@ export default function ProfilePage() {
                         Add an extra layer of security to your account.
                       </span>
                     </div>
-                    <button className="px-4 py-2 rounded-lg bg-base-950 border border-white/10 text-xs font-bold text-white hover:border-primary-500 transition-colors">
+                    <button type="button" className="px-4 py-2 rounded-lg bg-base-950 border border-white/10 text-xs font-bold text-white hover:border-primary-500 transition-colors">
                       Enable 2FA
                     </button>
                   </div>
@@ -341,7 +345,7 @@ export default function ProfilePage() {
                   </div>
                 </div>
                 <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-white/5">
-                  <button className="px-6 py-3 rounded-xl font-bold text-sm text-base-300 hover:text-white bg-base-900 border border-white/5 hover:bg-base-800 transition-colors">
+                  <button type="button" className="px-6 py-3 rounded-xl font-bold text-sm text-base-300 hover:text-white bg-base-900 border border-white/5 hover:bg-base-800 transition-colors">
                     Cancel
                   </button>
                   <button className="px-6 py-3 rounded-xl font-black text-sm text-white bg-primary-600 hover:bg-primary-500 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all">

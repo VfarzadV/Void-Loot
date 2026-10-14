@@ -182,10 +182,10 @@ export default function MediaPage() {
             {FEATURED_VIDEO.description}
           </p>
           <div className="flex items-center gap-3 mt-4">
-            <button className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-black text-sm hover:bg-base-200 transition-colors shadow-lg">
+            <button type="button" className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-black text-sm hover:bg-base-200 transition-colors shadow-lg">
               <Play size={18} fill="currentColor" /> Play Now
             </button>
-            <button className="flex items-center gap-2 bg-base-900/60 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-xl font-bold text-sm hover:bg-base-800 transition-colors">
+            <button type="button" className="flex items-center gap-2 bg-base-900/60 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-xl font-bold text-sm hover:bg-base-800 transition-colors">
               <Info size={18} /> More Info
             </button>
           </div>

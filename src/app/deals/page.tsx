@@ -119,9 +119,10 @@ export default async function DealsPage() {
                   </div>
                   <Link
                     href={`/shop/${deal.id}`}
+                    aria-label={`View ${deal.title}`}
                     className="w-10 h-10 rounded-xl bg-base-900 border border-white/10 flex items-center justify-center text-base-300 hover:text-white hover:bg-primary-600 hover:border-primary-500 transition-all"
                   >
-                    <ArrowRight size={18} />
+                    <ArrowRight size={18} aria-hidden="true" />
                   </Link>
                 </div>
               </div>

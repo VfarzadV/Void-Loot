@@ -1,7 +1,7 @@
 "use client";
-
 import { useState, useEffect } from "react";
 import Image from "next/image";
+import { useQuery } from "@tanstack/react-query";
 import { Zap, Clock, Star } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 
@@ -16,13 +16,28 @@ interface DealProduct {
   stock: number;
 }
 
+const fetchFlashDeals = async (): Promise<DealProduct[]> => {
+  const res = await fetch(
+    "https://dummyjson.com/products?sortBy=discountPercentage&order=desc&limit=4",
+  );
+  if (!res.ok) throw new Error("Failed to fetch flash deals");
+  const data = await res.json();
+  return data.products;
+};
+
 export default function FlashSale() {
-  const [deals, setDeals] = useState<DealProduct[]>([]);
   const [timeLeft, setTimeLeft] = useState({
     hours: 8,
     minutes: 42,
     seconds: 30,
   });
+  const addItem = useCartStore((state) => state.addItem);
+
+  const { data: deals = [] } = useQuery({
+    queryKey: ["flashDealsList"],
+    queryFn: fetchFlashDeals,
+  });
+
   useEffect(() => {
     const timer = setInterval(() => {
       setTimeLeft((prev) => {
@@ -36,23 +51,6 @@ export default function FlashSale() {
     }, 1000);
     return () => clearInterval(timer);
   }, []);
-  useEffect(() => {
-    async function fetchDeals() {
-      try {
-        const res = await fetch(
-          "https://dummyjson.com/products?sortBy=discountPercentage&order=desc&limit=4",
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setDeals(data.products);
-        }
-      } catch (error) {
-        console.error("Failed to fetch flash deals:", error);
-      }
-    }
-    fetchDeals();
-  }, []);
-  const addItem = useCartStore((state) => state.addItem);
 
   if (deals.length === 0) return null;
 
@@ -62,8 +60,8 @@ export default function FlashSale() {
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col gap-2 relative z-10">
           <div className="flex items-center gap-2 text-purple-400 text-xs font-bold tracking-widest uppercase">
-            <Zap size={16} className="text-yellow-400 animate-bounce" />
-            Limited Time Offer
+            <Zap size={16} className="text-yellow-400 animate-bounce" /> Limited
+            Time Offer
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
             Flash{" "}
@@ -74,8 +72,8 @@ export default function FlashSale() {
         </div>
         <div className="flex items-center gap-3 relative z-10">
           <div className="flex items-center gap-1.5 text-xs text-base-300 font-semibold mr-2">
-            <Clock size={16} className="text-purple-400 animate-pulse" />
-            Ends in:
+            <Clock size={16} className="text-purple-400 animate-pulse" /> Ends
+            in:
           </div>
           <div className="flex items-center gap-2 font-mono font-bold text-white">
             <span className="bg-purple-900/60 border border-purple-500/40 px-3 py-1.5 rounded-xl shadow-md">
@@ -151,7 +149,7 @@ export default function FlashSale() {
                   <span className="text-xs text-base-500 line-through">
                     ${deal.price.toFixed(2)}
                   </span>
-                  <span className="text-lg font-black  text-pink-400">
+                  <span className="text-lg font-black text-pink-400">
                     ${salePrice}
                   </span>
                 </div>

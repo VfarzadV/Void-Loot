@@ -1,6 +1,4 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -10,6 +8,7 @@ import {
   ArrowUpRight,
   Gamepad2,
 } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface RawgNewsItem {
   id: number;
@@ -19,43 +18,37 @@ interface RawgNewsItem {
   genres: { name: string }[];
 }
 
-export default function GamingNews() {
-  const [news, setNews] = useState<RawgNewsItem[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const fetchGamingNews = async (): Promise<RawgNewsItem[]> => {
+  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  const res = await fetch(
+    `https://api.rawg.io/api/games?key=${apiKey}&dates=2026-01-01,2026-10-31&ordering=-added&page_size=3`,
+  );
+  if (!res.ok) throw new Error("Failed to fetch gaming news");
+  const data = await res.json();
+  return data.results;
+};
 
-  useEffect(() => {
-    async function fetchLatestUpdates() {
-      const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-      try {
-        const res = await fetch(
-          `https://api.rawg.io/api/games?key=${apiKey}&dates=2026-01-01,2026-10-31&ordering=-added&page_size=3`,
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setNews(data.results);
-        }
-      } catch (error) {
-        console.error("Failed to fetch gaming news:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchLatestUpdates();
-  }, []);
+export default function GamingNews() {
+  const { data: news = [], isLoading } = useQuery({
+    queryKey: ["gamingNews"],
+    queryFn: fetchGamingNews,
+  });
 
   if (isLoading) {
     return (
-      <section className="w-full px-8 lg:px-16  relative z-10">
+      <section className="w-full px-8 lg:px-16 relative z-10">
         <div className="h-100 w-full bg-base-900/40 animate-pulse rounded-3xl border border-white/5"></div>
       </section>
     );
   }
+
   if (news.length === 0) return null;
+
   const featuredNews = news[0];
   const sideNews = news.slice(1, 3);
 
   return (
-    <section className="w-full px-8 lg:px-16  relative z-10">
+    <section className="w-full px-8 lg:px-16 relative z-10">
       <div className="flex items-end justify-between mb-8 border-b border-white/5 pb-4">
         <div className="flex items-center gap-3">
           <div className="w-12 h-12 rounded-xl bg-linear-to-br from-primary-600/20 to-primary-900/10 border border-primary-500/30 flex items-center justify-center shadow-[0_0_15px_rgba(170,79,255,0.2)]">
@@ -116,7 +109,7 @@ export default function GamingNews() {
                     {featuredNews.genres
                       ?.slice(0, 2)
                       .map((g) => g.name)
-                      .join(" • ")}
+                      .join("   ")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-primary-400 font-bold text-sm group-hover:text-primary-300">

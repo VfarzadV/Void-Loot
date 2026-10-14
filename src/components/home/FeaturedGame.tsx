@@ -120,11 +120,13 @@ export default function FeaturedGame({ slug }: { slug: string }) {
               Get it Now
             </Link>
             <button
+              type="button"
               onClick={() => {
                 setIsWishlisted(!isWishlisted);
                 if (!isWishlisted)
                   toast.success(`${game.name} added to your wishlist!`);
               }}
+              aria-pressed={isWishlisted}
               className={`group flex items-center gap-3 bg-base-900/50 hover:bg-base-800/80 border border-base-700/50 px-6 py-3 rounded-xl font-bold transition-all duration-300 backdrop-blur-md ${isWishlisted ? "text-rose-400 border-rose-500/50" : "text-base-50"}`}
             >
               {isWishlisted ? (

@@ -84,13 +84,14 @@ export default async function ShopPage({
               : "Upgrade your setup with premium hardware and tech peripherals powered by API."}
           </p>
         </div>
-        <Form action="/shop" className="relative w-full md:w-80 group">
+        <Form action="/shop" aria-label="Search hardware" className="relative w-full md:w-80 group">
           <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
           />
           <input
             type="text"
+            aria-label="Search hardware"
             name="search"
             defaultValue={searchQuery}
             placeholder="Search gear..."
@@ -146,6 +147,7 @@ export default async function ShopPage({
             <div className="flex flex-col gap-4">
               <input
                 type="range"
+                aria-label="Maximum price"
                 min="0"
                 max="2000"
                 className="w-full accent-primary-500"
@@ -163,7 +165,7 @@ export default async function ShopPage({
               Showing <strong className="text-white">{products.length}</strong>{" "}
               products
             </p>
-            <select className="bg-base-900 border border-base-800 text-sm text-white px-4 py-2 rounded-lg focus:outline-none focus:border-primary-500">
+            <select aria-label="Sort products" className="bg-base-900 border border-base-800 text-sm text-white px-4 py-2 rounded-lg focus:outline-none focus:border-primary-500">
               <option>Recommended</option>
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>

@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useQuery } from "@tanstack/react-query";
 import {
   ChevronRight,
   Play,
@@ -16,7 +17,6 @@ import {
 interface RawgGenre {
   name: string;
 }
-
 interface RawgGameDetailResponse {
   id: number;
   name: string;
@@ -39,69 +39,55 @@ export interface HeroGame {
   players: string;
 }
 
+// تابع واکشی مستقل
+const fetchHeroGames = async (slugs: string[]): Promise<HeroGame[]> => {
+  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  const fetched = await Promise.all(
+    slugs.map(async (slug) => {
+      const res = await fetch(
+        `https://api.rawg.io/api/games/${slug}?key=${apiKey}`,
+      );
+      if (res.ok) return res.json();
+      return null;
+    }),
+  );
+
+  return fetched
+    .filter((g): g is RawgGameDetailResponse => g !== null)
+    .map((data) => ({
+      id: data.id,
+      name: data.name,
+      background_image: data.background_image || "",
+      description: data.description_raw
+        ? data.description_raw.length > 150
+          ? data.description_raw.substring(0, 150) + "..."
+          : data.description_raw
+        : "Experience this masterpiece.",
+      meta: data.metacritic ?? 90,
+      year: data.released ? data.released.substring(0, 4) : "TBA",
+      genre:
+        data.genres && data.genres.length > 0 ? data.genres[0].name : "Action",
+      players: data.added ? (data.added / 1000).toFixed(1) + "k" : "1M+",
+    }));
+};
+
 export default function Hero({ slugs }: { slugs: string[] }) {
   const router = useRouter();
-  const [games, setGames] = useState<HeroGame[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [isLayoutHovered, setIsLayoutHovered] = useState(false);
 
-  useEffect(() => {
-    async function fetchRAWG() {
-      const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-      try {
-        const fetched = await Promise.all(
-          slugs.map(async (slug) => {
-            const res = await fetch(
-              `https://api.rawg.io/api/games/${slug}?key=${apiKey}`,
-            );
-            if (res.ok) {
-              const data: RawgGameDetailResponse = await res.json();
-              return data;
-            }
-            return null;
-          }),
-        );
-
-        const validGames: HeroGame[] = fetched
-          .filter((g): g is RawgGameDetailResponse => g !== null)
-          .map((data) => ({
-            id: data.id,
-            name: data.name,
-            background_image: data.background_image || "",
-            description: data.description_raw
-              ? data.description_raw.length > 150
-                ? data.description_raw.substring(0, 150) + "..."
-                : data.description_raw
-              : "Experience this masterpiece.",
-            meta: data.metacritic ?? 90,
-            year: data.released ? data.released.substring(0, 4) : "TBA",
-            genre:
-              data.genres && data.genres.length > 0
-                ? data.genres[0].name
-                : "Action",
-            players: data.added ? (data.added / 1000).toFixed(1) + "k" : "1M+",
-          }));
-
-        setGames(validGames);
-        setIsLoading(false);
-      } catch (error) {
-        console.error("RAWG Connection Error", error);
-        setIsLoading(false);
-      }
-    }
-
-    fetchRAWG();
-  }, [slugs]);
+  // واکشی با TanStack
+  const { data: games = [], isLoading } = useQuery({
+    queryKey: ["heroGames", slugs],
+    queryFn: () => fetchHeroGames(slugs),
+  });
 
   useEffect(() => {
     if (isLoading || games.length === 0 || isLayoutHovered) return;
-
     const interval = setInterval(() => {
       setCurrentIndex((prev) => (prev + 1) % games.length);
     }, 5000);
-
     return () => clearInterval(interval);
   }, [isLoading, games.length, isLayoutHovered]);
 
@@ -114,8 +100,6 @@ export default function Hero({ slugs }: { slugs: string[] }) {
             <div className="w-full h-12 md:h-16 bg-base-800/60 rounded-xl mt-2"></div>
             <div className="w-3/4 h-12 md:h-16 bg-base-800/60 rounded-xl mb-2"></div>
             <div className="w-full h-4 bg-base-800/50 rounded"></div>
-            <div className="w-5/6 h-4 bg-base-800/50 rounded"></div>
-            <div className="w-2/3 h-4 bg-base-800/50 rounded"></div>
             <div className="flex gap-3 mt-6">
               <div className="w-36 h-12 bg-base-800/60 rounded-xl"></div>
               <div className="w-40 h-12 bg-base-800/60 rounded-xl"></div>
@@ -123,11 +107,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
           </div>
           <div className="flex flex-col items-center w-full mt-6 lg:mt-0 relative h-100 lg:h-125 justify-center">
             <div className="absolute w-80 h-80 rounded-full bg-primary-900/10 blur-[100px]"></div>
-            <div className="w-64 lg:w-[320px] h-96 lg:h-115 bg-base-900/40 border border-white/5 rounded-2xl z-30 shadow-2xl relative overflow-hidden">
-              <div className="absolute bottom-0 left-0 w-full h-1/3 bg-linear-to-t from-base-950/80 to-transparent"></div>
-            </div>
-            <div className="absolute translate-x-28 lg:translate-x-48 -translate-y-2 rotate-12 w-48 lg:w-56 h-72 lg:h-96 bg-base-900/20 border border-white/5 rounded-2xl z-20"></div>
-            <div className="absolute -translate-x-28 lg:-translate-x-48 -translate-y-2 -rotate-12 w-48 lg:w-56 h-72 lg:h-96 bg-base-900/20 border border-white/5 rounded-2xl z-10"></div>
+            <div className="w-64 lg:w-[320px] h-96 lg:h-115 bg-base-900/40 border border-white/5 rounded-2xl z-30 shadow-2xl relative overflow-hidden"></div>
           </div>
         </div>
       </section>
@@ -135,7 +115,6 @@ export default function Hero({ slugs }: { slugs: string[] }) {
   }
 
   if (games.length === 0) return null;
-
   const activeGame = games[currentIndex];
 
   return (
@@ -162,20 +141,6 @@ export default function Hero({ slugs }: { slugs: string[] }) {
         </div>
         <div className="absolute inset-0 bg-linear-to-r from-base-950 via-base-950/80 to-base-950/90" />
         <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-base-950" />
-      </div>
-      <div className="absolute inset-0 pointer-events-none z-0 overflow-hidden opacity-40">
-        <div
-          className="absolute top-[20%] left-[10%] w-1.5 h-1.5 bg-primary-400/60 rounded-full animate-pulse blur-[1px]"
-          style={{ animationDuration: "3s" }}
-        ></div>
-        <div
-          className="absolute top-[60%] left-[30%] w-2 h-2 bg-white/40 rounded-full animate-ping blur-[2px]"
-          style={{ animationDuration: "4s" }}
-        ></div>
-        <div
-          className="absolute top-[30%] left-[60%] w-1 h-1 bg-primary-300/50 rounded-full animate-pulse blur-[1px]"
-          style={{ animationDuration: "2.5s" }}
-        ></div>
       </div>
       <div className="container mx-auto grid lg:grid-cols-2 gap-10 items-center relative z-10 w-full">
         <div className="flex flex-col items-start gap-4 glass-panel p-6 lg:p-8 border-l-4 border-l-primary-500/80 bg-base-900/30 backdrop-blur-xl transition-all duration-700 ease-in-out">
@@ -237,28 +202,9 @@ export default function Hero({ slugs }: { slugs: string[] }) {
               <Play
                 size={18}
                 className="text-primary-400 group-hover:scale-110 transition-transform"
-              />
+              />{" "}
               Watch Trailer
             </Link>
-          </div>
-          <div className="flex items-center gap-4 mt-2 pt-4 border-t border-base-800/50 w-full">
-            <div className="flex -space-x-2">
-              <div className="w-8 h-8 rounded-full bg-base-800 border-2 border-base-950 flex items-center justify-center">
-                <User size={14} className="text-base-400" />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-base-800 border-2 border-base-950 flex items-center justify-center">
-                <User size={14} className="text-base-400" />
-              </div>
-              <div className="w-8 h-8 rounded-full bg-primary-600 border-2 border-base-950 flex items-center justify-center">
-                <Users size={14} className="text-white" />
-              </div>
-            </div>
-            <div className="text-sm">
-              <p className="text-base-50 font-bold">
-                +{activeGame.players} Players
-              </p>
-              <p className="text-base-400 text-xs">tracked by RAWG API</p>
-            </div>
           </div>
         </div>
         <div className="flex flex-col items-center w-full mt-6 lg:mt-0">
@@ -319,11 +265,8 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                 <div
                   key={game.id}
                   onClick={() => {
-                    if (positionIndex !== 0) {
-                      setCurrentIndex(index);
-                    } else {
-                      router.push(`/games/${game.id}`);
-                    }
+                    if (positionIndex !== 0) setCurrentIndex(index);
+                    else router.push(`/games/${game.id}`);
                   }}
                   onMouseEnter={() => setHoveredCard(index)}
                   onMouseLeave={() => setHoveredCard(null)}
@@ -350,27 +293,6 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                 </div>
               );
             })}
-          </div>
-          <div className="flex items-center gap-3 text-base-400 font-mono text-xs z-10 mt-6 lg:mt-8">
-            <span
-              className={`transition-colors duration-300 ${currentIndex === 0 ? "text-primary-400 font-bold" : ""}`}
-            >
-              01
-            </span>
-            <div className="w-16 h-0.75 bg-base-800 rounded-full overflow-hidden relative cursor-pointer">
-              <div
-                className="absolute top-0 left-0 h-full bg-primary-500 transition-all duration-700 ease-out"
-                style={{
-                  width: "33.33%",
-                  transform: `translateX(${currentIndex * 100}%)`,
-                }}
-              ></div>
-            </div>
-            <span
-              className={`transition-colors duration-300 ${currentIndex === 2 ? "text-primary-400 font-bold" : ""}`}
-            >
-              03
-            </span>
           </div>
         </div>
       </div>

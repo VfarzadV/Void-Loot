@@ -111,6 +111,7 @@ export default function FAQPage() {
           className="absolute left-5 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
         />
         <input
+          aria-label="Search frequently asked questions"
           type="text"
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
@@ -133,6 +134,7 @@ export default function FAQPage() {
                   setActiveCategory(cat.id);
                   setOpenQuestion(null);
                 }}
+                aria-pressed={isActive}
                 className={`flex items-center gap-3 w-full px-5 py-4 rounded-xl transition-all duration-300 text-sm font-bold ${
                   isActive
                     ? "bg-primary-500/10 text-primary-400 border border-primary-500/30 shadow-[inset_0_0_15px_rgba(170,79,255,0.1)]"
@@ -174,6 +176,8 @@ export default function FAQPage() {
                 >
                   <button
                     onClick={() => setOpenQuestion(isOpen ? null : faq.id)}
+                    aria-expanded={isOpen}
+                    aria-controls={`faq-answer-${faq.id}`}
                     className="w-full flex items-center justify-between p-5 md:p-6 text-left focus:outline-none"
                   >
                     <span
@@ -188,6 +192,7 @@ export default function FAQPage() {
                     </div>
                   </button>
                   <div
+                    id={`faq-answer-${faq.id}`}
                     className={`grid transition-all duration-300 ease-in-out ${
                       isOpen
                         ? "grid-rows-[1fr] opacity-100"

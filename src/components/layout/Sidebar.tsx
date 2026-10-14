@@ -12,19 +12,24 @@ import {
   Settings,
   Hexagon,
   LucideIcon,
+  Box,
 } from "lucide-react";
 
 const NavItem = ({
   icon: Icon,
+  label,
   href,
   active = false,
 }: {
   icon: LucideIcon;
+  label: string;
   href: string;
   active?: boolean;
 }) => (
   <Link
     href={href}
+    aria-label={label}
+    aria-current={active ? "page" : undefined}
     className={`relative flex items-center justify-center w-10 h-10 rounded-xl transition-all duration-300 group ${
       active
         ? "bg-primary-500/10 text-primary-400 shadow-[inset_0_0_12px_rgba(170,79,255,0.1)]"
@@ -50,46 +55,60 @@ export default function Sidebar() {
     <aside className="fixed left-0 top-0 h-screen w-20 flex flex-col items-center py-6 bg-base-950/90 backdrop-blur-xl border-r border-base-800/40 z-50">
       <Link
         href="/"
+        aria-label="Void Loot home"
         className="mb-8 text-primary-500 transition-all duration-500 hover:rotate-90 hover:drop-shadow-[0_0_15px_rgba(170,79,255,0.8)]"
       >
         <Hexagon size={28} strokeWidth={2.5} />
       </Link>
-      <nav className="flex flex-col gap-3 grow">
-        <NavItem href="/" icon={Home} active={pathname === "/"} />
+      <nav aria-label="Main navigation" className="flex flex-col gap-3 grow">
+        <NavItem href="/" label="Home" icon={Home} active={pathname === "/"} />
         <NavItem
           href="/shop"
+          label="Hardware shop"
           icon={LayoutGrid}
           active={pathname.startsWith("/shop")}
         />
         <NavItem
           href="/games"
+          label="Games"
           icon={Gamepad2}
           active={pathname.startsWith("/games")}
         />
         <NavItem
           href="/media"
+          label="Media"
           icon={Film}
           active={pathname.startsWith("/media")}
         />
         <NavItem
           href="/live"
+          label="Live streams"
           icon={Radio}
           active={pathname.startsWith("/live")}
         />
         <NavItem
           href="/cloud"
+          label="Cloud gaming"
           icon={Cloud}
           active={pathname.startsWith("/cloud")}
+        />
+        <NavItem
+          href="/loot-box"
+          label="Void Loot Box"
+          icon={Box}
+          active={pathname.startsWith("/loot-box")}
         />
       </nav>
       <div className="flex flex-col gap-3 mt-auto">
         <NavItem
           href="/profile"
+          label="Profile"
           icon={User}
           active={pathname.startsWith("/profile")}
         />
         <NavItem
           href="/settings"
+          label="Settings"
           icon={Settings}
           active={pathname.startsWith("/settings")}
         />

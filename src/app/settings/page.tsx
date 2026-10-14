@@ -79,6 +79,7 @@ export default function SettingsPage() {
               <button
                 key={tab.id}
                 onClick={() => setActiveTab(tab.id)}
+                aria-pressed={isActive}
                 className={`flex items-center gap-3 w-full px-5 py-3.5 rounded-xl transition-all duration-300 text-sm font-bold ${
                   isActive
                     ? "bg-primary-500/10 text-primary-400 border border-primary-500/30 shadow-[inset_0_0_15px_rgba(170,79,255,0.1)]"
@@ -120,17 +121,18 @@ export default function SettingsPage() {
                 </div>
                 <div className="flex flex-col gap-4 grow w-full">
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label htmlFor="settings-display-name" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                       Display Name
                     </label>
                     <input
+                      id="settings-display-name"
                       type="text"
                       defaultValue="Farzad"
                       className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]"
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label htmlFor="settings-username" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                       Username
                     </label>
                     <div className="relative">
@@ -138,6 +140,7 @@ export default function SettingsPage() {
                         @
                       </span>
                       <input
+                        id="settings-username"
                         type="text"
                         defaultValue="ShadowHunter99"
                         className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 pl-9 pr-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]"
@@ -147,10 +150,11 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                <label htmlFor="settings-bio" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                   Bio
                 </label>
                 <textarea
+                  id="settings-bio"
                   rows={4}
                   placeholder="Tell the community about yourself..."
                   defaultValue="Front-end developer & Hardcore gamer. Exploring the void one game at a time."
@@ -176,30 +180,33 @@ export default function SettingsPage() {
               </div>
               <div className="flex flex-col gap-4 max-w-xl">
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label htmlFor="settings-current-password" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                     Current Password
                   </label>
                   <input
+                    id="settings-current-password"
                     type="password"
                     placeholder="••••••••"
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label htmlFor="settings-new-password" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                     New Password
                   </label>
                   <input
+                    id="settings-new-password"
                     type="password"
                     placeholder="Must be at least 8 characters"
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500"
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label htmlFor="settings-confirm-password" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                     Confirm New Password
                   </label>
                   <input
+                    id="settings-confirm-password"
                     type="password"
                     placeholder="Must match new password"
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500"
@@ -303,11 +310,11 @@ export default function SettingsPage() {
               </div>
               <div className="flex flex-col gap-6">
                 <div className="flex flex-col gap-3">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label id="settings-theme-label" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                     Theme Interface
                   </label>
-                  <div className="grid grid-cols-3 gap-4">
-                    <button className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-primary-500 bg-base-900/50">
+                  <div role="group" aria-labelledby="settings-theme-label" className="grid grid-cols-3 gap-4">
+                    <button type="button" aria-pressed="true" className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-primary-500 bg-base-900/50">
                       <div className="w-full h-16 rounded-lg bg-base-950 border border-white/10 flex items-center justify-center relative overflow-hidden">
                         <div className="absolute left-0 top-0 w-1/3 h-full bg-base-900"></div>
                       </div>
@@ -315,7 +322,7 @@ export default function SettingsPage() {
                         Dark Mode
                       </span>
                     </button>
-                    <button className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-base-900/30 hover:border-white/10 opacity-50 cursor-not-allowed">
+                    <button type="button" disabled aria-pressed="false" className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-base-900/30 hover:border-white/10 opacity-50 cursor-not-allowed">
                       <div className="w-full h-16 rounded-lg bg-white border border-base-300 flex items-center justify-center relative overflow-hidden">
                         <div className="absolute left-0 top-0 w-1/3 h-full bg-base-100"></div>
                       </div>
@@ -323,7 +330,7 @@ export default function SettingsPage() {
                         Light Mode
                       </span>
                     </button>
-                    <button className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-base-900/30 hover:border-white/10 opacity-50 cursor-not-allowed">
+                    <button type="button" disabled aria-pressed="false" className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-base-900/30 hover:border-white/10 opacity-50 cursor-not-allowed">
                       <div className="w-full h-16 rounded-lg bg-linear-to-r from-base-950 to-white flex items-center justify-center relative overflow-hidden"></div>
                       <span className="text-xs font-bold text-base-500">
                         System Sync
@@ -333,10 +340,10 @@ export default function SettingsPage() {
                 </div>
                 <div className="w-full h-px bg-white/5 my-2"></div>
                 <div className="flex flex-col gap-2">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label htmlFor="settings-language" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                     Language & Region
                   </label>
-                  <select className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-all appearance-none cursor-pointer">
+                  <select id="settings-language" className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-all appearance-none cursor-pointer">
                     <option>English (United States)</option>
                     <option>Persian (Farsi)</option>
                     <option>German (Deutschland)</option>

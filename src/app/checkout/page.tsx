@@ -22,10 +22,9 @@ export default function CheckoutPage() {
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [orderId, setOrderId] = useState(""); // استیت جدید برای ذخیره شماره سفارش ثابت
+  const [orderId, setOrderId] = useState("");
 
   useEffect(() => {
-    // حل ارور رندر آبشاری با قرار دادن در setTimeout
     const timer = setTimeout(() => setIsMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
@@ -34,7 +33,7 @@ export default function CheckoutPage() {
     (total, item) => total + item.price * item.quantity,
     0,
   );
-  const tax = subtotal * 0.05; // 5% Tax
+  const tax = subtotal * 0.05;
   const total = subtotal + tax;
 
   const handleCheckout = (e: React.FormEvent) => {
@@ -43,20 +42,17 @@ export default function CheckoutPage() {
 
     setIsProcessing(true);
 
-    // شبیه‌سازی درگاه پرداخت
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
-      // حل ارور Math.random: تولید شماره سفارش فقط یک بار در زمان موفقیت
       setOrderId(`VOID-${Math.floor(Math.random() * 1000000)}`);
-      clearCart(); // خالی کردن سبد خرید بعد از موفقیت
+      clearCart();
       toast.success("Payment successful! Welcome to the Void.");
     }, 2500);
   };
 
   if (!isMounted) return null;
 
-  // وضعیت موفقیت‌آمیز بودن خرید
   if (isSuccess) {
     return (
       <div className="w-full min-h-[70vh] flex flex-col items-center justify-center px-6 text-center animate-in fade-in zoom-in duration-500">
@@ -97,7 +93,6 @@ export default function CheckoutPage() {
     );
   }
 
-  // اگر سبد خرید خالی بود
   if (items.length === 0) {
     return (
       <div className="w-full min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
@@ -108,6 +103,7 @@ export default function CheckoutPage() {
           You need some loot before you can checkout.
         </p>
         <button
+          type="button"
           onClick={() => router.back()}
           className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-bold transition-colors"
         >
@@ -118,9 +114,11 @@ export default function CheckoutPage() {
   }
 
   return (
-    <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-8 max-w-[1400px] mx-auto overflow-hidden">
+    <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-8 max-w-350 mx-auto overflow-hidden">
       <div className="flex items-center gap-4 mb-8">
         <button
+          type="button"
+          aria-label="Return to previous page"
           onClick={() => router.back()}
           className="p-2 rounded-lg bg-base-900 border border-white/5 text-base-400 hover:text-white transition-colors"
         >
@@ -130,46 +128,55 @@ export default function CheckoutPage() {
           Secure <span className="text-primary-400">Checkout</span>
         </h1>
       </div>
-
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
-        {/* فرم اطلاعات و پرداخت */}
         <div className="lg:col-span-7 flex flex-col gap-8">
           <form
             id="checkout-form"
             onSubmit={handleCheckout}
             className="flex flex-col gap-8"
           >
-            {/* اطلاعات ارسال / اکانت */}
             <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
                 Billing Information
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label
+                    htmlFor="checkout-first-name"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                  >
                     First Name
                   </label>
                   <input
+                    id="checkout-first-name"
                     required
                     type="text"
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label
+                    htmlFor="checkout-last-name"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                  >
                     Last Name
                   </label>
                   <input
+                    id="checkout-last-name"
                     required
                     type="text"
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
                   />
                 </div>
                 <div className="flex flex-col gap-1.5 md:col-span-2">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label
+                    htmlFor="checkout-email"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                  >
                     Email Address (For digital delivery)
                   </label>
                   <input
+                    id="checkout-email"
                     required
                     type="email"
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
@@ -177,17 +184,15 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
-
-            {/* روش‌های پرداخت */}
             <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
                 Payment Method
               </h2>
-
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
+                  aria-pressed={paymentMethod === "card"}
                   className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "card" ? "border-primary-500 bg-primary-500/10 shadow-[0_0_15px_rgba(170,79,255,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
                 >
                   <CreditCard
@@ -207,6 +212,7 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("crypto")}
+                  aria-pressed={paymentMethod === "crypto"}
                   className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "crypto" ? "border-orange-500 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
                 >
                   <Bitcoin
@@ -226,6 +232,7 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("wallet")}
+                  aria-pressed={paymentMethod === "wallet"}
                   className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "wallet" ? "border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
                 >
                   <Wallet
@@ -243,15 +250,17 @@ export default function CheckoutPage() {
                   </span>
                 </button>
               </div>
-
-              {/* ورودی‌های کارت (نمایشی) */}
               {paymentMethod === "card" && (
                 <div className="flex flex-col gap-5 mt-4 animate-in fade-in duration-300">
                   <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label
+                      htmlFor="checkout-card-number"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                    >
                       Card Number
                     </label>
                     <input
+                      id="checkout-card-number"
                       required
                       type="text"
                       placeholder="0000 0000 0000 0000"
@@ -260,10 +269,14 @@ export default function CheckoutPage() {
                   </div>
                   <div className="grid grid-cols-2 gap-5">
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                      <label
+                        htmlFor="checkout-card-expiry"
+                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                      >
                         Expiry Date
                       </label>
                       <input
+                        id="checkout-card-expiry"
                         required
                         type="text"
                         placeholder="MM/YY"
@@ -271,10 +284,14 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                      <label
+                        htmlFor="checkout-card-cvc"
+                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                      >
                         CVC
                       </label>
                       <input
+                        id="checkout-card-cvc"
                         required
                         type="text"
                         placeholder="123"
@@ -287,15 +304,12 @@ export default function CheckoutPage() {
             </div>
           </form>
         </div>
-
-        {/* خلاصه سفارش (Order Summary) */}
         <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-900/30 border border-white/5 sticky top-28 flex flex-col gap-6">
             <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
               Order Summary
             </h2>
-
-            <div className="flex flex-col gap-4 max-h-[300px] overflow-y-auto hide-scrollbar">
+            <div className="flex flex-col gap-4 max-h-75 overflow-y-auto hide-scrollbar">
               {items.map((item) => (
                 <div key={item.id} className="flex gap-4 items-center">
                   <div className="relative w-16 h-16 rounded-xl bg-base-950 border border-white/5 overflow-hidden shrink-0 flex items-center justify-center">
@@ -321,7 +335,6 @@ export default function CheckoutPage() {
                 </div>
               ))}
             </div>
-
             <div className="flex flex-col gap-3 pt-4 border-t border-white/5 text-sm">
               <div className="flex justify-between items-center text-base-300">
                 <span>Subtotal</span>
@@ -338,14 +351,12 @@ export default function CheckoutPage() {
                 <span className="font-bold text-emerald-400">Free</span>
               </div>
             </div>
-
             <div className="flex justify-between items-center pt-4 border-t border-white/10">
               <span className="text-base font-bold text-white">Total</span>
               <span className="text-2xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                 ${total.toFixed(2)}
               </span>
             </div>
-
             <button
               form="checkout-form"
               type="submit"

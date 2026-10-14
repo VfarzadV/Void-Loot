@@ -41,6 +41,7 @@ export default function OrderTrackingPage() {
       </div>
       <div className="w-full max-w-2xl mx-auto flex flex-col gap-8">
         <form
+          aria-label="Track an order"
           onSubmit={handleTrack}
           className="flex flex-col sm:flex-row gap-4"
         >
@@ -50,6 +51,7 @@ export default function OrderTrackingPage() {
               className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
             />
             <input
+              aria-label="Order or tracking number"
               type="text"
               required
               value={orderId}

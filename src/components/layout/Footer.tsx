@@ -178,6 +178,7 @@ export default function Footer() {
               once-in-a-lifetime deals before anyone else.
             </p>
             <form
+              aria-label="Subscribe to email updates"
               className="flex flex-col gap-3"
               onSubmit={(e) => e.preventDefault()}
             >
@@ -188,6 +189,7 @@ export default function Footer() {
                 />
                 <input
                   type="email"
+                  aria-label="Email address for newsletter"
                   placeholder="Enter your email address"
                   className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-base-500 focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all"
                 />

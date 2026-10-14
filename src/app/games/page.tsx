@@ -68,13 +68,14 @@ export default async function GamesPage({
               : "Explore thousands of games powered by RAWG database."}
           </p>
         </div>
-        <Form action="/games" className="relative w-full md:w-80 group">
+        <Form action="/games" aria-label="Search games" className="relative w-full md:w-80 group">
           <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
           />
           <input
             type="text"
+            aria-label="Search games"
             name="search"
             defaultValue={searchQuery}
             placeholder="Search games..."
@@ -179,13 +180,14 @@ export default async function GamesPage({
         ) : (
           <button
             disabled
+            aria-label="Previous page (unavailable)"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-base-950 text-base-600 font-bold text-sm border border-white/5 cursor-not-allowed"
           >
             <ChevronLeft size={18} /> Previous
           </button>
         )}
         <div className="px-4 py-2 rounded-lg bg-primary-900/20 border border-primary-500/30 text-primary-400 font-bold text-sm">
-          Page {currentPage}
+        <span aria-current="page">Page {currentPage}</span>
         </div>
         {hasNextPage ? (
           <Link
@@ -197,6 +199,7 @@ export default async function GamesPage({
         ) : (
           <button
             disabled
+            aria-label="Next page (unavailable)"
             className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-base-950 text-base-600 font-bold text-sm border border-white/5 cursor-not-allowed"
           >
             Next <ChevronRight size={18} />

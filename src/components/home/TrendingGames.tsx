@@ -1,9 +1,8 @@
 "use client";
-
-import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, ArrowRight, Monitor, Gamepad2, Flame } from "lucide-react";
+import { useQuery } from "@tanstack/react-query";
 
 interface Platform {
   platform: {
@@ -23,29 +22,21 @@ interface RawgGame {
   parent_platforms: Platform[];
 }
 
-export default function TrendingGames() {
-  const [games, setGames] = useState<RawgGame[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+const fetchTrendingGames = async (): Promise<RawgGame[]> => {
+  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  const res = await fetch(
+    `https://api.rawg.io/api/games?key=${apiKey}&ordering=-added&page_size=8`
+  );
+  if (!res.ok) throw new Error("Failed to fetch trending games");
+  const data = await res.json();
+  return data.results;
+};
 
-  useEffect(() => {
-    async function fetchTrendingGames() {
-      const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-      try {
-        const res = await fetch(
-          `https://api.rawg.io/api/games?key=${apiKey}&ordering=-added&page_size=8`,
-        );
-        if (res.ok) {
-          const data = await res.json();
-          setGames(data.results);
-        }
-      } catch (error) {
-        console.error("Failed to fetch trending games:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    }
-    fetchTrendingGames();
-  }, []);
+export default function TrendingGames() {
+  const { data: games = [], isLoading } = useQuery({
+    queryKey: ["trendingGames"],
+    queryFn: fetchTrendingGames,
+  });
 
   if (isLoading) {
     return (

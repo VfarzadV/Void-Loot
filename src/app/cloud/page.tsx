@@ -307,7 +307,7 @@ export default function CloudGamingPage() {
                   <Cloud size={10} /> Cloud Ready
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 scale-90 group-hover:scale-100 transform bg-black/30 backdrop-blur-sm">
-                  <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 text-white font-black text-sm shadow-[0_0_30px_rgba(170,79,255,0.6)] hover:bg-primary-500 hover:scale-105 transition-all">
+                  <button type="button" aria-label={`Stream ${game.title} now`} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 text-white font-black text-sm shadow-[0_0_30px_rgba(170,79,255,0.6)] hover:bg-primary-500 hover:scale-105 transition-all">
                     <Play size={16} fill="currentColor" /> Stream Now
                   </button>
                 </div>

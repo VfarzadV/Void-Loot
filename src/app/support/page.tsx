@@ -46,10 +46,11 @@ export default function SupportPage() {
           <form onSubmit={handleSubmit} className="flex flex-col gap-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                <label htmlFor="support-name" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                   Full Name
                 </label>
                 <input
+                  id="support-name"
                   required
                   type="text"
                   placeholder="John Doe"
@@ -57,10 +58,11 @@ export default function SupportPage() {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                <label htmlFor="support-email" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                   Email Address
                 </label>
                 <input
+                  id="support-email"
                   required
                   type="email"
                   placeholder="john@nexus.com"
@@ -69,10 +71,10 @@ export default function SupportPage() {
               </div>
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+              <label htmlFor="support-category" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                 Category
               </label>
-              <select className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors appearance-none cursor-pointer">
+              <select id="support-category" className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3.5 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors appearance-none cursor-pointer">
                 <option value="order">Order & Shipping</option>
                 <option value="tech">Technical Support</option>
                 <option value="refund">Returns & Refunds</option>
@@ -80,10 +82,11 @@ export default function SupportPage() {
               </select>
             </div>
             <div className="flex flex-col gap-2">
-              <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+              <label htmlFor="support-message" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
                 Message
               </label>
               <textarea
+                id="support-message"
                 required
                 rows={6}
                 placeholder="Describe your issue in detail..."
@@ -112,7 +115,7 @@ export default function SupportPage() {
             <p className="text-xs text-base-400 mb-6">
               Our agents are online and ready to assist you in real-time.
             </p>
-            <button className="w-full py-3 rounded-xl bg-white text-black font-black text-sm hover:bg-base-200 transition-colors">
+            <button type="button" className="w-full py-3 rounded-xl bg-white text-black font-black text-sm hover:bg-base-200 transition-colors">
               Start Chat
             </button>
           </div>
