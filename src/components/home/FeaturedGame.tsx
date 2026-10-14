@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Trophy, Calendar, Download, Plus, Heart } from "lucide-react";
-import { toast } from "sonner";
+import { useWishlistStore } from "@/store/useWishlistStore";
 
 interface RawgGame {
   id: number;
@@ -18,7 +18,8 @@ interface RawgGame {
 export default function FeaturedGame({ slug }: { slug: string }) {
   const [game, setGame] = useState<RawgGame | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isWishlisted, setIsWishlisted] = useState(false);
+
+  const { toggleItem, isInWishlist } = useWishlistStore();
 
   useEffect(() => {
     async function fetchFeaturedGame() {
@@ -53,7 +54,10 @@ export default function FeaturedGame({ slug }: { slug: string }) {
       </section>
     );
   }
+
   if (!game) return null;
+  const isWishlisted = isInWishlist(game.id);
+
   return (
     <section className="relative w-full min-h-87.5 flex items-center border-y border-white/5">
       <div className="absolute inset-0 z-0">
@@ -122,9 +126,12 @@ export default function FeaturedGame({ slug }: { slug: string }) {
             <button
               type="button"
               onClick={() => {
-                setIsWishlisted(!isWishlisted);
-                if (!isWishlisted)
-                  toast.success(`${game.name} added to your wishlist!`);
+                toggleItem({
+                  id: game.id,
+                  title: game.name,
+                  price: 59.99,
+                  image: game.background_image,
+                });
               }}
               aria-pressed={isWishlisted}
               className={`group flex items-center gap-3 bg-base-900/50 hover:bg-base-800/80 border border-base-700/50 px-6 py-3 rounded-xl font-bold transition-all duration-300 backdrop-blur-md ${isWishlisted ? "text-rose-400 border-rose-500/50" : "text-base-50"}`}

@@ -4,6 +4,7 @@ import Image from "next/image";
 import { Star, ArrowRight, Heart } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useQuery } from "@tanstack/react-query";
+import { useWishlistStore } from "@/store/useWishlistStore";
 
 interface Product {
   id: number;
@@ -16,18 +17,21 @@ interface Product {
 }
 
 const fetchPopularHardware = async (): Promise<Product[]> => {
-  const res = await fetch("https://dummyjson.com/products/category/laptops?limit=4");
+  const res = await fetch(
+    "https://dummyjson.com/products/category/laptops?limit=4",
+  );
   if (!res.ok) throw new Error("Failed to fetch popular hardware");
   const data = await res.json();
   return data.products;
 };
 
 export default function PopularHardware() {
-  const addItem = useCartStore((state) => state.addItem);
   const { data: products = [], isLoading } = useQuery({
     queryKey: ["popularHardware"],
     queryFn: fetchPopularHardware,
   });
+  const addItem = useCartStore((state) => state.addItem);
+  const { toggleItem, isInWishlist } = useWishlistStore();
 
   if (isLoading) {
     return (
@@ -95,8 +99,29 @@ export default function PopularHardware() {
           >
             <div className="relative w-full aspect-4/3 rounded-xl bg-white/5 border border-purple-500/20 overflow-hidden flex items-center justify-center mb-4">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.1)_0%,transparent_70%)]" />
-              <button type="button" aria-label={`Add ${product.title} to wishlist`} className="absolute top-3 right-3 w-8 h-8 rounded-lg bg-base-950/60 border border-purple-500/30 flex items-center justify-center text-purple-300 hover:text-white hover:bg-purple-600/40 transition-colors backdrop-blur-md z-10">
-                <Heart size={16} aria-hidden="true" />
+              <button
+                type="button"
+                aria-label={`Add ${product.title} to wishlist`}
+                onClick={(e) => {
+                  e.preventDefault();
+                  toggleItem({
+                    id: product.id,
+                    title: product.title,
+                    price: product.price,
+                    image: product.thumbnail,
+                  });
+                }}
+                className={`absolute top-3 right-3 w-8 h-8 rounded-lg bg-base-950/60 border flex items-center justify-center backdrop-blur-md z-10 transition-all ${
+                  isInWishlist(product.id)
+                    ? "text-rose-500 border-rose-500/50 bg-rose-500/10 shadow-[0_0_15px_rgba(244,63,94,0.3)]"
+                    : "border-purple-500/30 text-purple-300 hover:text-white hover:bg-purple-600/40"
+                }`}
+              >
+                <Heart
+                  size={16}
+                  className={isInWishlist(product.id) ? "fill-rose-500" : ""}
+                  aria-hidden="true"
+                />
               </button>
               <Image
                 src={product.thumbnail}

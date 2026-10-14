@@ -9,9 +9,7 @@ import {
   Play,
   Star,
   Calendar,
-  Users,
   Gamepad2,
-  User,
 } from "lucide-react";
 
 interface RawgGenre {
@@ -39,7 +37,6 @@ export interface HeroGame {
   players: string;
 }
 
-// تابع واکشی مستقل
 const fetchHeroGames = async (slugs: string[]): Promise<HeroGame[]> => {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
   const fetched = await Promise.all(
@@ -76,8 +73,6 @@ export default function Hero({ slugs }: { slugs: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [isLayoutHovered, setIsLayoutHovered] = useState(false);
-
-  // واکشی با TanStack
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["heroGames", slugs],
     queryFn: () => fetchHeroGames(slugs),

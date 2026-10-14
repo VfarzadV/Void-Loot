@@ -1,8 +1,10 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Calendar, ArrowRight, Monitor, Gamepad2, Flame } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import WishlistButton from "../cart/WishlistButton";
 
 interface Platform {
   platform: {
@@ -25,7 +27,7 @@ interface RawgGame {
 const fetchTrendingGames = async (): Promise<RawgGame[]> => {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
   const res = await fetch(
-    `https://api.rawg.io/api/games?key=${apiKey}&ordering=-added&page_size=8`
+    `https://api.rawg.io/api/games?key=${apiKey}&ordering=-added&page_size=8`,
   );
   if (!res.ok) throw new Error("Failed to fetch trending games");
   const data = await res.json();
@@ -77,73 +79,90 @@ export default function TrendingGames() {
           />
         </Link>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        {games.map((game) => (
-          <Link
-            href={`/games/${game.id}`}
-            key={game.id}
-            className="group relative flex flex-col overflow-hidden rounded-xl glass-panel bg-base-950 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(170,79,255,0.15)] border border-base-800/60 hover:border-primary-500/50"
-          >
-            <div className="relative w-full aspect-video overflow-hidden bg-base-900">
-              <Image
-                src={game.background_image || "/images/placeholder.jpg"}
-                alt={game.name}
-                fill
-                unoptimized
-                className="object-cover transition-transform duration-700 group-hover:scale-105"
+        {games.map((game) => {
+          const mockPrice = ((game.id % 40) + 19.99).toFixed(2);
+
+          return (
+            <div
+              key={game.id}
+              className="group relative flex flex-col overflow-hidden rounded-xl glass-panel bg-base-950 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_8px_30px_rgba(170,79,255,0.15)] border border-base-800/60 hover:border-primary-500/50"
+            >
+              <Link
+                href={`/games/${game.id}`}
+                className="relative w-full aspect-video overflow-hidden bg-base-900 block"
+              >
+                <Image
+                  src={game.background_image || "/images/placeholder.jpg"}
+                  alt={game.name}
+                  fill
+                  unoptimized
+                  className="object-cover transition-transform duration-700 group-hover:scale-105"
+                />
+                <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />
+                {game.metacritic && (
+                  <div
+                    className={`absolute top-3 left-3 flex items-center justify-center w-8 h-8 rounded-md font-bold text-xs backdrop-blur-md border ${
+                      game.metacritic >= 90
+                        ? "bg-green-500/20 text-green-400 border-green-500/50"
+                        : game.metacritic >= 75
+                          ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50"
+                          : "bg-orange-500/20 text-orange-400 border-orange-500/50"
+                    }`}
+                  >
+                    {game.metacritic}
+                  </div>
+                )}
+              </Link>
+              <WishlistButton
+                product={{
+                  id: game.id,
+                  title: game.name,
+                  price: parseFloat(mockPrice),
+                  image: game.background_image || "/images/placeholder.jpg",
+                }}
               />
-              <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />
-              {game.metacritic && (
-                <div
-                  className={`absolute top-3 right-3 flex items-center justify-center w-8 h-8 rounded-md font-bold text-xs backdrop-blur-md border ${
-                    game.metacritic >= 90
-                      ? "bg-green-500/20 text-green-400 border-green-500/50"
-                      : game.metacritic >= 75
-                        ? "bg-yellow-500/20 text-yellow-400 border-yellow-500/50"
-                        : "bg-orange-500/20 text-orange-400 border-orange-500/50"
-                  }`}
-                >
-                  {game.metacritic}
+              <div className="p-4 flex flex-col grow gap-3 pointer-events-none">
+                <div className="grow pointer-events-auto">
+                  <Link href={`/games/${game.id}`}>
+                    <h3 className="text-base font-bold text-base-50 mb-1.5 line-clamp-1 group-hover:text-primary-300 transition-colors">
+                      {game.name}
+                    </h3>
+                  </Link>
+                  <div className="flex flex-wrap items-center gap-2 text-[11px] text-base-400 font-medium">
+                    {game.released && (
+                      <span className="flex items-center gap-1 bg-base-900 px-2 py-1 rounded-md border border-white/5">
+                        <Calendar size={12} className="text-primary-400" />
+                        {game.released.substring(0, 4)}
+                      </span>
+                    )}
+                    {game.genres?.[0] && (
+                      <span className="flex items-center gap-1 bg-base-900 px-2 py-1 rounded-md border border-white/5">
+                        <Gamepad2 size={12} className="text-cyan-400" />
+                        {game.genres[0].name}
+                      </span>
+                    )}
+                  </div>
                 </div>
-              )}
-            </div>
-            <div className="p-4 flex flex-col grow gap-3">
-              <div className="grow">
-                <h3 className="text-base font-bold text-base-50 mb-1.5 line-clamp-1 group-hover:text-primary-300 transition-colors">
-                  {game.name}
-                </h3>
-                <div className="flex flex-wrap items-center gap-2 text-[11px] text-base-400 font-medium">
-                  {game.released && (
-                    <span className="flex items-center gap-1 bg-base-900 px-2 py-1 rounded-md">
-                      <Calendar size={12} className="text-primary-400" />
-                      {game.released.substring(0, 4)}
+                <div className="pt-3 border-t border-base-800/50 flex items-center justify-between pointer-events-auto">
+                  <div className="flex items-center gap-1.5 text-base-400">
+                    {game.parent_platforms?.some((p) =>
+                      p.platform.slug.includes("pc"),
+                    ) && <Monitor size={14} />}
+                    <span className="text-[10px] font-bold uppercase tracking-wider text-base-500">
+                      {game.parent_platforms
+                        ?.slice(0, 3)
+                        .map((p) => p.platform.name)
+                        .join(", ")}
+                      {(game.parent_platforms?.length || 0) > 3 ? " +" : ""}
                     </span>
-                  )}
-                  {game.genres?.[0] && (
-                    <span className="flex items-center gap-1 bg-base-900 px-2 py-1 rounded-md">
-                      <Gamepad2 size={12} className="text-cyan-400" />
-                      {game.genres[0].name}
-                    </span>
-                  )}
-                </div>
-              </div>
-              <div className="pt-3 border-t border-base-800/50 flex items-center justify-between">
-                <div className="flex items-center gap-1.5 text-base-400">
-                  {game.parent_platforms?.some((p) =>
-                    p.platform.slug.includes("pc"),
-                  ) && <Monitor size={14} />}
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-base-500">
-                    {game.parent_platforms
-                      ?.slice(0, 3)
-                      .map((p) => p.platform.name)
-                      .join(", ")}
-                    {(game.parent_platforms?.length || 0) > 3 ? " +" : ""}
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
-          </Link>
-        ))}
+          );
+        })}
       </div>
     </section>
   );

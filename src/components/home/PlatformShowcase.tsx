@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Monitor, Gamepad, Star } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import WishlistButton from "../cart/WishlistButton";
 
 interface PlatformShowcaseProps {
   platformId: number;
@@ -78,6 +79,14 @@ export default function PlatformShowcase({
                 href={`/games/${game.id}`}
                 className="relative w-full aspect-3/4 overflow-hidden bg-base-900 block"
               >
+                <WishlistButton
+                  product={{
+                    id: game.id,
+                    title: game.name,
+                    price: parseFloat(mockPrice),
+                    image: game.background_image || "/images/placeholder.jpg",
+                  }}
+                />
                 <Image
                   src={game.background_image || "/images/placeholder.jpg"}
                   alt={game.name}

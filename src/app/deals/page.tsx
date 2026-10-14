@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Flame, Clock, Tag, ArrowRight, Star } from "lucide-react";
+import WishlistButton from "@/components/cart/WishlistButton";
 
 interface DealProduct {
   id: number;
@@ -92,6 +93,14 @@ export default async function DealsPage() {
                 <span className="absolute top-3 left-3 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_15px_rgba(170,79,255,0.5)] z-10 animate-bounce">
                   -{Math.round(deal.discountPercentage)}%
                 </span>
+                <WishlistButton
+                  product={{
+                    id: deal.id,
+                    title: deal.title,
+                    price: deal.price,
+                    image: deal.thumbnail,
+                  }}
+                />
                 <Image
                   src={deal.thumbnail}
                   alt={deal.title}

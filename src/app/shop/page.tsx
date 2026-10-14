@@ -13,6 +13,7 @@ import {
   Gamepad2,
 } from "lucide-react";
 import AddToCartButton from "@/components/cart/AddToCartButton";
+import WishlistButton from "@/components/cart/WishlistButton";
 
 interface Product {
   id: number;
@@ -67,7 +68,6 @@ export default async function ShopPage({
   const params = await searchParams;
   const searchQuery = params.search || "";
   const currentCategory = params.category || "laptops";
-
   const data = await getProducts(searchQuery, currentCategory);
   const products: Product[] = data?.products || [];
 
@@ -84,7 +84,11 @@ export default async function ShopPage({
               : "Upgrade your setup with premium hardware and tech peripherals powered by API."}
           </p>
         </div>
-        <Form action="/shop" aria-label="Search hardware" className="relative w-full md:w-80 group">
+        <Form
+          action="/shop"
+          aria-label="Search hardware"
+          className="relative w-full md:w-80 group"
+        >
           <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
@@ -165,7 +169,10 @@ export default async function ShopPage({
               Showing <strong className="text-white">{products.length}</strong>{" "}
               products
             </p>
-            <select aria-label="Sort products" className="bg-base-900 border border-base-800 text-sm text-white px-4 py-2 rounded-lg focus:outline-none focus:border-primary-500">
+            <select
+              aria-label="Sort products"
+              className="bg-base-900 border border-base-800 text-sm text-white px-4 py-2 rounded-lg focus:outline-none focus:border-primary-500"
+            >
               <option>Recommended</option>
               <option>Price: Low to High</option>
               <option>Price: High to Low</option>
@@ -193,6 +200,14 @@ export default async function ShopPage({
                     href={`/shop/${product.id}`}
                     className="relative w-full aspect-4/3 bg-white/5 flex items-center justify-center p-6 overflow-hidden"
                   >
+                    <WishlistButton
+                      product={{
+                        id: product.id,
+                        title: product.title,
+                        price: product.price,
+                        image: product.thumbnail,
+                      }}
+                    />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(170,79,255,0.05)_0%,transparent_70%)]" />
                     {product.availabilityStatus === "Low Stock" && (
                       <span className="absolute top-3 left-3 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_15px_rgba(225,29,72,0.5)] z-10 animate-pulse">

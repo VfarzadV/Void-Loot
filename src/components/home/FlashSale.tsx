@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { Zap, Clock, Star } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import WishlistButton from "../cart/WishlistButton";
 
 interface DealProduct {
   id: number;
@@ -106,6 +107,14 @@ export default function FlashSale() {
                 <span className="absolute top-3 left-3 bg-pink-600 text-white text-[10px] font-bold px-2.5 py-1 rounded-md backdrop-blur-md shadow-lg border border-pink-400/30 animate-pulse z-10">
                   -{deal.discountPercentage.toFixed(0)}%
                 </span>
+                <WishlistButton
+                  product={{
+                    id: deal.id,
+                    title: deal.title,
+                    price: deal.price,
+                    image: deal.thumbnail,
+                  }}
+                />
                 <Image
                   src={deal.thumbnail}
                   alt={deal.title}

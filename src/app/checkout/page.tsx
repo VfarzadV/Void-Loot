@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
@@ -13,11 +14,14 @@ import {
   Loader2,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const { items, clearCart } = useCartStore();
+  const { user, addOrder } = useAuthStore();
+
   const [isMounted, setIsMounted] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -39,13 +43,36 @@ export default function CheckoutPage() {
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
-
     setIsProcessing(true);
 
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
-      setOrderId(`VOID-${Math.floor(Math.random() * 1000000)}`);
+
+      const newOrderId = `VOID-${Math.floor(Math.random() * 1000000)}`;
+      setOrderId(newOrderId);
+
+      if (user && addOrder) {
+        const today = new Date().toLocaleDateString("en-US", {
+          month: "short",
+          day: "numeric",
+          year: "numeric",
+        });
+
+        const itemsSummary =
+          items.length === 1
+            ? `${items[0].quantity}x ${items[0].title}`
+            : `${items.length} Items (inc. ${items[0].title})`;
+
+        addOrder({
+          id: newOrderId,
+          date: today,
+          status: "Processing",
+          total: `$${total.toFixed(2)}`,
+          items: itemsSummary,
+        });
+      }
+
       clearCart();
       toast.success("Payment successful! Welcome to the Void.");
     }, 2500);
@@ -118,7 +145,6 @@ export default function CheckoutPage() {
       <div className="flex items-center gap-4 mb-8">
         <button
           type="button"
-          aria-label="Return to previous page"
           onClick={() => router.back()}
           className="p-2 rounded-lg bg-base-900 border border-white/5 text-base-400 hover:text-white transition-colors"
         >
@@ -151,6 +177,7 @@ export default function CheckoutPage() {
                     id="checkout-first-name"
                     required
                     type="text"
+                    defaultValue={user?.name?.split(" ")[0] || ""}
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
                   />
                 </div>
@@ -165,6 +192,7 @@ export default function CheckoutPage() {
                     id="checkout-last-name"
                     required
                     type="text"
+                    defaultValue={user?.name?.split(" ")[1] || ""}
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
                   />
                 </div>
@@ -179,6 +207,7 @@ export default function CheckoutPage() {
                     id="checkout-email"
                     required
                     type="email"
+                    defaultValue={user?.email || ""}
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
                   />
                 </div>
@@ -192,7 +221,6 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
-                  aria-pressed={paymentMethod === "card"}
                   className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "card" ? "border-primary-500 bg-primary-500/10 shadow-[0_0_15px_rgba(170,79,255,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
                 >
                   <CreditCard
@@ -212,7 +240,6 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("crypto")}
-                  aria-pressed={paymentMethod === "crypto"}
                   className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "crypto" ? "border-orange-500 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
                 >
                   <Bitcoin
@@ -232,7 +259,6 @@ export default function CheckoutPage() {
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("wallet")}
-                  aria-pressed={paymentMethod === "wallet"}
                   className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "wallet" ? "border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
                 >
                   <Wallet

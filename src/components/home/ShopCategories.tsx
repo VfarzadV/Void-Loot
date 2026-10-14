@@ -38,7 +38,6 @@ export default function ShopCategories() {
         </Link>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* PlayStation Banner */}
         <Link
           href="/shop/playstation"
           className="group relative overflow-hidden rounded-2xl bg-linear-to-r from-purple-950 via-purple-900/50 to-base-950 border border-purple-500/30 p-8 flex items-center justify-between min-h-55 transition-all duration-500 hover:border-purple-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
