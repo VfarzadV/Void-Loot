@@ -12,6 +12,8 @@ import {
   Camera,
   CheckCircle2,
 } from "lucide-react";
+import { useTheme } from "next-themes";
+import { useEffect } from "react";
 
 const SETTINGS_TABS = [
   { id: "account", label: "Account Profile", icon: User },
@@ -58,6 +60,12 @@ const CONNECTED_ACCOUNTS = [
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
+  const { theme, setTheme } = useTheme();
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
+  }, []);
 
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-8 max-w-[1600px] mx-auto overflow-hidden">
@@ -121,7 +129,10 @@ export default function SettingsPage() {
                 </div>
                 <div className="flex flex-col gap-4 grow w-full">
                   <div className="flex flex-col gap-2">
-                    <label htmlFor="settings-display-name" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label
+                      htmlFor="settings-display-name"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                    >
                       Display Name
                     </label>
                     <input
@@ -132,7 +143,10 @@ export default function SettingsPage() {
                     />
                   </div>
                   <div className="flex flex-col gap-2">
-                    <label htmlFor="settings-username" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                    <label
+                      htmlFor="settings-username"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                    >
                       Username
                     </label>
                     <div className="relative">
@@ -150,7 +164,10 @@ export default function SettingsPage() {
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <label htmlFor="settings-bio" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                <label
+                  htmlFor="settings-bio"
+                  className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                >
                   Bio
                 </label>
                 <textarea
@@ -180,7 +197,10 @@ export default function SettingsPage() {
               </div>
               <div className="flex flex-col gap-4 max-w-xl">
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="settings-current-password" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label
+                    htmlFor="settings-current-password"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                  >
                     Current Password
                   </label>
                   <input
@@ -191,7 +211,10 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="settings-new-password" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label
+                    htmlFor="settings-new-password"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                  >
                     New Password
                   </label>
                   <input
@@ -202,7 +225,10 @@ export default function SettingsPage() {
                   />
                 </div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="settings-confirm-password" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label
+                    htmlFor="settings-confirm-password"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                  >
                     Confirm New Password
                   </label>
                   <input
@@ -309,41 +335,71 @@ export default function SettingsPage() {
                 </p>
               </div>
               <div className="flex flex-col gap-6">
-                <div className="flex flex-col gap-3">
-                  <label id="settings-theme-label" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
-                    Theme Interface
-                  </label>
-                  <div role="group" aria-labelledby="settings-theme-label" className="grid grid-cols-3 gap-4">
-                    <button type="button" aria-pressed="true" className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-primary-500 bg-base-900/50">
-                      <div className="w-full h-16 rounded-lg bg-base-950 border border-white/10 flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute left-0 top-0 w-1/3 h-full bg-base-900"></div>
-                      </div>
-                      <span className="text-xs font-bold text-primary-400">
-                        Dark Mode
-                      </span>
-                    </button>
-                    <button type="button" disabled aria-pressed="false" className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-base-900/30 hover:border-white/10 opacity-50 cursor-not-allowed">
-                      <div className="w-full h-16 rounded-lg bg-white border border-base-300 flex items-center justify-center relative overflow-hidden">
-                        <div className="absolute left-0 top-0 w-1/3 h-full bg-base-100"></div>
-                      </div>
-                      <span className="text-xs font-bold text-base-500">
-                        Light Mode
-                      </span>
-                    </button>
-                    <button type="button" disabled aria-pressed="false" className="flex flex-col items-center gap-3 p-4 rounded-2xl border-2 border-transparent bg-base-900/30 hover:border-white/10 opacity-50 cursor-not-allowed">
-                      <div className="w-full h-16 rounded-lg bg-linear-to-r from-base-950 to-white flex items-center justify-center relative overflow-hidden"></div>
-                      <span className="text-xs font-bold text-base-500">
-                        System Sync
-                      </span>
-                    </button>
-                  </div>
+                <div
+                  role="group"
+                  aria-labelledby="settings-theme-label"
+                  className="grid grid-cols-3 gap-4"
+                >
+                  {mounted && (
+                    <>
+                      <button
+                        type="button"
+                        onClick={() => setTheme("dark")}
+                        aria-pressed={theme === "dark"}
+                        className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${theme === "dark" ? "border-primary-500 bg-base-900/50" : "border-transparent bg-base-900/30 hover:border-white/10"}`}
+                      >
+                        <div className="w-full h-16 rounded-lg bg-black border border-white/10 flex items-center justify-center relative overflow-hidden">
+                          <div className="absolute left-0 top-0 w-1/3 h-full bg-[#111]"></div>
+                        </div>
+                        <span
+                          className={`text-xs font-bold ${theme === "dark" ? "text-primary-400" : "text-base-500"}`}
+                        >
+                          Dark Mode
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTheme("light")}
+                        aria-pressed={theme === "light"}
+                        className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${theme === "light" ? "border-primary-500 bg-base-900/50" : "border-transparent bg-base-900/30 hover:border-white/10"}`}
+                      >
+                        <div className="w-full h-16 rounded-lg bg-[#fafafa] border border-gray-300 flex items-center justify-center relative overflow-hidden">
+                          <div className="absolute left-0 top-0 w-1/3 h-full bg-[#eee]"></div>
+                        </div>
+                        <span
+                          className={`text-xs font-bold ${theme === "light" ? "text-primary-400" : "text-base-500"}`}
+                        >
+                          Light Mode
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTheme("system")}
+                        aria-pressed={theme === "system"}
+                        className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${theme === "system" ? "border-primary-500 bg-base-900/50" : "border-transparent bg-base-900/30 hover:border-white/10"}`}
+                      >
+                        <div className="w-full h-16 rounded-lg bg-linear-to-r from-black to-white flex items-center justify-center relative overflow-hidden border border-gray-500"></div>
+                        <span
+                          className={`text-xs font-bold ${theme === "system" ? "text-primary-400" : "text-base-500"}`}
+                        >
+                          System Sync
+                        </span>
+                      </button>
+                    </>
+                  )}
                 </div>
                 <div className="w-full h-px bg-white/5 my-2"></div>
                 <div className="flex flex-col gap-2">
-                  <label htmlFor="settings-language" className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
+                  <label
+                    htmlFor="settings-language"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                  >
                     Language & Region
                   </label>
-                  <select id="settings-language" className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-all appearance-none cursor-pointer">
+                  <select
+                    id="settings-language"
+                    className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-all appearance-none cursor-pointer"
+                  >
                     <option>English (United States)</option>
                     <option>Persian (Farsi)</option>
                     <option>German (Deutschland)</option>

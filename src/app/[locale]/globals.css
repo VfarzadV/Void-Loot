@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    --base-50: #0f172a;
+    --base-100: #1e293b;
+    --base-200: #334155;
+    --base-300: #475569;
+    --base-400: #64748b;
+    --base-500: #94a3b8;
+    --base-600: #cbd5e1;
+    --base-700: #e2e8f0;
+    --base-800: #f1f5f9;
+    --base-900: #ffffff;
+    --base-950: #f4f4f5;
+
+    --theme-white: #0f172a;
+    --theme-black: #ffffff;
+  }
+
+  .dark {
+    --base-50: #fafafa;
+    --base-100: #f5f5f5;
+    --base-200: #ececec;
+    --base-300: #e0e0e0;
+    --base-400: #cbcbcb;
+    --base-500: #b1b1b1;
+    --base-600: #979797;
+    --base-700: #7c7c7c;
+    --base-800: #595959;
+    --base-900: #404040;
+    --base-950: #252525;
+
+    --theme-white: #ffffff;
+    --theme-black: #000000;
+  }
+}
+
+@theme {
+  --color-primary-50: #fbf0ff;
+  --color-primary-100: #f5d0ff;
+  --color-primary-200: #eab5ff;
+  --color-primary-300: #d79aff;
+  --color-primary-400: #c47aff;
+  --color-primary-500: #aa4fff;
+  --color-primary-600: #9333ff;
+  --color-primary-700: #7c1aff;
+  --color-primary-800: #6a00f0;
+  --color-primary-900: #4a00e5;
+  --color-primary-950: #300065;
+
+  --color-base-50: var(--base-50);
+  --color-base-100: var(--base-100);
+  --color-base-200: var(--base-200);
+  --color-base-300: var(--base-300);
+  --color-base-400: var(--base-400);
+  --color-base-500: var(--base-500);
+  --color-base-600: var(--base-600);
+  --color-base-700: var(--base-700);
+  --color-base-800: var(--base-800);
+  --color-base-900: var(--base-900);
+  --color-base-950: var(--base-950);
+
+  --color-white: var(--theme-white);
+  --color-black: var(--theme-black);
+}
+
+body {
+  background-color: var(--color-base-950);
+  color: var(--color-base-50);
+  overflow-x: hidden;
+  transition:
+    background-color 0.4s ease,
+    color 0.4s ease;
+}
+
+@utility glass-panel {
+  background-color: color-mix(in srgb, var(--color-base-900) 40%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid color-mix(in srgb, var(--color-base-700) 50%, transparent);
+  border-radius: 1rem;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.08);
+}

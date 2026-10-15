@@ -74,7 +74,7 @@ export const useAuthStore = create<AuthStore>()(
         set({
           registeredAccount: {
             ...account,
-            banner: SAFE_BANNER, // لینک اصلاح شده
+            banner: SAFE_BANNER, 
             joinDate: "Just Now",
             stats: { gamesOwned: 0, cloudHours: 0, achievements: 0 },
             orders: [],

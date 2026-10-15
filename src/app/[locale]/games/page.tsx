@@ -1,15 +1,10 @@
 import Image from "next/image";
 import Link from "next/link";
 import Form from "next/form";
-import {
-  Search,
-  ChevronLeft,
-  ChevronRight,
-  Calendar,
-  Gamepad2,
-  Monitor,
-} from "lucide-react";
+import { Search, Calendar, Gamepad2, Monitor } from "lucide-react";
 import WishlistButton from "@/components/cart/WishlistButton";
+import Pagination from "@/components/shared/Pagination";
+import GameSortDropdown from "@/components/games/GameSortDropdown";
 
 interface Platform {
   platform: {
@@ -29,12 +24,18 @@ interface RawgGame {
   parent_platforms: Platform[];
 }
 
-async function getGames(page: number, search: string) {
+async function getGames(page: number, search: string, sort: string) {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
   let url = `https://api.rawg.io/api/games?key=${apiKey}&page=${page}&page_size=20`;
 
   if (search) {
     url += `&search=${encodeURIComponent(search)}`;
+  }
+
+  if (sort) {
+    url += `&ordering=${sort}`;
+  } else if (!search) {
+    url += `&ordering=-added`;
   }
 
   const res = await fetch(url, { next: { revalidate: 3600 } });
@@ -46,21 +47,18 @@ async function getGames(page: number, search: string) {
 export default async function GamesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string }>;
+  searchParams: Promise<{ page?: string; search?: string; sort?: string }>;
 }) {
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
   const searchQuery = params.search || "";
-
-  const data = await getGames(currentPage, searchQuery);
+  const currentSort = params.sort || "";
+  const data = await getGames(currentPage, searchQuery, currentSort);
   const games: RawgGame[] = data?.results || [];
-
-  const hasNextPage = data?.next !== null;
-  const hasPrevPage = data?.previous !== null;
 
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-10 max-w-[1600px] mx-auto">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-white/5">
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 pb-6 border-b border-white/5">
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
             The <span className="text-primary-400">Void</span> Archive
@@ -76,6 +74,9 @@ export default async function GamesPage({
           aria-label="Search games"
           className="relative w-full md:w-80 group"
         >
+          {currentSort && (
+            <input type="hidden" name="sort" value={currentSort} />
+          )}
           <Search
             size={18}
             className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
@@ -90,13 +91,23 @@ export default async function GamesPage({
           />
           {searchQuery && (
             <Link
-              href="/games"
+              href={`/games${currentSort ? `?sort=${currentSort}` : ""}`}
               className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
             >
               Clear
             </Link>
           )}
         </Form>
+      </div>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
+        <p className="text-sm text-base-400 font-medium">
+          Found{" "}
+          <strong className="text-white">
+            {data?.count?.toLocaleString() || 0}
+          </strong>{" "}
+          games
+        </p>
+        <GameSortDropdown />
       </div>
       {games.length === 0 ? (
         <div className="w-full py-20 flex flex-col items-center text-center">
@@ -191,43 +202,12 @@ export default async function GamesPage({
           })}
         </div>
       )}
-      <div className="w-full flex items-center justify-center gap-4 mt-12 pt-8 border-t border-white/5">
-        {hasPrevPage ? (
-          <Link
-            href={`/games?page=${currentPage - 1}${searchQuery ? `&search=${searchQuery}` : ""}`}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-base-900 text-white font-bold text-sm border border-white/10 hover:border-primary-500 hover:text-primary-400 transition-colors"
-          >
-            <ChevronLeft size={18} /> Previous
-          </Link>
-        ) : (
-          <button
-            disabled
-            aria-label="Previous page (unavailable)"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-base-950 text-base-600 font-bold text-sm border border-white/5 cursor-not-allowed"
-          >
-            <ChevronLeft size={18} /> Previous
-          </button>
-        )}
-        <div className="px-4 py-2 rounded-lg bg-primary-900/20 border border-primary-500/30 text-primary-400 font-bold text-sm">
-          <span aria-current="page">Page {currentPage}</span>
-        </div>
-        {hasNextPage ? (
-          <Link
-            href={`/games?page=${currentPage + 1}${searchQuery ? `&search=${searchQuery}` : ""}`}
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-base-900 text-white font-bold text-sm border border-white/10 hover:border-primary-500 hover:text-primary-400 transition-colors"
-          >
-            Next <ChevronRight size={18} />
-          </Link>
-        ) : (
-          <button
-            disabled
-            aria-label="Next page (unavailable)"
-            className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-base-950 text-base-600 font-bold text-sm border border-white/5 cursor-not-allowed"
-          >
-            Next <ChevronRight size={18} />
-          </button>
-        )}
-      </div>
+
+      {games.length > 0 && (
+        <Pagination
+          pageCount={Math.min(Math.ceil((data?.count || 0) / 20), 500)}
+        />
+      )}
     </div>
   );
 }

@@ -1,0 +1,32 @@
+{
+  "common": {
+    "searchPlaceholder": "Search games & gear...",
+    "clear": "Clear",
+    "total": "Total",
+    "viewAll": "View All"
+  },
+  "nav": {
+    "notifications": "Notifications",
+    "markAllRead": "Mark all read",
+    "noNotifications": "No new signals detected.",
+    "myLoot": "My Loot",
+    "clearCart": "Clear Cart",
+    "checkout": "Proceed to Checkout",
+    "profile": "My Profile",
+    "signOut": "Sign Out",
+    "login": "Log In",
+    "signUp": "Sign Up",
+    "emptyCart": "Your cart is empty."
+  },
+  "sidebar": {
+    "home": "Home Base",
+    "hardwareShop": "Hardware Shop",
+    "games": "Games Archive",
+    "media": "Void Cinema",
+    "liveStreams": "Live Streams",
+    "cloudGaming": "Cloud Gaming",
+    "lootBox": "Void Loot Box",
+    "profile": "Profile",
+    "settings": "Settings"
+  }
+}

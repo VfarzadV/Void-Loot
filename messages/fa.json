@@ -1,0 +1,32 @@
+{
+  "common": {
+    "searchPlaceholder": "جستجوی بازی و تجهیزات...",
+    "clear": "پاک کردن",
+    "total": "مجموع پرداختی",
+    "viewAll": "مشاهده همه"
+  },
+  "nav": {
+    "notifications": "اعلان‌های سیستم",
+    "markAllRead": "خواندن همه",
+    "noNotifications": "هیچ سیگنال جدیدی دریافت نشد.",
+    "myLoot": "لوت‌های من",
+    "clearCart": "تخلیه سبد",
+    "checkout": "تایید و پرداخت",
+    "profile": "پروفایل کاربری",
+    "signOut": "خروج از شبکه",
+    "login": "ورود به سیستم",
+    "signUp": "ثبت‌نام",
+    "emptyCart": "سبد لوت شما خالی است."
+  },
+  "sidebar": {
+    "home": "پایگاه اصلی",
+    "hardwareShop": "فروشگاه سخت‌افزار",
+    "games": "آرشیو بازی‌ها",
+    "media": "سینمای ووید",
+    "liveStreams": "استریم‌های زنده",
+    "cloudGaming": "کلاد گیمینگ",
+    "lootBox": "لوت‌باکس شانس",
+    "profile": "پروفایل من",
+    "settings": "تنظیمات پلتفرم"
+  }
+}
