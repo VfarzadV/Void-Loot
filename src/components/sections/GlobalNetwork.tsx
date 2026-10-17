@@ -1,99 +1,132 @@
-import Image from "next/image";
-import { Star } from "lucide-react";
+"use client";
 
-interface ApiComment {
-  id: number;
-  body: string;
-  user: {
-    id: number;
-    username: string;
-    fullName: string;
-  };
+import { useTranslations } from "next-intl";
+import { Globe, Server, Activity, Zap, ShieldCheck } from "lucide-react";
+
+interface RegionNode {
+  city: string;
+  country: string;
+  ping: string;
+  load: number;
+  status: "optimal" | "stable";
 }
 
-async function getTestimonials() {
-  try {
-    const res = await fetch("https://dummyjson.com/comments?limit=3", {
-      next: { revalidate: 3600 },
-    });
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.comments as ApiComment[];
-  } catch (error) {
-    return [];
-  }
-}
+const REGIONS: RegionNode[] = [
+  { city: "Frankfurt", country: "Germany", ping: "12ms", load: 42, status: "optimal" },
+  { city: "Tokyo", country: "Japan", ping: "24ms", load: 58, status: "optimal" },
+  { city: "New York", country: "USA", ping: "18ms", load: 65, status: "stable" },
+  { city: "London", country: "UK", ping: "15ms", load: 38, status: "optimal" },
+  { city: "Singapore", country: "Singapore", ping: "28ms", load: 72, status: "stable" },
+  { city: "Sydney", country: "Australia", ping: "35ms", load: 45, status: "optimal" },
+];
 
-export default async function GlobalNetwork() {
-  const testimonials = await getTestimonials();
+export default function GlobalNetwork() {
+  const t = useTranslations("globalNetwork");
 
   return (
-    <section className="w-full flex flex-col items-center py-24 px-6 lg:px-12 max-w-[1600px] mx-auto overflow-hidden">
-      <div className="flex flex-col items-center text-center mb-16 gap-4">
-        <h2 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-          Global <span className="text-primary-500">Network</span>
+    <div className="w-full flex flex-col gap-10 py-12 px-6 lg:px-12 max-w-[1600px] mx-auto">
+      <div className="flex flex-col items-center text-center gap-4 max-w-2xl mx-auto">
+        <div className="w-16 h-16 rounded-2xl bg-primary-500/10 border border-primary-500/30 flex items-center justify-center shadow-[0_0_20px_rgba(170,79,255,0.2)] mb-2">
+          <Globe size={32} className="text-primary-400 animate-spin-slow" />
+        </div>
+        <h2 className="text-3xl md:text-5xl font-black text-white tracking-tight">
+          {t("titlePrefix")} <span className="text-primary-500">{t("titleHighlight")}</span>
         </h2>
-        <p className="text-sm text-base-400 max-w-2xl">
-          Join millions of players across the globe. Our servers are
-          strategically located to guarantee ultra-low latency and seamless
-          streaming.
+        <p className="text-sm text-base-400 leading-relaxed">
+          {t("subtitle")}
         </p>
       </div>
-      <div className="relative w-full max-w-5xl mx-auto mb-24">
-        <Image
-          src="/images/MAP.png"
-          alt="Global Network Map"
-          width={1200}
-          height={600}
-          className="w-full h-auto opacity-80 mix-blend-screen"
-        />
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="glass-panel bg-base-950/60 p-6 rounded-3xl border border-white/5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-primary-500/10 text-primary-400 flex items-center justify-center border border-primary-500/20">
+            <Server size={24} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-2xl font-black text-white">1,420+</span>
+            <span className="text-xs font-bold text-base-500 uppercase tracking-wider">
+              {t("activeNodes")}
+            </span>
+          </div>
+        </div>
+
+        <div className="glass-panel bg-base-950/60 p-6 rounded-3xl border border-white/5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+            <Zap size={24} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-2xl font-black text-white">14ms</span>
+            <span className="text-xs font-bold text-base-500 uppercase tracking-wider">
+              {t("globalLatency")}
+            </span>
+          </div>
+        </div>
+
+        <div className="glass-panel bg-base-950/60 p-6 rounded-3xl border border-white/5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-cyan-500/10 text-cyan-400 flex items-center justify-center border border-cyan-500/20">
+            <Activity size={24} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-2xl font-black text-white">12.8 Tbps</span>
+            <span className="text-xs font-bold text-base-500 uppercase tracking-wider">
+              {t("bandwidth")}
+            </span>
+          </div>
+        </div>
+
+        <div className="glass-panel bg-base-950/60 p-6 rounded-3xl border border-white/5 flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-purple-500/10 text-purple-400 flex items-center justify-center border border-purple-500/20">
+            <ShieldCheck size={24} />
+          </div>
+          <div className="flex flex-col">
+            <span className="text-sm font-black text-emerald-400 flex items-center gap-1.5 mt-1">
+              <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+              {t("operational")}
+            </span>
+            <span className="text-xs font-bold text-base-500 uppercase tracking-wider mt-0.5">
+              {t("status")}
+            </span>
+          </div>
+        </div>
       </div>
-      <div className="flex flex-col items-center text-center mb-12 gap-2">
-        <h3 className="text-2xl md:text-3xl font-black text-white">
-          Trusted by Thousands of Happy Gamers
+
+      <div className="glass-panel bg-base-950/60 p-8 rounded-3xl border border-white/5 flex flex-col gap-6">
+        <h3 className="text-xl font-black text-white flex items-center gap-2 border-b border-white/5 pb-4">
+          <Globe size={20} className="text-primary-500" /> {t("regionsTitle")}
         </h3>
-        <p className="text-sm text-base-400">
-          Real feedback from the Void community fetched live.
-        </p>
-      </div>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 w-full max-w-6xl">
-        {testimonials.map((testimonial) => (
-          <div
-            key={testimonial.id}
-            className="glass-panel bg-base-950/60 rounded-3xl border border-white/10 backdrop-blur-xl p-8 flex flex-col gap-6 hover:-translate-y-2 transition-all duration-300 hover:border-primary-500/60 hover:shadow-[0_10px_35px_rgba(170,79,255,0.2)] group"
-          >
-            <div className="flex items-center justify-between border-b border-white/5 pb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          {REGIONS.map((region, idx) => (
+            <div
+              key={idx}
+              className="flex items-center justify-between p-4 rounded-2xl bg-base-900/40 border border-white/5 hover:border-primary-500/30 transition-colors"
+            >
+              <div className="flex flex-col gap-0.5">
+                <span className="text-sm font-bold text-white">
+                  {region.city}
+                </span>
+                <span className="text-xs text-base-400">{region.country}</span>
+              </div>
               <div className="flex items-center gap-4">
-                <div className="relative w-12 h-12 rounded-full overflow-hidden border border-white/10 bg-base-900 group-hover:border-primary-500/40 transition-colors">
-                  <Image
-                    src={`https://i.pravatar.cc/150?u=${testimonial?.user?.username || "user"}`}
-                    alt={testimonial?.user?.fullName || "User"}
-                    fill
-                    unoptimized
-                    className="object-cover"
-                  />
-                </div>
-                <div className="flex flex-col">
-                  <h4 className="text-sm font-bold text-white line-clamp-1 group-hover:text-primary-300 transition-colors">
-                    {testimonial?.user?.fullName || "Unknown User"}
-                  </h4>
-                  <span className="text-[10px] text-base-400 font-medium uppercase tracking-wider">
-                    @{testimonial?.user?.username || "anonymous"}
+                <div className="flex flex-col items-end">
+                  <span className="text-xs font-mono font-bold text-primary-400">
+                    {region.ping}
+                  </span>
+                  <span className="text-[10px] text-base-500 font-mono">
+                    {region.load}% {t("load")}
                   </span>
                 </div>
-              </div>
-              <div className="flex items-center gap-1 bg-base-900 px-2 py-1 rounded-md border border-white/5 shrink-0">
-                <span className="text-xs font-bold text-white">5.0</span>
-                <Star size={12} className="text-yellow-500 fill-yellow-500" />
+                <div
+                  className={`w-2.5 h-2.5 rounded-full ${
+                    region.status === "optimal"
+                      ? "bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)]"
+                      : "bg-amber-500 shadow-[0_0_8px_rgba(245,158,11,0.5)]"
+                  }`}
+                />
               </div>
             </div>
-            <p className="text-sm text-base-300 leading-relaxed font-medium line-clamp-4">
-              &quot;{testimonial?.body || "Great service and fast delivery!"}
-              &quot;
-            </p>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </section>
+    </div>
   );
 }

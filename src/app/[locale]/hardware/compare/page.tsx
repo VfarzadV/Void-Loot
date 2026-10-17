@@ -1,6 +1,8 @@
 "use client";
+
 import { useState } from "react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { Cpu, Activity } from "lucide-react";
 
 interface TechItem {
@@ -41,6 +43,7 @@ const MOCK_ITEMS: TechItem[] = [
 ];
 
 export default function ComparePage() {
+  const t = useTranslations("hardware");
   const [item1, setItem1] = useState<TechItem>(MOCK_ITEMS[0]);
   const [item2, setItem2] = useState<TechItem>(MOCK_ITEMS[1]);
 
@@ -64,7 +67,7 @@ export default function ComparePage() {
             {val2}%
           </span>
         </div>
-        <div className="flex w-full h-3 bg-base-900 rounded-full overflow-hidden border border-white/5">
+        <div className="flex w-full h-3 bg-base-900 rounded-full overflow-hidden border border-white/5 rtl:flex-row-reverse">
           <div
             className={`h-full ${isItem1Better ? "bg-primary-500 shadow-[0_0_10px_rgba(170,79,255,0.5)]" : "bg-base-700"}`}
             style={{ width: `${(val1 / (val1 + val2)) * 100}%` }}
@@ -86,13 +89,13 @@ export default function ComparePage() {
           <Cpu size={32} className="text-primary-400" />
         </div>
         <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
-          Hardware <span className="text-primary-500">Benchmark</span>
+          {t("title")} <span className="text-primary-500">{t("titleHighlight")}</span>
         </h1>
         <p className="text-sm text-base-400 max-w-lg">
-          Pit the best hardware against each other. Compare raw performance,
-          thermals, and value to build your ultimate rig.
+          {t("subtitle")}
         </p>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
         <div className="flex flex-col gap-6">
           <select
@@ -133,10 +136,11 @@ export default function ComparePage() {
               ${item1.price}
             </span>
             <button type="button" className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
-              View Product
+              {t("viewProduct")}
             </button>
           </div>
         </div>
+
         <div className="flex flex-col gap-6">
           <select
             aria-label="Second hardware product"
@@ -176,33 +180,34 @@ export default function ComparePage() {
               ${item2.price}
             </span>
             <button type="button" className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
-              View Product
+              {t("viewProduct")}
             </button>
           </div>
         </div>
       </div>
+
       <div className="w-full mt-12 glass-panel bg-base-950/80 p-8 md:p-12 rounded-3xl border border-white/10">
         <h3 className="text-xl font-black text-white flex items-center justify-center gap-2 mb-8">
-          <Activity size={24} className="text-primary-500" /> Head-to-Head Stats
+          <Activity size={24} className="text-primary-500" /> {t("headToHead")}
         </h3>
         <div className="flex flex-col gap-8 max-w-3xl mx-auto">
           {renderStatBar(
-            "Gaming Performance",
+            t("gamingPerformance"),
             item1.specs.performance,
             item2.specs.performance,
           )}
           {renderStatBar(
-            "Thermal Efficiency",
+            t("thermalEfficiency"),
             item1.specs.cooling,
             item2.specs.cooling,
           )}
           {renderStatBar(
-            "Value for Money",
+            t("valueForMoney"),
             item1.specs.value,
             item2.specs.value,
           )}
           {renderStatBar(
-            "Power Efficiency (Lower % is Better)",
+            t("powerEfficiency"),
             item1.specs.power,
             item2.specs.power,
             true,
@@ -210,10 +215,10 @@ export default function ComparePage() {
         </div>
         <div className="mt-12 flex items-center justify-center gap-4 text-xs font-bold text-base-400">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-primary-500 rounded-sm"></div> Winner
+            <div className="w-3 h-3 bg-primary-500 rounded-sm"></div> {t("winner")}
           </div>
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-base-700 rounded-sm"></div> Loser
+            <div className="w-3 h-3 bg-base-700 rounded-sm"></div> {t("loser")}
           </div>
         </div>
       </div>

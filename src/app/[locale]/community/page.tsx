@@ -135,7 +135,7 @@ export default function CommunityPage() {
           <div className="relative w-full group">
             <Search
               size={18}
-              className="absolute start-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+              className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
             />
             <input
               aria-label="Search community posts"

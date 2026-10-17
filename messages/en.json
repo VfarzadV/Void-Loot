@@ -287,5 +287,359 @@
     "comments": "Comments",
     "share": "Share",
     "topContributors": "Top Contributors"
+  },
+  "deals": {
+    "limitedTime": "Limited Time Offers",
+    "title": "Cyber",
+    "titleHighlight": "Deals",
+    "description": "Save up to 80% on premium gaming gear, laptops, and digital keys. These deals will vanish into the void soon.",
+    "hours": "h",
+    "minutes": "m",
+    "seconds": "s",
+    "activePromotions": "Active Promotions"
+  },
+  "faq": {
+    "title": "How Can We",
+    "titleHighlight": "Help You?",
+    "subtitle": "Search our knowledge base or browse categories to find answers to common questions about Void Loot services.",
+    "searchPlaceholder": "Search for answers (e.g. 'refunds', 'shipping')...",
+    "categoriesTitle": "Categories",
+    "noResultsTitle": "No answers found",
+    "noResultsDesc": "We couldn't find anything matching your search. Try different keywords.",
+    "stillHaveQuestions": "Still have questions?",
+    "stillHaveQuestionsDesc": "Can't find the answer you're looking for? Our tech drones and support team are available 24/7.",
+    "openTicket": "Open Ticket",
+    "liveChat": "Live Chat",
+    "cats": {
+      "all": "All Topics",
+      "orders": "Orders & Shipping",
+      "digital": "Digital Games & Keys",
+      "cloud": "Void Cloud Services",
+      "security": "Account & Security"
+    },
+    "q1": {
+      "q": "How long does physical hardware shipping take?",
+      "a": "Standard shipping across the globe takes 3-5 business days. Express Void Delivery guarantees arrival within 24-48 hours depending on your sector. Tracking codes are generated immediately after checkout."
+    },
+    "q2": {
+      "q": "When do I receive my digital game key?",
+      "a": "Instantly. Once your payment is verified by our secure gateway, the digital key is displayed on your screen and simultaneously sent to your registered email address and added to your Profile Dashboard."
+    },
+    "q3": {
+      "q": "Can I refund a digital game if I don't like it?",
+      "a": "Digital game keys cannot be refunded once they have been revealed or activated on Steam/PSN/Xbox. However, if you haven't viewed the key yet, you can request a refund within 14 days of purchase."
+    },
+    "q4": {
+      "q": "What are the minimum internet requirements for Void Cloud?",
+      "a": "For a smooth 1080p 60FPS experience, we recommend a stable 15Mbps connection. For 4K HDR gaming on our ultra-tier rigs, a minimum of 50Mbps is required. Ethernet is highly recommended over Wi-Fi."
+    },
+    "q5": {
+      "q": "Do I need to buy games separately to play them on Cloud?",
+      "a": "Yes and No. Void Cloud gives you access to a rotating library of 100+ free games. However, for specific AAA titles like Cyberpunk 2077 or Elden Ring, you must own the game on Steam, Epic, or through our store to stream it."
+    },
+    "q6": {
+      "q": "How do I secure my account with Two-Factor Authentication (2FA)?",
+      "a": "Navigate to Settings > Security & Login. Click on 'Enable 2FA' and scan the QR code using Google Authenticator, Authy, or any standard TOTP application."
+    },
+    "q7": {
+      "q": "What payment methods do you accept?",
+      "a": "We accept all major credit/debit cards, PayPal, Crypto (BTC, ETH, USDT), and Void Loot Wallet credits."
+    }
+  },
+  "games": {
+    "titlePrefix": "The",
+    "titleHighlight": "Void",
+    "titleSuffix": "Archive",
+    "subtitleSearch": "Showing results for \"{query}\"",
+    "subtitleDefault": "Explore thousands of games powered by RAWG database.",
+    "searchPlaceholder": "Search games...",
+    "clear": "Clear",
+    "found": "Found",
+    "gamesCount": "games",
+    "noGamesTitle": "No Games Found",
+    "noGamesDesc": "Try adjusting your search terms."
+  },
+  "gameDetails": {
+    "backToStore": "Back to Store",
+    "tba": "TBA",
+    "unknownDeveloper": "Unknown Developer",
+    "metascore": "Metascore",
+    "aboutGame": "About the Game",
+    "topAchievements": "Top Achievements",
+    "officialTrailer": "Official Trailer",
+    "systemRequirements": "System Requirements",
+    "minimum": "Minimum",
+    "recommended": "Recommended",
+    "gallery": "Gallery",
+    "digitalDownload": "Digital Download",
+    "availablePlatforms": "Available Platforms",
+    "moreLikeThis": "More Like This",
+    "notFound": "404 - Data Not Found",
+    "returnBase": "Return to Base"
+  },
+  "hardware": {
+    "title": "Hardware",
+    "titleHighlight": "Benchmark",
+    "subtitle": "Pit the best hardware against each other. Compare raw performance, thermals, and value to build your ultimate rig.",
+    "gamingPerformance": "Gaming Performance",
+    "thermalEfficiency": "Thermal Efficiency",
+    "valueForMoney": "Value for Money",
+    "powerEfficiency": "Power Efficiency (Lower % is Better)",
+    "viewProduct": "View Product",
+    "winner": "Winner",
+    "loser": "Loser",
+    "headToHead": "Head-to-Head Stats"
+  },
+  "live": {
+    "titlePrefix": "Void",
+    "titleHighlight": "Live",
+    "liveNow": "Live Now",
+    "playing": "playing",
+    "follow": "Follow",
+    "following": "Following",
+    "streamChat": "Stream Chat",
+    "inChat": "in chat",
+    "chatPlaceholder": "Send a message...",
+    "liveChannels": "Live Channels We Think You'll Like",
+    "liveStreamsCategory": "{category} Live Streams",
+    "noStreams": "No live streams found in this category.",
+    "categories": {
+      "all": "All",
+      "fps": "FPS",
+      "rpg": "RPG",
+      "esports": "Esports",
+      "justChatting": "Just Chatting",
+      "speedrun": "Speedrun"
+    }
+  },
+  "login": {
+    "title": "Welcome Back",
+    "subtitle": "Enter your credentials or use",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "player@nexus.com",
+    "passwordLabel": "Password",
+    "forgotPassword": "Forgot Password?",
+    "passwordPlaceholder": "Enter your password",
+    "submitBtn": "Initiate Login",
+    "authenticating": "Authenticating...",
+    "noAccount": "Don't have an account?",
+    "joinVoid": "Join the Void",
+    "welcomeUser": "Welcome back to the Void, {username}!",
+    "demoSuccess": "Demo Login successful! Welcome back, ShadowHunter99.",
+    "accessDenied": "Access Denied: Invalid email or password."
+  },
+  "lootBox": {
+    "exitChamber": "Exit Chamber",
+    "neuralLink": "Establishing Neural Link...",
+    "systemOverride": "SYSTEM OVERRIDE...",
+    "interactiveRelic": "3D INTERACTIVE RELIC",
+    "dragInstruction": "Drag to Rotate • Click Relic to Decrypt",
+    "titlePrefix": "The",
+    "titleHighlight": "Quantum",
+    "titleSuffix": "Loot Box",
+    "subtitle": "Encrypted cache containing legendary gaming keys, hardware vouchers, and exclusive tier upgrades.",
+    "decrypting": "DECRYPTING MATRIX...",
+    "decryptBtn": "DECRYPT RELIC (FREE)",
+    "marketValue": "Market Value:",
+    "resetRelic": "Reset Relic",
+    "claimLoot": "Claim Loot",
+    "dropBadge": "DROP",
+    "extractingToast": "Extracting encrypted signal from the Void...",
+    "decryptCompleteToast": "Decrypt complete! Relic unlocked.",
+    "claimSuccessToast": "{title} added to your cart for free!",
+    "rewards": {
+      "item1": "Cyberpunk 2077 Phantom Key",
+      "item2": "RTX Neural Overclock Pass",
+      "item3": "Void Loot 50% Hardware Coupon",
+      "legendary": "LEGENDARY",
+      "epic": "EPIC",
+      "rare": "RARE"
+    }
+  },
+  "media": {
+    "titlePrefix": "Void",
+    "titleHighlight": "Cinema",
+    "premiere": "Premiere",
+    "playNow": "Play Now",
+    "moreInfo": "More Info",
+    "trendingTrailers": "Trending Trailers",
+    "originalDocumentaries": "Original Documentaries",
+    "views": "Views",
+    "featured": {
+      "title": "Cyberpunk 2077: Phantom Liberty - Official Cinematic Trailer",
+      "description": "Return to Night City and embark on a high-stakes mission of espionage and intrigue to save the NUSA President. In this spy-thriller expansion, build alliances and make choices that will shatter the world around you.",
+      "category": "Cinematic Trailer"
+    }
+  },
+  "profile": {
+    "tabs": {
+      "overview": "Overview",
+      "orders": "My Orders",
+      "wishlist": "Wishlist",
+      "settings": "Settings"
+    },
+    "changeBanner": "Change Banner",
+    "lvl": "LVL",
+    "online": "Online",
+    "signOut": "Sign Out",
+    "accountInfo": "Account Info",
+    "memberSince": "Member Since",
+    "plan": "Plan",
+    "premium": "Void Premium",
+    "cloudHours": "Cloud Hours",
+    "gamesOwned": "Games Owned",
+    "achievements": "Achievements",
+    "recentActivity": "Recent Cart Activity",
+    "noActivity": "No recent cart activity detected.",
+    "addedToCart": "Added to Cart",
+    "removedFromCart": "Removed from Cart",
+    "allOrders": "All Orders",
+    "myWishlist": "My Wishlist",
+    "items": "Items",
+    "emptyWishlist": "Your wishlist is empty.",
+    "moveToCart": "Move to Cart",
+    "remove": "Remove",
+    "accountSettings": "Account Settings",
+    "manageInfo": "Manage your personal information, profile aesthetics, and security.",
+    "displayName": "Display Name",
+    "username": "Gamer Tag (Username)",
+    "avatarUrl": "Avatar Image URL",
+    "bannerUrl": "Profile Banner URL",
+    "saveChanges": "Save Changes",
+    "updateSuccess": "Profile updated successfully!"
+  },
+  "register": {
+    "title": "Create Account",
+    "subtitle": "Join thousands of gamers worldwide.",
+    "usernameLabel": "Gamer Tag / Username",
+    "usernamePlaceholder": "e.g. ShadowHunter99",
+    "emailLabel": "Email Address",
+    "emailPlaceholder": "player@nexus.com",
+    "passwordLabel": "Password",
+    "passwordPlaceholder": "Create a strong password",
+    "creatingAccount": "Creating Account...",
+    "submitBtn": "Create Account",
+    "alreadyMember": "Already a member?",
+    "signInHere": "Sign In Here",
+    "toastInvalidEmail": "Invalid email format! Please enter a valid email address.",
+    "toastShortPassword": "Password must be at least 6 characters long.",
+    "toastSuccess": "Account created successfully! Redirecting to login..."
+  },
+  "shop": {
+    "titlePrefix": "Nexus",
+    "titleHighlight": "Hardware",
+    "subtitleSearch": "Showing results for \"{query}\"",
+    "subtitleDefault": "Upgrade your setup with premium hardware and tech peripherals powered by API.",
+    "searchPlaceholder": "Search gear...",
+    "clear": "Clear",
+    "categories": "Categories",
+    "cats": {
+      "all": "All Gear",
+      "laptops": "Gaming Laptops",
+      "tablets": "Tablets & Displays",
+      "accessories": "Accessories",
+      "smartphones": "Smartphones"
+    },
+    "priceRange": "Price Range",
+    "reset": "Reset",
+    "showing": "Showing",
+    "products": "products",
+    "noHardwareTitle": "No Hardware Found",
+    "noHardwareDesc": "Try adjusting your search, price range, or category.",
+    "lowStock": "Low Stock"
+  },
+  "support": {
+    "titlePrefix": "Support",
+    "titleHighlight": "Center",
+    "subtitle": "Our dedicated team is ready to answer your questions and resolve your issues. We are here for you 24/7.",
+    "contactMethods": "Contact Methods",
+    "liveChat": "Live Chat",
+    "liveChatDesc": "Fast response under 2 minutes",
+    "discord": "Discord Server",
+    "discordDesc": "Join the Void Loot community",
+    "emailUs": "Email Support",
+    "emailUsDesc": "Response within 2-12 hours",
+    "faqSection": "FAQ",
+    "faqDesc": "Search our knowledge base",
+    "submitTicket": "Submit a New Ticket",
+    "ticketSubject": "Ticket Subject",
+    "subjectPlaceholder": "Briefly describe your issue",
+    "ticketCategory": "Category",
+    "categorySelect": "Select a category...",
+    "catAccount": "Account & Security",
+    "catPayment": "Billing & Payments",
+    "catTech": "Technical & Cloud Support",
+    "catOrder": "Order Tracking",
+    "catOther": "Other Inquiries",
+    "ticketMessage": "Message",
+    "messagePlaceholder": "Describe your issue in detail...",
+    "sendTicket": "Submit Ticket",
+    "sending": "Submitting...",
+    "ticketSuccess": "Your ticket has been submitted successfully! A tracking number will be emailed to you."
+  },
+  "tracking": {
+    "titlePrefix": "Order",
+    "titleHighlight": "Tracking",
+    "subtitle": "Enter your tracking ID or order number to check the real-time status of your physical hardware or digital key delivery.",
+    "inputPlaceholder": "Enter Order ID (e.g. VL-98421)...",
+    "trackBtn": "Track Shipment",
+    "trackingDetails": "Tracking Details",
+    "status": "Order Status",
+    "courier": "Courier Service",
+    "estimatedDelivery": "Estimated Delivery",
+    "destination": "Destination",
+    "steps": {
+      "placed": "Order Placed",
+      "verified": "Payment Verified",
+      "shipping": "Dispatched / Shipping",
+      "delivered": "Delivered"
+    },
+    "notFound": "No order found with this ID. Please double-check your tracking number.",
+    "trackingError": "Please enter a valid order ID."
+  },
+  "error": {
+    "title": "System Anomaly Detected",
+    "subtitle": "An unexpected anomaly occurred in the matrix. Our tech drones have been notified.",
+    "tryAgain": "Re-Initialize",
+    "returnHome": "Return to Base"
+  },
+  "notFound": {
+    "code": "404",
+    "title": "Lost in the Void",
+    "subtitle": "It seems you've wandered into a sector of the matrix that doesn't exist or has been wiped.",
+    "returnHome": "Return to Base",
+    "exploreGames": "Explore Games Archive"
+  },
+  "gameSort": {
+    "label": "Sort by:",
+    "popular": "Most Popular",
+    "newest": "Newest",
+    "rating": "Highest Rating",
+    "name": "Name (A-Z)"
+  },
+  "globalNetwork": {
+    "titlePrefix": "Global",
+    "titleHighlight": "Network",
+    "subtitle": "Decentralized cloud infrastructure, edge servers, and active nodes worldwide ensuring ultra-low latency and zero-lag gaming.",
+    "activeNodes": "Active Nodes",
+    "globalLatency": "Global Avg Latency",
+    "bandwidth": "Total Bandwidth",
+    "status": "System Status",
+    "operational": "Operational",
+    "regionsTitle": "Active Data Centers & Edge Nodes",
+    "ping": "Ping",
+    "load": "Network Load"
+  },
+  "priceFilter": {
+    "title": "Price Filter",
+    "max": "Max Price:",
+    "apply": "Apply Filter"
+  },
+  "sortDropdown": {
+    "label": "Sort by:",
+    "featured": "Featured",
+    "priceAsc": "Price: Low to High",
+    "priceDesc": "Price: High to Low",
+    "ratingDesc": "Highest Rating"
   }
 }

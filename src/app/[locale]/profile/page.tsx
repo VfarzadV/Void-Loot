@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   User,
   Settings,
@@ -28,6 +29,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { toast } from "sonner";
 
 export default function ProfilePage() {
+  const t = useTranslations("profile");
   const [activeTab, setActiveTab] = useState("overview");
   const [isMounted, setIsMounted] = useState(false);
   const { items: wishlistItems, removeItem: removeWishlistItem } =
@@ -58,10 +60,10 @@ export default function ProfilePage() {
   const ordersList = user.orders || [];
 
   const TABS = [
-    { id: "overview", label: "Overview", icon: User },
-    { id: "orders", label: "My Orders", icon: ShoppingBag },
-    { id: "wishlist", label: "Wishlist", icon: Heart },
-    { id: "settings", label: "Settings", icon: Settings },
+    { id: "overview", label: t("tabs.overview"), icon: User },
+    { id: "orders", label: t("tabs.orders"), icon: ShoppingBag },
+    { id: "wishlist", label: t("tabs.wishlist"), icon: Heart },
+    { id: "settings", label: t("tabs.settings"), icon: Settings },
   ];
 
   const handleSaveProfile = (e: React.FormEvent<HTMLFormElement>) => {
@@ -73,7 +75,7 @@ export default function ProfilePage() {
       avatar: formData.get("avatar") as string,
       banner: formData.get("banner") as string,
     });
-    toast.success("Profile updated successfully!");
+    toast.success(t("updateSuccess"));
   };
 
   return (
@@ -92,17 +94,18 @@ export default function ProfilePage() {
           />
           <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/40 to-transparent opacity-95" />
           <div className="absolute inset-0 bg-linear-to-r from-base-950/90 via-base-950/30 to-transparent" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-primary-600/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-primary-500/30 transition-colors duration-700" />
+          <div className="absolute -bottom-24 -inset-s-24 w-96 h-96 bg-primary-600/20 rounded-full blur-[80px] pointer-events-none group-hover:bg-primary-500/30 transition-colors duration-700" />
           <button
             onClick={() => setActiveTab("settings")}
             type="button"
-            title="Change Banner"
-            className="absolute top-6 right-6 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/20 text-white hover:bg-primary-600 hover:border-primary-500 hover:shadow-[0_0_20px_rgba(170,79,255,0.5)] transition-all z-10"
+            title={t("changeBanner")}
+            className="absolute top-6 inset-e-6 bg-black/40 backdrop-blur-md p-3 rounded-2xl border border-white/20 text-white hover:bg-primary-600 hover:border-primary-500 hover:shadow-[0_0_20px_rgba(170,79,255,0.5)] transition-all z-10"
           >
             <Edit2 size={18} />
           </button>
         </div>
-        <div className="absolute -bottom-20 md:-bottom-24 left-6 md:left-12 flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 z-20 w-[calc(100%-3rem)] md:w-auto">
+
+        <div className="absolute -bottom-20 md:-bottom-24 inset-s-6 md:inset-s-12 flex flex-col md:flex-row items-center md:items-end gap-6 md:gap-8 z-20 w-[calc(100%-3rem)] md:w-auto">
           <div className="relative w-40 h-40 md:w-48 md:h-48 rounded-[2.25rem] p-1.5 bg-linear-to-br from-primary-500 via-primary-600 to-cyan-500 shadow-[0_15px_40px_rgba(170,79,255,0.4)] hover:shadow-[0_15px_50px_rgba(170,79,255,0.6)] transition-all duration-500 shrink-0 group/avatar cursor-pointer">
             <div className="relative w-full h-full rounded-4xl overflow-hidden border-4 border-base-950 bg-base-900">
               <Image
@@ -120,14 +123,15 @@ export default function ProfilePage() {
               </div>
             </div>
           </div>
-          <div className="mb-2 md:mb-8 flex flex-col items-center md:items-start drop-shadow-2xl text-center md:text-left w-full">
+
+          <div className="mb-2 md:mb-8 flex flex-col items-center md:items-start drop-shadow-2xl text-center md:text-start w-full">
             <div className="flex flex-wrap items-center justify-center md:justify-start gap-4 mb-3">
               <h1 className="text-4xl md:text-6xl font-black text-white tracking-tight drop-shadow-[0_4px_20px_rgba(0,0,0,0.8)]">
                 {user.name}
               </h1>
               <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-linear-to-r from-primary-600 to-primary-500 text-white text-xs font-black uppercase tracking-widest shadow-[0_0_20px_rgba(170,79,255,0.6)] border border-white/20">
                 <Star size={14} className="fill-white" />
-                LVL {user.level}
+                {t("lvl")} {user.level}
               </div>
             </div>
             <div className="flex items-center flex-wrap justify-center md:justify-start gap-3">
@@ -140,7 +144,7 @@ export default function ProfilePage() {
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
                 </div>
-                Online
+                {t("online")}
               </span>
             </div>
           </div>
@@ -153,6 +157,7 @@ export default function ProfilePage() {
             {TABS.map((tab) => {
               const Icon = tab.icon;
               const isActive = activeTab === tab.id;
+
               return (
                 <button
                   key={tab.id}
@@ -168,7 +173,7 @@ export default function ProfilePage() {
                     className={isActive ? "text-primary-400" : "text-base-500"}
                   />
                   {tab.label}
-                  {isActive && <ChevronRight size={16} className="ml-auto" />}
+                  {isActive && <ChevronRight size={16} className="ms-auto rtl:rotate-180" />}
                 </button>
               );
             })}
@@ -180,26 +185,27 @@ export default function ProfilePage() {
               }}
               className="flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold text-base-400 hover:bg-rose-500/10 hover:text-rose-400 border border-transparent hover:border-rose-500/30"
             >
-              <LogOut size={18} /> Sign Out
+              <LogOut size={18} className="rtl:rotate-180" /> {t("signOut")}
             </button>
           </div>
 
           <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 flex flex-col gap-4">
             <h3 className="text-xs font-black text-white uppercase tracking-widest border-b border-white/5 pb-3">
-              Account Info
+              {t("accountInfo")}
             </h3>
             <div className="flex flex-col gap-3 text-sm">
               <div className="flex justify-between items-center">
-                <span className="text-base-500">Member Since</span>
+                <span className="text-base-500">{t("memberSince")}</span>
                 <span className="font-bold text-white">{user.joinDate}</span>
               </div>
               <div className="flex justify-between items-center">
-                <span className="text-base-500">Plan</span>
-                <span className="font-bold text-primary-400">Void Premium</span>
+                <span className="text-base-500">{t("plan")}</span>
+                <span className="font-bold text-primary-400">{t("premium")}</span>
               </div>
             </div>
           </div>
         </div>
+
         <div className="lg:col-span-9 flex flex-col gap-6">
           {activeTab === "overview" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 flex flex-col gap-8">
@@ -213,7 +219,7 @@ export default function ProfilePage() {
                       {user.stats?.cloudHours || 0}
                     </span>
                     <span className="text-xs font-bold text-base-500 uppercase tracking-wider">
-                      Cloud Hours
+                      {t("cloudHours")}
                     </span>
                   </div>
                 </div>
@@ -226,7 +232,7 @@ export default function ProfilePage() {
                       {user.stats?.gamesOwned || 0}
                     </span>
                     <span className="text-xs font-bold text-base-500 uppercase tracking-wider">
-                      Games Owned
+                      {t("gamesOwned")}
                     </span>
                   </div>
                 </div>
@@ -239,23 +245,23 @@ export default function ProfilePage() {
                       {user.stats?.achievements || 0}
                     </span>
                     <span className="text-xs font-bold text-base-500 uppercase tracking-wider">
-                      Achievements
+                      {t("achievements")}
                     </span>
                   </div>
                 </div>
               </div>
+
               <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-8 flex flex-col gap-6">
                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
                   <h2 className="text-xl font-black text-white flex items-center gap-2">
-                    <Activity size={20} className="text-primary-500" /> Recent
-                    Cart Activity
+                    <Activity size={20} className="text-primary-500" /> {t("recentActivity")}
                   </h2>
                 </div>
-                <div className="flex flex-col gap-6 relative pl-4 mt-2">
-                  <div className="absolute left-9 top-2 bottom-2 w-px bg-white/5 z-0"></div>
+                <div className="flex flex-col gap-6 relative ps-4 mt-2">
+                  <div className="absolute inset-s-9 top-2 bottom-2 w-px bg-white/5 z-0"></div>
                   {activityLog.length === 0 ? (
-                    <p className="text-sm text-base-400 py-4 pl-8">
-                      No recent cart activity detected.
+                    <p className="text-sm text-base-400 py-4 ps-8">
+                      {t("noActivity")}
                     </p>
                   ) : (
                     activityLog.slice(0, 5).map((log) => {
@@ -267,6 +273,7 @@ export default function ProfilePage() {
                         ? "bg-emerald-500/10 border-emerald-500/20"
                         : "bg-rose-500/10 border-rose-500/20";
                       const Icon = isAdd ? Plus : Minus;
+
                       return (
                         <div
                           key={log.id}
@@ -294,10 +301,10 @@ export default function ProfilePage() {
                               <span
                                 className={`text-[10px] font-bold uppercase tracking-widest ${colorClass}`}
                               >
-                                {isAdd ? "Added to Cart" : "Removed from Cart"}
+                                {isAdd ? t("addedToCart") : t("removedFromCart")}
                               </span>
                             </div>
-                            <span className="text-[10px] text-base-500 font-mono shrink-0 pr-2">
+                            <span className="text-[10px] text-base-500 font-mono shrink-0 pe-2">
                               {log.date}
                             </span>
                           </div>
@@ -309,10 +316,11 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
+
           {activeTab === "orders" && ordersList.length > 0 && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-8 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white flex items-center gap-2 border-b border-white/5 pb-4">
-                <Package size={20} className="text-primary-500" /> All Orders
+                <Package size={20} className="text-primary-500" /> {t("allOrders")}
               </h2>
               <div className="flex flex-col gap-4">
                 {ordersList.map((order) => (
@@ -334,7 +342,7 @@ export default function ProfilePage() {
                       >
                         {order.status}
                       </span>
-                      <span className="text-base font-black text-white w-20 text-right">
+                      <span className="text-base font-black text-white w-20 text-end">
                         {order.total}
                       </span>
                     </div>
@@ -343,22 +351,23 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
+
           {activeTab === "wishlist" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-8 flex flex-col gap-6">
               <div className="flex items-center justify-between border-b border-white/5 pb-4">
                 <h2 className="text-xl font-black text-white flex items-center gap-2">
                   <Heart size={20} className="text-rose-500 fill-rose-500/20" />{" "}
-                  My Wishlist
+                  {t("myWishlist")}
                 </h2>
                 <span className="text-xs font-bold text-base-400">
-                  {wishlistItems.length} Items
+                  {wishlistItems.length} {t("items")}
                 </span>
               </div>
               {wishlistItems.length === 0 ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center opacity-50">
                   <Heart size={48} className="text-base-600 mb-4" />
                   <p className="text-sm font-bold text-base-400">
-                    Your wishlist is empty.
+                    {t("emptyWishlist")}
                   </p>
                 </div>
               ) : (
@@ -406,17 +415,16 @@ export default function ProfilePage() {
                               price: numericPrice,
                               image: item.image,
                             });
-                            removeWishlistItem(item.id); // بعد از رفتن به سبد، از لیست علاقه‌مندی‌ها حذف می‌شود
-                            toast.success(`${item.title} moved to cart!`);
+                            removeWishlistItem(item.id);
                           }}
                           className="grow flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs text-white bg-primary-600 hover:bg-primary-500 shadow-[0_0_15px_rgba(170,79,255,0.2)] transition-all"
                         >
-                          <ShoppingCart size={14} /> Move to Cart
+                          <ShoppingCart size={14} /> {t("moveToCart")}
                         </button>
                         <button
                           onClick={() => removeWishlistItem(item.id)}
                           className="p-2.5 rounded-xl bg-base-950 border border-white/5 text-base-500 hover:text-rose-400 hover:border-rose-500/30 transition-colors"
-                          title="Remove"
+                          title={t("remove")}
                         >
                           <Trash2 size={16} />
                         </button>
@@ -432,11 +440,10 @@ export default function ProfilePage() {
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-8 flex flex-col gap-8">
               <div className="flex flex-col gap-1 border-b border-white/5 pb-6">
                 <h2 className="text-2xl font-black text-white">
-                  Account Settings
+                  {t("accountSettings")}
                 </h2>
                 <p className="text-sm text-base-400">
-                  Manage your personal information, profile aesthetics, and
-                  security.
+                  {t("manageInfo")}
                 </p>
               </div>
 
@@ -448,9 +455,9 @@ export default function ProfilePage() {
                   <div className="flex flex-col gap-2">
                     <label
                       htmlFor="name"
-                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                     >
-                      Display Name
+                      {t("displayName")}
                     </label>
                     <input
                       id="name"
@@ -464,9 +471,9 @@ export default function ProfilePage() {
                   <div className="flex flex-col gap-2">
                     <label
                       htmlFor="username"
-                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                     >
-                      Gamer Tag (Username)
+                      {t("username")}
                     </label>
                     <input
                       id="username"
@@ -480,9 +487,9 @@ export default function ProfilePage() {
                   <div className="flex flex-col gap-2 md:col-span-2">
                     <label
                       htmlFor="avatar"
-                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                     >
-                      Avatar Image URL
+                      {t("avatarUrl")}
                     </label>
                     <input
                       id="avatar"
@@ -497,9 +504,9 @@ export default function ProfilePage() {
                   <div className="flex flex-col gap-2 md:col-span-2">
                     <label
                       htmlFor="banner"
-                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                     >
-                      Profile Banner URL
+                      {t("bannerUrl")}
                     </label>
                     <input
                       id="banner"
@@ -511,13 +518,12 @@ export default function ProfilePage() {
                     />
                   </div>
                 </div>
-
                 <div className="flex justify-end gap-3 mt-6 pt-6 border-t border-white/5">
                   <button
                     type="submit"
                     className="px-6 py-3 rounded-xl font-black text-sm text-white bg-primary-600 hover:bg-primary-500 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all"
                   >
-                    Save Changes
+                    {t("saveChanges")}
                   </button>
                 </div>
               </form>

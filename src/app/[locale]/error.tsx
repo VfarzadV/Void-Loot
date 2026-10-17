@@ -2,45 +2,52 @@
 
 import { useEffect } from "react";
 import Link from "next/link";
-import { AlertTriangle, RefreshCcw, Home } from "lucide-react";
+import { useTranslations } from "next-intl";
+import { AlertTriangle, RefreshCw, Home } from "lucide-react";
 
-export default function Error({
+export default function ErrorPage({
   error,
   reset,
 }: {
   error: Error & { digest?: string };
   reset: () => void;
 }) {
+  const t = useTranslations("error");
+
   useEffect(() => {
     console.error(error);
   }, [error]);
 
   return (
-    <div className="w-full min-h-[80vh] flex flex-col items-center justify-center px-6 text-center relative">
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-96 h-96 bg-rose-500/10 rounded-full blur-[100px] pointer-events-none z-0"></div>
-      <div className="relative z-10 flex flex-col items-center gap-6 max-w-xl glass-panel bg-base-950/80 border-rose-500/20 p-10 rounded-3xl">
-        <div className="w-20 h-20 rounded-2xl bg-rose-500/10 flex items-center justify-center border border-rose-500/20">
-          <AlertTriangle size={40} className="text-rose-500" />
+    <div className="w-full min-h-[calc(100vh-80px)] flex items-center justify-center px-6 lg:px-12 py-20 bg-base-950 relative overflow-hidden">
+      <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(239,68,68,0.08)_0%,transparent_70%)] pointer-events-none" />
+
+      <div className="relative z-10 max-w-lg w-full glass-panel bg-base-950/80 p-8 md:p-12 rounded-3xl border border-red-500/30 flex flex-col items-center text-center shadow-[0_20px_50px_rgba(239,68,68,0.15)]">
+        <div className="w-20 h-20 rounded-2xl bg-red-500/10 border border-red-500/30 flex items-center justify-center text-red-500 shadow-[0_0_30px_rgba(239,68,68,0.3)] mb-6 animate-pulse">
+          <AlertTriangle size={40} />
         </div>
-        <div className="flex flex-col gap-2">
-          <h2 className="text-2xl font-black text-white">System Malfunction</h2>
-          <p className="text-base-400 text-sm">
-            A critical error occurred while accessing the database. Our tech
-            drones have been notified.
-          </p>
-        </div>
-        <div className="flex flex-wrap items-center justify-center gap-4 mt-2">
+
+        <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight mb-3">
+          {t("title")}
+        </h1>
+
+        <p className="text-sm text-base-400 mb-8 leading-relaxed max-w-md">
+          {t("subtitle")}
+        </p>
+
+        <div className="flex flex-col sm:flex-row items-center gap-4 w-full">
           <button
             onClick={() => reset()}
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-white bg-rose-600 hover:bg-rose-500 shadow-[0_0_20px_rgba(225,29,72,0.3)] transition-all"
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-black text-sm text-white bg-red-600 hover:bg-red-500 shadow-[0_0_20px_rgba(239,68,68,0.4)] transition-all"
           >
-            <RefreshCcw size={18} /> Reboot System
+            <RefreshCw size={18} /> {t("tryAgain")}
           </button>
+
           <Link
             href="/"
-            className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm text-base-300 bg-base-900 border border-white/10 hover:text-white transition-colors"
+            className="w-full flex items-center justify-center gap-2 px-6 py-4 rounded-xl font-bold text-sm text-white bg-base-900 border border-white/10 hover:border-white/30 hover:bg-base-800 transition-colors"
           >
-            <Home size={18} /> Return Home
+            <Home size={18} /> {t("returnHome")}
           </Link>
         </div>
       </div>

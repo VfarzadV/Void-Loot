@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
+import { getTranslations } from "next-intl/server";
 import {
   ArrowLeft,
   Calendar,
@@ -108,7 +109,7 @@ export async function generateMetadata({
   const { id } = await params;
   const game = await getGameDetails(id);
 
-if (!game) {
+  if (!game) {
     notFound();
   }
 
@@ -132,6 +133,8 @@ export default async function GameDetailsPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
+  const t = await getTranslations("gameDetails");
+
   const [game, screenshotsData, moviesData, relatedData, achievementsData] =
     await Promise.all([
       getGameDetails(id),
@@ -144,14 +147,12 @@ export default async function GameDetailsPage({
   if (!game) {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-base-950">
-        <h1 className="text-4xl font-black text-white mb-4">
-          404 - Data Not Found
-        </h1>
+        <h1 className="text-4xl font-black text-white mb-4">{t("notFound")}</h1>
         <Link
           href="/"
           className="text-primary-400 hover:text-primary-300 flex items-center gap-2"
         >
-          <ArrowLeft size={16} /> Return to Base
+          <ArrowLeft size={16} className="rtl:rotate-180" /> {t("returnBase")}
         </Link>
       </div>
     );
@@ -161,6 +162,7 @@ export default async function GameDetailsPage({
   const movies = moviesData?.results || [];
   const relatedGames = relatedData?.results || [];
   const achievements = achievementsData?.results || [];
+
   const mockPrice = ((game.id % 40) + 19.99).toFixed(2);
   const pcPlatform = game.platforms?.find(
     (p: Platform) => p.platform.slug === "pc",
@@ -191,6 +193,7 @@ export default async function GameDetailsPage({
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
+
       <section className="relative w-full h-[65vh] min-h-137.5 flex items-end pb-16 px-6 lg:px-12 border-b border-white/10">
         <div className="absolute inset-0 z-0">
           <Image
@@ -204,13 +207,16 @@ export default async function GameDetailsPage({
           <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/60 to-transparent" />
           <div className="absolute inset-0 bg-linear-to-r from-base-950 via-base-950/80 to-transparent" />
         </div>
+
         <div className="relative z-10 w-full max-w-5xl flex flex-col gap-4">
           <Link
             href="/"
             className="inline-flex items-center gap-2 text-base-400 hover:text-white transition-colors text-sm w-fit mb-4 border border-white/10 bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl"
           >
-            <ArrowLeft size={16} /> Back to Store
+            <ArrowLeft size={16} className="rtl:rotate-180" />{" "}
+            {t("backToStore")}
           </Link>
+
           <div className="flex flex-wrap items-center gap-3 mb-2">
             {game.metacritic && (
               <span
@@ -222,16 +228,18 @@ export default async function GameDetailsPage({
                       : "bg-orange-500/20 text-orange-400 border-orange-500/50"
                 }`}
               >
-                Metascore: {game.metacritic}
+                {t("metascore")}: {game.metacritic}
               </span>
             )}
             <span className="px-3 py-1 rounded-md text-xs font-bold bg-primary-900/40 text-primary-300 border border-primary-500/30 backdrop-blur-md flex items-center gap-1.5">
-              <Calendar size={14} /> {game.released || "TBA"}
+              <Calendar size={14} /> {game.released || t("tba")}
             </span>
           </div>
+
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight drop-shadow-xl leading-tight">
             {game.name}
           </h1>
+
           <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-base-300 mt-2">
             <div className="flex items-center gap-2">
               <Gamepad2 size={16} className="text-primary-400" />
@@ -240,9 +248,10 @@ export default async function GameDetailsPage({
             <div className="w-1.5 h-1.5 rounded-full bg-white/20"></div>
             <div className="flex items-center gap-2">
               <Layers size={16} className="text-cyan-400" />
-              {game.developers?.[0]?.name || "Unknown Developer"}
+              {game.developers?.[0]?.name || t("unknownDeveloper")}
             </div>
           </div>
+
           {game.ratings && game.ratings.length > 0 && (
             <div className="w-full max-w-xl mt-4">
               <div className="w-full h-1.5 rounded-full overflow-hidden flex bg-base-900 border border-white/5">
@@ -252,6 +261,7 @@ export default async function GameDetailsPage({
                   else if (r.title === "recommended") color = "bg-blue-500";
                   else if (r.title === "meh") color = "bg-orange-500";
                   else if (r.title === "skip") color = "bg-red-500";
+
                   return (
                     <div
                       key={r.id}
@@ -284,12 +294,13 @@ export default async function GameDetailsPage({
           )}
         </div>
       </section>
+
       <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 grid grid-cols-1 lg:grid-cols-3 gap-12">
         <div className="lg:col-span-2 flex flex-col gap-12">
           <div className="flex flex-col gap-4">
             <h3 className="text-2xl font-black text-white flex items-center gap-2">
               <span className="w-1 h-6 bg-primary-500 rounded-full"></span>{" "}
-              About the Game
+              {t("aboutGame")}
             </h3>
             <div
               className="text-base-300 leading-relaxed text-sm prose prose-invert max-w-none"
@@ -298,11 +309,12 @@ export default async function GameDetailsPage({
               }}
             />
           </div>
+
           {achievements.length > 0 && (
             <div className="flex flex-col gap-4">
               <h3 className="text-2xl font-black text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-primary-500 rounded-full"></span>{" "}
-                Top Achievements
+                {t("topAchievements")}
               </h3>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {achievements.slice(0, 6).map((ach: Achievement) => (
@@ -337,11 +349,12 @@ export default async function GameDetailsPage({
               </div>
             </div>
           )}
+
           {movies.length > 0 && (
             <div className="flex flex-col gap-4">
               <h3 className="text-2xl font-black text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-primary-500 rounded-full"></span>{" "}
-                Official Trailer
+                {t("officialTrailer")}
               </h3>
               <div className="relative w-full aspect-video rounded-xl overflow-hidden border border-white/10 shadow-2xl bg-black">
                 <video
@@ -353,18 +366,19 @@ export default async function GameDetailsPage({
               </div>
             </div>
           )}
+
           {pcRequirements &&
             (pcRequirements.minimum || pcRequirements.recommended) && (
               <div className="flex flex-col gap-4">
                 <h3 className="text-2xl font-black text-white flex items-center gap-2">
                   <span className="w-1 h-6 bg-primary-500 rounded-full"></span>{" "}
-                  System Requirements
+                  {t("systemRequirements")}
                 </h3>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {pcRequirements.minimum && (
                     <div className="p-5 rounded-xl bg-base-950 border border-white/5">
                       <h4 className="text-primary-400 font-bold mb-3 text-sm">
-                        Minimum
+                        {t("minimum")}
                       </h4>
                       <p className="text-xs text-base-300 leading-relaxed font-mono whitespace-pre-wrap">
                         {pcRequirements.minimum.replace("Minimum:", "").trim()}
@@ -374,7 +388,7 @@ export default async function GameDetailsPage({
                   {pcRequirements.recommended && (
                     <div className="p-5 rounded-xl bg-base-950 border border-white/5">
                       <h4 className="text-primary-400 font-bold mb-3 text-sm">
-                        Recommended
+                        {t("recommended")}
                       </h4>
                       <p className="text-xs text-base-300 leading-relaxed font-mono whitespace-pre-wrap">
                         {pcRequirements.recommended
@@ -386,11 +400,12 @@ export default async function GameDetailsPage({
                 </div>
               </div>
             )}
+
           {screenshots.length > 0 && (
             <div className="flex flex-col gap-4">
               <h3 className="text-2xl font-black text-white flex items-center gap-2">
                 <span className="w-1 h-6 bg-primary-500 rounded-full"></span>{" "}
-                Gallery
+                {t("gallery")}
               </h3>
               <div className="grid grid-cols-2 gap-4">
                 {screenshots.slice(0, 4).map((shot: Screenshot) => (
@@ -411,16 +426,18 @@ export default async function GameDetailsPage({
             </div>
           )}
         </div>
+
         <div className="flex flex-col gap-6">
           <div className="glass-panel p-6 bg-base-900/60 border-base-800/80 sticky top-24 flex flex-col gap-6">
             <div className="flex flex-col items-center text-center gap-2 pb-6 border-b border-white/10">
               <span className="text-base-400 text-xs font-bold uppercase tracking-widest">
-                Digital Download
+                {t("digitalDownload")}
               </span>
               <span className="text-5xl font-black text-white drop-shadow-md">
                 ${mockPrice}
               </span>
             </div>
+
             <AddToCartFullButton
               product={{
                 id: game.id,
@@ -429,9 +446,10 @@ export default async function GameDetailsPage({
                 image: game.background_image || "/images/placeholder.jpg",
               }}
             />
+
             <div className="flex flex-col gap-3 pt-2">
               <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-1">
-                Available Platforms
+                {t("availablePlatforms")}
               </h4>
               <div className="flex flex-wrap gap-2">
                 {game.parent_platforms?.map((p: Platform) => (
@@ -450,11 +468,12 @@ export default async function GameDetailsPage({
           </div>
         </div>
       </section>
+
       {relatedGames.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 border-t border-white/5">
           <h3 className="text-2xl font-black text-white flex items-center gap-2 mb-8">
-            <span className="w-1 h-6 bg-primary-500 rounded-full"></span> More
-            Like This
+            <span className="w-1 h-6 bg-primary-500 rounded-full"></span>{" "}
+            {t("moreLikeThis")}
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {relatedGames.slice(0, 5).map((rg: RelatedGame) => (

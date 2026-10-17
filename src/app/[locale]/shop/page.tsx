@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Form from "next/form";
+import { getTranslations } from "next-intl/server";
 import {
   Search,
   Monitor,
@@ -11,6 +12,7 @@ import {
   Laptop,
   Smartphone,
   Gamepad2,
+  LucideIcon,
 } from "lucide-react";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import WishlistButton from "@/components/cart/WishlistButton";
@@ -29,12 +31,29 @@ interface Product {
   stock: number;
 }
 
-const CATEGORIES = [
-  { name: "All Gear", slug: "all", icon: Cpu },
-  { name: "Gaming Laptops", slug: "laptops", icon: Laptop },
-  { name: "Tablets & Displays", slug: "tablets", icon: Monitor },
-  { name: "Accessories", slug: "mobile-accessories", icon: Headphones },
-  { name: "Smartphones", slug: "smartphones", icon: Smartphone },
+type CategoryTranslationKey =
+  | "cats.all"
+  | "cats.laptops"
+  | "cats.tablets"
+  | "cats.accessories"
+  | "cats.smartphones";
+
+interface CategoryConfig {
+  labelKey: CategoryTranslationKey;
+  slug: string;
+  icon: LucideIcon;
+}
+
+const CATEGORIES: CategoryConfig[] = [
+  { labelKey: "cats.all", slug: "all", icon: Cpu },
+  { labelKey: "cats.laptops", slug: "laptops", icon: Laptop },
+  { labelKey: "cats.tablets", slug: "tablets", icon: Monitor },
+  {
+    labelKey: "cats.accessories",
+    slug: "mobile-accessories",
+    icon: Headphones,
+  },
+  { labelKey: "cats.smartphones", slug: "smartphones", icon: Smartphone },
 ];
 
 async function getProducts(search?: string, category?: string) {
@@ -44,6 +63,7 @@ async function getProducts(search?: string, category?: string) {
     "mobile-accessories",
     "smartphones",
   ];
+
   if ((!category || category === "all") && !search) {
     const endpoints = techCategories.map(
       (cat) => `https://dummyjson.com/products/category/${cat}?limit=50`,
@@ -53,7 +73,6 @@ async function getProducts(search?: string, category?: string) {
         fetch(url, { next: { revalidate: 3600 } }).then((res) => res.json()),
       ),
     );
-
     let allTechProducts: Product[] = [];
     responses.forEach((res) => {
       if (res && res.products) {
@@ -62,6 +81,7 @@ async function getProducts(search?: string, category?: string) {
     });
     return allTechProducts;
   }
+
   let url = "https://dummyjson.com/products?limit=150";
 
   if (search) {
@@ -73,7 +93,9 @@ async function getProducts(search?: string, category?: string) {
   const res = await fetch(url, { next: { revalidate: 3600 } });
   if (!res.ok) return [];
   const data = await res.json();
+
   let fetchedProducts = data.products;
+
   if (search) {
     fetchedProducts = fetchedProducts.filter((p: Product) =>
       techCategories.includes(p.category),
@@ -102,6 +124,8 @@ export default async function ShopPage({
   const currentPage = Number(params.page) || 1;
   const ITEMS_PER_PAGE = 12;
 
+  const t = await getTranslations("shop");
+
   let products: Product[] =
     (await getProducts(searchQuery, currentCategory)) || [];
 
@@ -119,35 +143,27 @@ export default async function ShopPage({
 
   const totalItems = products.length;
   const pageCount = Math.ceil(totalItems / ITEMS_PER_PAGE);
+
   const paginatedProducts = products.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE,
   );
-  if (maxPrice < 2000) {
-    products = products.filter((p) => p.price <= maxPrice);
-  }
-
-  if (currentSort === "price-asc") {
-    products.sort((a, b) => a.price - b.price);
-  } else if (currentSort === "price-desc") {
-    products.sort((a, b) => b.price - a.price);
-  } else if (currentSort === "rating-desc") {
-    products.sort((a, b) => b.rating - a.rating);
-  }
 
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-10 max-w-[1600px] mx-auto">
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-10 pb-6 border-b border-white/5">
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-            Nexus <span className="text-primary-400">Hardware</span>
+            {t("titlePrefix")}{" "}
+            <span className="text-primary-400">{t("titleHighlight")}</span>
           </h1>
           <p className="text-sm text-base-400 max-w-xl">
             {searchQuery
-              ? `Showing results for "${searchQuery}"`
-              : "Upgrade your setup with premium hardware and tech peripherals powered by API."}
+              ? t("subtitleSearch", { query: searchQuery })
+              : t("subtitleDefault")}
           </p>
         </div>
+
         <Form
           action="/shop"
           aria-label="Search hardware"
@@ -164,37 +180,40 @@ export default async function ShopPage({
           )}
           <Search
             size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+            className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
           />
           <input
             type="text"
             aria-label="Search hardware"
             name="search"
             defaultValue={searchQuery}
-            placeholder="Search gear..."
-            className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-base-500 focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
+            placeholder={t("searchPlaceholder")}
+            className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white placeholder-base-500 focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
           />
           {searchQuery && (
             <Link
               href={`/shop?category=${currentCategory}${currentSort ? `&sort=${currentSort}` : ""}${maxPrice < 2000 ? `&maxPrice=${maxPrice}` : ""}`}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
+              className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
             >
-              Clear
+              {t("clear")}
             </Link>
           )}
         </Form>
       </div>
+
       <div className="flex flex-col lg:flex-row gap-10">
         <aside className="w-full lg:w-64 shrink-0 flex flex-col gap-8">
           <div className="flex flex-col gap-4">
             <h3 className="text-lg font-black text-white flex items-center gap-2 uppercase tracking-wider">
-              <Filter size={18} className="text-primary-500" /> Categories
+              <Filter size={18} className="text-primary-500" />{" "}
+              {t("categories")}
             </h3>
             <ul className="flex flex-col gap-2">
               {CATEGORIES.map((cat) => {
                 const Icon = cat.icon;
                 const isActive = currentCategory === cat.slug;
                 const categoryUrl = `/shop?category=${cat.slug}${searchQuery ? `&search=${searchQuery}` : ""}${currentSort ? `&sort=${currentSort}` : ""}${maxPrice < 2000 ? `&maxPrice=${maxPrice}` : ""}`;
+
                 return (
                   <li key={cat.slug}>
                     <Link
@@ -210,7 +229,9 @@ export default async function ShopPage({
                           size={18}
                           className={isActive ? "text-primary-400" : ""}
                         />
-                        <span className="text-sm font-bold">{cat.name}</span>
+                        <span className="text-sm font-bold">
+                          {t(cat.labelKey)}
+                        </span>
                       </div>
                     </Link>
                   </li>
@@ -218,38 +239,40 @@ export default async function ShopPage({
               })}
             </ul>
           </div>
+
           <div className="flex flex-col gap-4 pt-6 border-t border-white/5">
             <h3 className="text-sm font-black text-white uppercase tracking-wider flex items-center justify-between">
-              Price Range
+              {t("priceRange")}
               {maxPrice < 2000 && (
                 <Link
                   href={`/shop?category=${currentCategory}${searchQuery ? `&search=${searchQuery}` : ""}${currentSort ? `&sort=${currentSort}` : ""}`}
                   className="text-[10px] text-primary-400 hover:text-white normal-case"
                 >
-                  Reset
+                  {t("reset")}
                 </Link>
               )}
             </h3>
             <PriceFilter />
           </div>
         </aside>
+
         <div className="grow flex flex-col gap-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <p className="text-sm text-base-400 font-medium">
-              Showing <strong className="text-white">{products.length}</strong>{" "}
-              products
+              {t("showing")}{" "}
+              <strong className="text-white">{products.length}</strong>{" "}
+              {t("products")}
             </p>
             <SortDropdown />
           </div>
+
           {products.length === 0 ? (
             <div className="w-full py-20 flex flex-col items-center text-center">
               <Gamepad2 size={48} className="text-base-800 mb-4" />
               <h3 className="text-xl font-bold text-white mb-2">
-                No Hardware Found
+                {t("noHardwareTitle")}
               </h3>
-              <p className="text-base-400 text-sm">
-                Try adjusting your search, price range, or category.
-              </p>
+              <p className="text-base-400 text-sm">{t("noHardwareDesc")}</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-6">
@@ -272,8 +295,8 @@ export default async function ShopPage({
                     />
                     <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(170,79,255,0.05)_0%,transparent_70%)]" />
                     {product.availabilityStatus === "Low Stock" && (
-                      <span className="absolute top-3 left-3 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_15px_rgba(225,29,72,0.5)] z-10 animate-pulse">
-                        Low Stock
+                      <span className="absolute top-3 inset-s-3 bg-rose-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_15px_rgba(225,29,72,0.5)] z-10 animate-pulse">
+                        {t("lowStock")}
                       </span>
                     )}
                     <Image
@@ -284,6 +307,7 @@ export default async function ShopPage({
                       className="object-contain p-4 group-hover:scale-110 transition-transform duration-700 relative z-0 drop-shadow-xl"
                     />
                   </Link>
+
                   <div className="p-5 flex flex-col grow gap-2 border-t border-base-800/50">
                     <span className="text-[10px] font-bold text-primary-400 uppercase tracking-widest">
                       {product.category.replace("-", " ")}
@@ -305,6 +329,7 @@ export default async function ShopPage({
                         {product.rating.toFixed(1)}
                       </span>
                     </div>
+
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
                       <span className="text-xl font-black text-white">
                         ${product.price.toFixed(2)}
@@ -323,6 +348,7 @@ export default async function ShopPage({
               ))}
             </div>
           )}
+
           {totalItems > ITEMS_PER_PAGE && <Pagination pageCount={pageCount} />}
         </div>
       </div>

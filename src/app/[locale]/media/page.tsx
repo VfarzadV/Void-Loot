@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Play, Info, Clock, MonitorPlay, Flame } from "lucide-react";
+import { getTranslations } from "next-intl/server";
+import { Play, Info, Clock, MonitorPlay, Flame, LucideIcon } from "lucide-react";
 
 interface VideoItem {
   id: number;
@@ -11,14 +12,9 @@ interface VideoItem {
 }
 
 const FEATURED_VIDEO = {
-  title: "Cyberpunk 2077: Phantom Liberty - Official Cinematic Trailer",
-  description:
-    "Return to Night City and embark on a high-stakes mission of espionage and intrigue to save the NUSA President. In this spy-thriller expansion, build alliances and make choices that will shatter the world around you.",
   image:
     "https://media.rawg.io/media/games/26d/26d4437715bee60138cb4a44dbe8bf2f.jpg",
   duration: "3:42",
-  category: "Cinematic Trailer",
-  tags: ["4K", "HDR", "Dolby Atmos"],
 };
 
 const TRENDING_TRAILERS = [
@@ -95,10 +91,12 @@ const VideoRow = ({
   title,
   icon: Icon,
   videos,
+  viewsLabel,
 }: {
   title: string;
-  icon: React.ElementType;
+  icon: LucideIcon;
   videos: VideoItem[];
+  viewsLabel: string;
 }) => (
   <div className="flex flex-col gap-5 w-full">
     <h3 className="text-xl md:text-2xl font-black text-white flex items-center gap-2">
@@ -122,10 +120,10 @@ const VideoRow = ({
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-100 scale-90">
               <div className="w-12 h-12 rounded-full bg-primary-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_20px_rgba(170,79,255,0.5)]">
-                <Play size={20} className="ml-1" fill="currentColor" />
+                <Play size={20} className="ms-1 rtl:rotate-180" fill="currentColor" />
               </div>
             </div>
-            <div className="absolute bottom-2 right-2 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10 flex items-center gap-1">
+            <div className="absolute bottom-2 inset-e-2 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10 flex items-center gap-1">
               <Clock size={10} /> {video.duration}
             </div>
           </div>
@@ -137,7 +135,7 @@ const VideoRow = ({
               {video.title}
             </h4>
             <span className="text-[10px] text-base-400 font-medium">
-              {video.views} Views
+              {video.views} {viewsLabel}
             </span>
           </div>
         </Link>
@@ -146,19 +144,22 @@ const VideoRow = ({
   </div>
 );
 
-export default function MediaPage() {
+export default async function MediaPage() {
+  const t = await getTranslations("media");
+
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-6 max-w-[1600px] mx-auto overflow-hidden">
       <div className="flex items-center gap-3 mb-8">
         <MonitorPlay size={28} className="text-primary-500" />
         <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-          Void<span className="text-primary-400">Cinema</span>
+          {t("titlePrefix")}<span className="text-primary-400">{t("titleHighlight")}</span>
         </h1>
       </div>
+
       <section className="relative w-full h-[55vh] min-h-112.5 rounded-3xl overflow-hidden mb-12 border border-white/10 group">
         <Image
           src={FEATURED_VIDEO.image}
-          alt={FEATURED_VIDEO.title}
+          alt={t("featured.title")}
           fill
           unoptimized
           priority
@@ -166,41 +167,44 @@ export default function MediaPage() {
         />
         <div className="absolute inset-0 bg-linear-to-r from-base-950 via-base-950/80 to-transparent" />
         <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent" />
-        <div className="absolute bottom-0 left-0 p-8 md:p-12 z-10 flex flex-col gap-4 max-w-2xl w-full">
+        <div className="absolute bottom-0 inset-s-0 p-8 md:p-12 z-10 flex flex-col gap-4 max-w-2xl w-full">
           <div className="flex items-center gap-3">
             <span className="px-3 py-1 rounded-md bg-primary-600 text-[10px] font-black uppercase tracking-widest text-white shadow-[0_0_15px_rgba(170,79,255,0.5)] animate-pulse">
-              Premiere
+              {t("premiere")}
             </span>
             <span className="text-xs font-bold text-primary-300">
-              {FEATURED_VIDEO.category}
+              {t("featured.category")}
             </span>
           </div>
           <h2 className="text-3xl md:text-5xl font-black text-white leading-tight drop-shadow-lg">
-            {FEATURED_VIDEO.title}
+            {t("featured.title")}
           </h2>
           <p className="text-sm text-base-300 line-clamp-3 leading-relaxed max-w-xl">
-            {FEATURED_VIDEO.description}
+            {t("featured.description")}
           </p>
           <div className="flex items-center gap-3 mt-4">
             <button type="button" className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-black text-sm hover:bg-base-200 transition-colors shadow-lg">
-              <Play size={18} fill="currentColor" /> Play Now
+              <Play size={18} fill="currentColor" className="rtl:rotate-180" /> {t("playNow")}
             </button>
             <button type="button" className="flex items-center gap-2 bg-base-900/60 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-xl font-bold text-sm hover:bg-base-800 transition-colors">
-              <Info size={18} /> More Info
+              <Info size={18} /> {t("moreInfo")}
             </button>
           </div>
         </div>
       </section>
+
       <div className="flex flex-col gap-10">
         <VideoRow
-          title="Trending Trailers"
+          title={t("trendingTrailers")}
           icon={Flame}
           videos={TRENDING_TRAILERS}
+          viewsLabel={t("views")}
         />
         <VideoRow
-          title="Original Documentaries"
+          title={t("originalDocumentaries")}
           icon={MonitorPlay}
           videos={DOCUMENTARIES}
+          viewsLabel={t("views")}
         />
       </div>
     </div>

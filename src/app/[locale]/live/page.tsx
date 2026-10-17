@@ -1,7 +1,9 @@
 "use client";
+
 import { useState, useEffect, useRef, FormEvent } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Radio,
   Users,
@@ -30,12 +32,12 @@ interface Stream {
   viewers: string;
   thumbnail: string;
   avatar: string;
-  category: string;
+  categoryKey: string;
 }
 
 const FEATURED_STREAM = {
   streamer: "Ninja",
-  title: "🔥 RANKED GRIND | Road to Radiant | !drops enabled",
+  title: "RANKED GRIND | Road to Radiant | !drops enabled",
   game: "Valorant",
   baseViewers: 124500,
   thumbnail:
@@ -43,13 +45,13 @@ const FEATURED_STREAM = {
   avatar: "https://i.pravatar.cc/150?u=ninja",
 };
 
-const CATEGORIES = [
-  "All",
-  "FPS",
-  "RPG",
-  "Esports",
-  "Just Chatting",
-  "Speedrun",
+const CATEGORY_KEYS = [
+  { key: "all", labelKey: "categories.all" },
+  { key: "fps", labelKey: "categories.fps" },
+  { key: "rpg", labelKey: "categories.rpg" },
+  { key: "esports", labelKey: "categories.esports" },
+  { key: "justChatting", labelKey: "categories.justChatting" },
+  { key: "speedrun", labelKey: "categories.speedrun" },
 ];
 
 const LIVE_STREAMS: Stream[] = [
@@ -62,7 +64,7 @@ const LIVE_STREAMS: Stream[] = [
     thumbnail:
       "https://media.rawg.io/media/games/26d/26d4437715bee60138cb4a44dbe8bf2f.jpg",
     avatar: "https://i.pravatar.cc/150?u=shroud",
-    category: "RPG",
+    categoryKey: "rpg",
   },
   {
     id: 2,
@@ -73,18 +75,18 @@ const LIVE_STREAMS: Stream[] = [
     thumbnail:
       "https://media.rawg.io/media/games/78b/78bc81e247fc7e77af700cbd632a9297.jpg",
     avatar: "https://i.pravatar.cc/150?u=faker",
-    category: "Esports",
+    categoryKey: "esports",
   },
   {
     id: 3,
     streamer: "Tarik",
-    title: "VCT Masters Watch Party 🏆",
+    title: "VCT Masters Watch Party",
     game: "Valorant",
     viewers: "95K",
     thumbnail:
       "https://media.rawg.io/media/games/b11/b115b2bc6a5957a917bc7601f4abdda2.jpg",
     avatar: "https://i.pravatar.cc/150?u=tarik",
-    category: "FPS",
+    categoryKey: "fps",
   },
   {
     id: 4,
@@ -95,18 +97,18 @@ const LIVE_STREAMS: Stream[] = [
     thumbnail:
       "https://media.rawg.io/media/games/8cc/8cce7c0e99dcc43d66c8efd42f9d03e3.jpg",
     avatar: "https://i.pravatar.cc/150?u=xqc",
-    category: "Just Chatting",
+    categoryKey: "justChatting",
   },
   {
     id: 5,
     streamer: "KaiCenat",
-    title: "ELDEN RING MARATHON 💀",
+    title: "ELDEN RING MARATHON",
     game: "Elden Ring",
     viewers: "112K",
     thumbnail:
       "https://media.rawg.io/media/games/174/1743b3dd185bda4a7be349347d4064df.jpg",
     avatar: "https://i.pravatar.cc/150?u=kai",
-    category: "RPG",
+    categoryKey: "rpg",
   },
   {
     id: 6,
@@ -117,7 +119,7 @@ const LIVE_STREAMS: Stream[] = [
     thumbnail:
       "https://media.rawg.io/media/games/511/5118aff5091cb3efec399c808f8c598f.jpg",
     avatar: "https://i.pravatar.cc/150?u=lirik",
-    category: "RPG",
+    categoryKey: "rpg",
   },
   {
     id: 7,
@@ -128,7 +130,7 @@ const LIVE_STREAMS: Stream[] = [
     thumbnail:
       "https://media.rawg.io/media/games/b11/b115b2bc6a5957a917bc7601f4abdda2.jpg",
     avatar: "https://i.pravatar.cc/150?u=tenz",
-    category: "FPS",
+    categoryKey: "fps",
   },
   {
     id: 8,
@@ -139,7 +141,7 @@ const LIVE_STREAMS: Stream[] = [
     thumbnail:
       "https://media.rawg.io/media/games/174/1743b3dd185bda4a7be349347d4064df.jpg",
     avatar: "https://i.pravatar.cc/150?u=dist",
-    category: "Speedrun",
+    categoryKey: "speedrun",
   },
 ];
 
@@ -165,17 +167,18 @@ const BOT_COLORS = [
 const BOT_MESSAGES = [
   "POGGERS",
   "W stream",
-  "LET'S GOOO! 🔥",
-  "Sheeeeesh 🥶",
+  "LET'S GOOO!",
+  "Sheeeeesh",
   "Drops enabled?",
   "that shot was insane",
   "LMAO",
   "W W W W W",
   "can't wait for the new update",
-  "aimbot?? jk 😂",
+  "aimbot?? jk",
 ];
 
 export default function LivePage() {
+  const t = useTranslations("live");
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
       id: 1,
@@ -189,8 +192,7 @@ export default function LivePage() {
   const [isTheater, setIsTheater] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [isLiked, setIsLiked] = useState(false);
-  const [activeCategory, setActiveCategory] = useState("All");
-
+  const [activeCategory, setActiveCategory] = useState("all");
   const chatContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -211,7 +213,6 @@ export default function LivePage() {
           BOT_COLORS[Math.floor(Math.random() * BOT_COLORS.length)];
         const randomText =
           BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
-
         setMessages((prev) => [
           ...prev.slice(-40),
           {
@@ -224,7 +225,6 @@ export default function LivePage() {
       },
       Math.floor(Math.random() * 2000) + 2000,
     );
-
     return () => clearInterval(interval);
   }, []);
 
@@ -238,7 +238,6 @@ export default function LivePage() {
   const handleSendMessage = (e: FormEvent) => {
     e.preventDefault();
     if (!newMessage.trim()) return;
-
     setMessages((prev) => [
       ...prev,
       {
@@ -252,9 +251,9 @@ export default function LivePage() {
   };
 
   const filteredStreams =
-    activeCategory === "All"
+    activeCategory === "all"
       ? LIVE_STREAMS
-      : LIVE_STREAMS.filter((s) => s.category === activeCategory);
+      : LIVE_STREAMS.filter((s) => s.categoryKey === activeCategory);
 
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-6 max-w-[1600px] mx-auto overflow-hidden">
@@ -262,26 +261,28 @@ export default function LivePage() {
         <div className="flex items-center gap-3">
           <Radio size={28} className="text-red-500 animate-pulse" />
           <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-            Void<span className="text-red-500">Live</span>
+            {t("titlePrefix")}
+            <span className="text-red-500">{t("titleHighlight")}</span>
           </h1>
         </div>
         <div className="flex flex-wrap items-center gap-2 md:gap-4">
-          {CATEGORIES.map((cat) => (
+          {CATEGORY_KEYS.map((cat) => (
             <button
-              key={cat}
-              onClick={() => setActiveCategory(cat)}
-              aria-pressed={activeCategory === cat}
+              key={cat.key}
+              onClick={() => setActiveCategory(cat.key)}
+              aria-pressed={activeCategory === cat.key}
               className={`px-4 py-1.5 rounded-full border text-xs font-bold transition-all ${
-                activeCategory === cat
+                activeCategory === cat.key
                   ? "bg-red-500/20 border-red-500 text-white shadow-[0_0_10px_rgba(239,68,68,0.3)]"
                   : "bg-base-900 border-white/5 text-base-300 hover:text-white hover:border-red-500/50 hover:bg-red-500/10"
               }`}
             >
-              {cat}
+              {t(cat.labelKey)}
             </button>
           ))}
         </div>
       </div>
+
       <section
         className={`w-full grid ${isTheater ? "grid-cols-1" : "lg:grid-cols-4"} gap-6 mb-12 transition-all duration-500`}
       >
@@ -297,13 +298,13 @@ export default function LivePage() {
             className="object-cover opacity-80"
           />
           <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />
-          <div className="absolute top-6 left-6 flex items-center gap-2 bg-red-600/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-red-400/30 shadow-[0_0_15px_rgba(220,38,38,0.6)] z-20">
+          <div className="absolute top-6 inset-s-6 flex items-center gap-2 bg-red-600/90 backdrop-blur-md px-3 py-1.5 rounded-lg border border-red-400/30 shadow-[0_0_15px_rgba(220,38,38,0.6)] z-20">
             <div className="w-2 h-2 rounded-full bg-white animate-pulse" />
             <span className="text-[10px] font-black text-white uppercase tracking-widest">
-              Live Now
+              {t("liveNow")}
             </span>
           </div>
-          <div className="absolute top-6 right-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 z-20 transition-all">
+          <div className="absolute top-6 inset-e-6 flex items-center gap-1.5 bg-black/60 backdrop-blur-md px-3 py-1.5 rounded-lg border border-white/10 z-20 transition-all">
             <Users size={14} className="text-red-400" />
             <span className="text-xs font-bold text-white font-mono">
               {viewers.toLocaleString()}
@@ -313,17 +314,26 @@ export default function LivePage() {
             onClick={() => setIsTheater(!isTheater)}
             aria-label={isTheater ? "Exit theater mode" : "Enter theater mode"}
             aria-pressed={isTheater}
-            className="absolute bottom-6 right-6 p-2 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-primary-600 hover:border-primary-500 transition-all z-20"
+            className="absolute bottom-6 inset-e-6 p-2 rounded-lg bg-black/60 backdrop-blur-md border border-white/10 text-white hover:bg-primary-600 hover:border-primary-500 transition-all z-20"
             title={isTheater ? "Exit Theater Mode" : "Theater Mode"}
           >
             {isTheater ? <Minimize size={18} /> : <Maximize size={18} />}
           </button>
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
-            <button type="button" aria-label={`Play ${FEATURED_STREAM.title}`} className="w-16 h-16 rounded-full bg-red-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 transition-transform">
-              <Play size={24} className="ml-1" fill="currentColor" aria-hidden="true" />
+            <button
+              type="button"
+              aria-label={`Play ${FEATURED_STREAM.title}`}
+              className="w-16 h-16 rounded-full bg-red-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 transition-transform"
+            >
+              <Play
+                size={24}
+                className="ms-1 rtl:rotate-180"
+                fill="currentColor"
+                aria-hidden="true"
+              />
             </button>
           </div>
-          <div className="absolute bottom-6 left-6 flex flex-col sm:flex-row items-start sm:items-end gap-4 z-20 pr-16">
+          <div className="absolute bottom-6 inset-s-6 flex flex-col sm:flex-row items-start sm:items-end gap-4 z-20 pe-16">
             <div className="relative w-14 h-14 rounded-xl overflow-hidden border-2 border-red-500 shadow-[0_0_15px_rgba(220,38,38,0.4)] shrink-0">
               <Image
                 src={FEATURED_STREAM.avatar}
@@ -341,11 +351,11 @@ export default function LivePage() {
                 <span className="text-base-50 text-base font-black">
                   {FEATURED_STREAM.streamer}
                 </span>
-                <span className="text-red-400">playing</span>
+                <span className="text-red-400">{t("playing")}</span>
                 <span className="text-primary-400 font-black">
                   {FEATURED_STREAM.game}
                 </span>
-                <div className="flex items-center gap-2 ml-2">
+                <div className="flex items-center gap-2 ms-2">
                   <button
                     onClick={() => setIsFollowing(!isFollowing)}
                     aria-pressed={isFollowing}
@@ -357,11 +367,11 @@ export default function LivePage() {
                   >
                     {isFollowing ? (
                       <>
-                        <UserCheck size={14} /> Following
+                        <UserCheck size={14} /> {t("following")}
                       </>
                     ) : (
                       <>
-                        <UserPlus size={14} /> Follow
+                        <UserPlus size={14} /> {t("follow")}
                       </>
                     )}
                   </button>
@@ -385,6 +395,7 @@ export default function LivePage() {
             </div>
           </div>
         </div>
+
         <div
           className={`${isTheater ? "col-span-1" : "lg:col-span-1"} glass-panel bg-base-950/60 rounded-3xl border border-white/5 flex flex-col overflow-hidden transition-all duration-500 h-112.5 lg:h-137.5`}
         >
@@ -392,12 +403,12 @@ export default function LivePage() {
             <div className="flex items-center gap-2">
               <MessageSquare size={16} className="text-base-400" />
               <span className="text-xs font-bold text-white uppercase tracking-wider">
-                Stream Chat
+                {t("streamChat")}
               </span>
             </div>
             <div className="flex items-center gap-1 text-[10px] text-base-500">
               <Users size={12} /> {Math.floor(viewers * 0.1).toLocaleString()}{" "}
-              in chat
+              {t("inChat")}
             </div>
           </div>
           <div
@@ -412,7 +423,7 @@ export default function LivePage() {
                 key={msg.id}
                 className="animate-in fade-in slide-in-from-right-4 duration-300 wrap-break-word"
               >
-                <strong className={`${msg.color} mr-1.5`}>{msg.user}:</strong>
+                <strong className={`${msg.color} me-1.5`}>{msg.user}:</strong>
                 <span className="text-base-100">{msg.text}</span>
               </div>
             ))}
@@ -427,22 +438,28 @@ export default function LivePage() {
               aria-label="Chat message"
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
-              placeholder="Send a message..."
+              placeholder={t("chatPlaceholder")}
               className="w-full bg-base-950 border border-base-800 rounded-lg px-3 py-2.5 text-xs text-white placeholder-base-600 focus:outline-none focus:border-primary-500 transition-colors shadow-[inset_0_2px_5px_rgba(0,0,0,0.2)]"
             />
           </form>
         </div>
       </section>
+
       <div className="flex flex-col gap-6">
         <h3 className="text-xl font-black text-white flex items-center gap-2 border-b border-white/5 pb-4">
           <Flame size={20} className="text-red-500" />
-          {activeCategory === "All"
-            ? "Live Channels We Think You'll Like"
-            : `${activeCategory} Live Streams`}
+          {activeCategory === "all"
+            ? t("liveChannels")
+            : t("liveStreamsCategory", {
+                category: t(
+                  CATEGORY_KEYS.find((c) => c.key === activeCategory)
+                    ?.labelKey || "",
+                ),
+              })}
         </h3>
         {filteredStreams.length === 0 ? (
           <div className="py-10 text-center text-base-400 text-sm">
-            No live streams found in this category.
+            {t("noStreams")}
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
@@ -460,10 +477,10 @@ export default function LivePage() {
                     unoptimized
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
-                  <div className="absolute top-2 left-2 bg-red-600 px-1.5 py-0.5 rounded text-[9px] font-black text-white uppercase tracking-wider">
+                  <div className="absolute top-2 inset-s-2 bg-red-600 px-1.5 py-0.5 rounded text-[9px] font-black text-white uppercase tracking-wider">
                     Live
                   </div>
-                  <div className="absolute bottom-2 left-2 bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded text-[10px] font-bold text-white flex items-center gap-1">
+                  <div className="absolute bottom-2 inset-s-2 bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded text-[10px] font-bold text-white flex items-center gap-1">
                     <Users size={10} className="text-red-400" />{" "}
                     {stream.viewers}
                   </div>

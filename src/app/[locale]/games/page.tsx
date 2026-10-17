@@ -5,6 +5,7 @@ import { Search, Calendar, Gamepad2, Monitor } from "lucide-react";
 import WishlistButton from "@/components/cart/WishlistButton";
 import Pagination from "@/components/shared/Pagination";
 import GameSortDropdown from "@/components/games/GameSortDropdown";
+import { getTranslations } from "next-intl/server";
 
 interface Platform {
   platform: {
@@ -40,7 +41,6 @@ async function getGames(page: number, search: string, sort: string) {
 
   const res = await fetch(url, { next: { revalidate: 3600 } });
   if (!res.ok) return null;
-
   return res.json();
 }
 
@@ -53,6 +53,8 @@ export default async function GamesPage({
   const currentPage = Number(params.page) || 1;
   const searchQuery = params.search || "";
   const currentSort = params.sort || "";
+  const t = await getTranslations("games");
+
   const data = await getGames(currentPage, searchQuery, currentSort);
   const games: RawgGame[] = data?.results || [];
 
@@ -61,14 +63,17 @@ export default async function GamesPage({
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 mb-8 pb-6 border-b border-white/5">
         <div className="flex flex-col gap-2">
           <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-            The <span className="text-primary-400">Void</span> Archive
+            {t("titlePrefix")}{" "}
+            <span className="text-primary-400">{t("titleHighlight")}</span>{" "}
+            {t("titleSuffix")}
           </h1>
           <p className="text-sm text-base-400">
             {searchQuery
-              ? `Showing results for "${searchQuery}"`
-              : "Explore thousands of games powered by RAWG database."}
+              ? t("subtitleSearch", { query: searchQuery })
+              : t("subtitleDefault")}
           </p>
         </div>
+
         <Form
           action="/games"
           aria-label="Search games"
@@ -79,43 +84,45 @@ export default async function GamesPage({
           )}
           <Search
             size={18}
-            className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+            className="absolute start-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
           />
           <input
             type="text"
             aria-label="Search games"
             name="search"
             defaultValue={searchQuery}
-            placeholder="Search games..."
-            className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 pl-11 pr-4 text-sm text-white placeholder-base-500 focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
+            placeholder={t("searchPlaceholder")}
+            className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white placeholder-base-500 focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
           />
           {searchQuery && (
             <Link
               href={`/games${currentSort ? `?sort=${currentSort}` : ""}`}
-              className="absolute right-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
+              className="absolute end-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
             >
-              Clear
+              {t("clear")}
             </Link>
           )}
         </Form>
       </div>
+
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-8">
         <p className="text-sm text-base-400 font-medium">
-          Found{" "}
+          {t("found")}{" "}
           <strong className="text-white">
             {data?.count?.toLocaleString() || 0}
           </strong>{" "}
-          games
+          {t("gamesCount")}
         </p>
         <GameSortDropdown />
       </div>
+
       {games.length === 0 ? (
         <div className="w-full py-20 flex flex-col items-center text-center">
           <Gamepad2 size={48} className="text-base-800 mb-4" />
-          <h3 className="text-xl font-bold text-white mb-2">No Games Found</h3>
-          <p className="text-base-400 text-sm">
-            Try adjusting your search terms.
-          </p>
+          <h3 className="text-xl font-bold text-white mb-2">
+            {t("noGamesTitle")}
+          </h3>
+          <p className="text-base-400 text-sm">{t("noGamesDesc")}</p>
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-6">
@@ -140,7 +147,7 @@ export default async function GamesPage({
                   <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />
                   {game.metacritic && (
                     <div
-                      className={`absolute top-3 left-3 flex items-center justify-center w-8 h-8 rounded-md font-bold text-xs backdrop-blur-md border ${
+                      className={`absolute top-3 start-3 flex items-center justify-center w-8 h-8 rounded-md font-bold text-xs backdrop-blur-md border ${
                         game.metacritic >= 90
                           ? "bg-green-500/20 text-green-400 border-green-500/50"
                           : game.metacritic >= 75
@@ -152,6 +159,7 @@ export default async function GamesPage({
                     </div>
                   )}
                 </Link>
+
                 <WishlistButton
                   product={{
                     id: game.id,
@@ -160,6 +168,7 @@ export default async function GamesPage({
                     image: game.background_image || "/images/placeholder.jpg",
                   }}
                 />
+
                 <div className="p-4 flex flex-col grow gap-3 pointer-events-none">
                   <div className="grow pointer-events-auto">
                     <Link href={`/games/${game.id}`}>
@@ -182,6 +191,7 @@ export default async function GamesPage({
                       )}
                     </div>
                   </div>
+
                   <div className="pt-3 border-t border-base-800/50 flex items-center justify-between pointer-events-auto">
                     <div className="flex items-center gap-1.5 text-base-400">
                       {game.parent_platforms?.some((p) =>
