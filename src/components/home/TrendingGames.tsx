@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Calendar, ArrowRight, Monitor, Gamepad2, Flame } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import WishlistButton from "../cart/WishlistButton";
+import { useTranslations } from "next-intl";
 
 interface Platform {
   platform: {
@@ -35,6 +36,7 @@ const fetchTrendingGames = async (): Promise<RawgGame[]> => {
 };
 
 export default function TrendingGames() {
+  const t = useTranslations("home.trending");
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["trendingGames"],
     queryFn: fetchTrendingGames,
@@ -45,7 +47,7 @@ export default function TrendingGames() {
       <section className="w-full px-8 lg:px-16 py-12 flex flex-col items-center justify-center min-h-75">
         <div className="w-8 h-8 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin mb-4"></div>
         <p className="text-primary-400 font-mono text-xs animate-pulse">
-          Loading Trending Titles...
+          {t("loading")}
         </p>
       </section>
     );
@@ -59,20 +61,17 @@ export default function TrendingGames() {
         <div className="flex flex-col gap-1">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <Flame size={14} className="text-orange-500 animate-pulse" />
-            Hot & Trending
+            {t("hotTrending")}
           </div>
-          <h2 className="text-3xl md:text-4xl font-black text-base-50 tracking-tight">
-            Popular{" "}
-            <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-400 to-primary-600">
-              Right Now
-            </span>
+          <h2 className="text-3xl md:text-4xl font-black tracking-tight text-transparent bg-clip-text bg-linear-to-r from-primary-400 to-primary-600">
+            {t("popularRightNow")}
           </h2>
         </div>
         <Link
           href="/games"
           className="hidden md:flex items-center gap-2 text-base-300 hover:text-white text-sm font-semibold transition-colors group"
         >
-          View All{" "}
+          {t("viewAll")}{" "}
           <ArrowRight
             size={16}
             className="group-hover:translate-x-1 transition-transform"

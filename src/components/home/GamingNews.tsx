@@ -1,4 +1,5 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import {
@@ -9,6 +10,7 @@ import {
   Gamepad2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl"; 
 
 interface RawgNewsItem {
   id: number;
@@ -29,6 +31,8 @@ const fetchGamingNews = async (): Promise<RawgNewsItem[]> => {
 };
 
 export default function GamingNews() {
+  const t = useTranslations("home.news");
+
   const { data: news = [], isLoading } = useQuery({
     queryKey: ["gamingNews"],
     queryFn: fetchGamingNews,
@@ -56,10 +60,13 @@ export default function GamingNews() {
           </div>
           <div className="flex flex-col">
             <span className="text-primary-400 text-[10px] font-bold tracking-widest uppercase mb-1">
-              Stay Updated
+              {t("stayUpdated")}
             </span>
             <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight drop-shadow-md">
-              Latest <span className="text-primary-400">Drops & News</span>
+              {t("latestDrops").split(" ")[0]}{" "}
+              <span className="text-primary-400">
+                {t("latestDrops").split(" ").slice(1).join(" ")}
+              </span>
             </h2>
           </div>
         </div>
@@ -67,10 +74,10 @@ export default function GamingNews() {
           href="/news"
           className="hidden md:flex items-center gap-1.5 text-base-400 hover:text-white text-xs font-bold tracking-wider uppercase transition-colors group px-4 py-2 rounded-lg bg-base-900/50 hover:bg-primary-600/20 border border-transparent hover:border-primary-500/30"
         >
-          Read All Intel{" "}
+          {t("readAllIntel")}{" "}
           <ArrowRight
             size={14}
-            className="group-hover:translate-x-1 transition-transform"
+            className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
           />
         </Link>
       </div>
@@ -92,7 +99,7 @@ export default function GamingNews() {
             <div className="absolute inset-0 p-8 flex flex-col justify-end z-10">
               <div className="flex items-center gap-3 mb-4">
                 <span className="bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest px-3 py-1.5 rounded-md shadow-[0_0_15px_rgba(170,79,255,0.5)]">
-                  Major Update
+                  {t("majorUpdate")}
                 </span>
                 <span className="flex items-center gap-1.5 text-xs text-base-300 font-medium bg-black/40 backdrop-blur-md px-3 py-1.5 rounded-md border border-white/10">
                   <Calendar size={12} className="text-primary-400" />
@@ -100,7 +107,7 @@ export default function GamingNews() {
                 </span>
               </div>
               <h3 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-4 line-clamp-2 leading-tight group-hover:text-primary-300 transition-colors">
-                {featuredNews.name} : The Next Chapter
+                {featuredNews.name} : {t("nextChapter")}
               </h3>
               <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/10">
                 <div className="flex items-center gap-2">
@@ -109,11 +116,11 @@ export default function GamingNews() {
                     {featuredNews.genres
                       ?.slice(0, 2)
                       .map((g) => g.name)
-                      .join("   ")}
+                      .join(" • ")}
                   </span>
                 </div>
                 <div className="flex items-center gap-2 text-primary-400 font-bold text-sm group-hover:text-primary-300">
-                  View Details{" "}
+                  {t("viewDetails")}{" "}
                   <ArrowUpRight
                     size={18}
                     className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
@@ -141,7 +148,7 @@ export default function GamingNews() {
               <div className="absolute inset-0 p-6 flex flex-col justify-between z-10">
                 <div className="flex justify-between items-start">
                   <span className="bg-white/10 backdrop-blur-md text-white text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded border border-white/10">
-                    {idx === 0 ? "Trending" : "New Release"}
+                    {idx === 0 ? t("trendingBadge") : t("newReleaseBadge")}
                   </span>
                   <ArrowUpRight
                     size={16}
@@ -154,7 +161,7 @@ export default function GamingNews() {
                   </h3>
                   <p className="text-[11px] text-base-400 font-medium flex items-center gap-1.5">
                     <Calendar size={10} className="text-primary-500" />
-                    Released: {newsItem.released}
+                    {t("releasedPrefix")} {newsItem.released}
                   </p>
                 </div>
               </div>

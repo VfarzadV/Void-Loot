@@ -3,7 +3,8 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   ShoppingCart,
   Search,
@@ -54,20 +55,24 @@ const MOCK_NOTIFICATIONS = [
 ];
 
 export default function Navbar() {
+  const tNav = useTranslations("nav");
+  const tCommon = useTranslations("common");
+  const pathname = usePathname();
+  const router = useRouter();
+
   const { toggleCart, items } = useCartStore();
   const { user, isAuthenticated, logout } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const searchInputRef = useRef<HTMLInputElement>(null);
-  const router = useRouter();
 
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
-
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
+
   const unreadCount = notifications.filter((n) => n.unread).length;
 
   useEffect(() => {
@@ -96,7 +101,10 @@ export default function Navbar() {
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      router.push(`/games?search=${encodeURIComponent(searchQuery.trim())}`);
+      const currentLocale = pathname.startsWith("/fa") ? "fa" : "en";
+      router.push(
+        `/${currentLocale}/games?search=${encodeURIComponent(searchQuery.trim())}`,
+      );
       setIsSearchOpen(false);
       setSearchQuery("");
     }
@@ -127,15 +135,15 @@ export default function Navbar() {
         <div className="relative items-center hidden sm:flex">
           <form
             onSubmit={handleSearchSubmit}
-            className={`flex items-center transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${isSearchOpen ? "w-64 opacity-100 mr-2" : "w-0 opacity-0 mr-0"}`}
+            className={`flex items-center transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] overflow-hidden ${isSearchOpen ? "w-64 opacity-100 me-2" : "w-0 opacity-0 me-0"}`}
           >
             <input
               ref={searchInputRef}
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search games..."
-              className="w-full bg-base-900/50 border border-primary-500/50 rounded-full py-2 pl-4 pr-10 text-sm text-white focus:outline-none focus:bg-base-900 focus:border-primary-400 shadow-[inset_0_2px_10px_rgba(0,0,0,0.1),0_0_15px_rgba(170,79,255,0.15)] transition-all"
+              placeholder={tCommon("searchPlaceholder")}
+              className="w-full bg-base-900/50 border border-primary-500/50 rounded-full py-2 ps-4 pe-10 text-sm text-white focus:outline-none focus:bg-base-900 focus:border-primary-400 shadow-[inset_0_2px_10px_rgba(0,0,0,0.1),0_0_15px_rgba(170,79,255,0.15)] transition-all"
             />
             {isSearchOpen && (
               <button
@@ -144,7 +152,7 @@ export default function Navbar() {
                   setIsSearchOpen(false);
                   setSearchQuery("");
                 }}
-                className="absolute right-3 text-base-400 hover:text-rose-400 transition-colors"
+                className="absolute inset-e-3 text-base-400 hover:text-rose-400 transition-colors"
               >
                 <X size={16} />
               </button>
@@ -171,13 +179,15 @@ export default function Navbar() {
               className={`${unreadCount > 0 && !isNotifOpen ? "animate-[ring_4s_ease-in-out_infinite]" : ""}`}
             />
             {isMounted && unreadCount > 0 && (
-              <span className="absolute -top-1 -right-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-base-950"></span>
+              <span className="absolute -top-1 -inset-e-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-base-950"></span>
             )}
           </button>
           {isNotifOpen && (
-            <div className="absolute right-0 top-10 w-80 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
+            <div className="absolute inset-e-0 top-10 w-80 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
               <div className="flex items-center justify-between p-4 border-b border-white/5 bg-base-900/30">
-                <h3 className="text-sm font-black text-white">Notifications</h3>
+                <h3 className="text-sm font-black text-white">
+                  {tNav("notifications")}
+                </h3>
                 {unreadCount > 0 && (
                   <button
                     onClick={() =>
@@ -187,14 +197,14 @@ export default function Navbar() {
                     }
                     className="flex items-center gap-1 text-[10px] font-bold text-primary-400 hover:text-primary-300 transition-colors uppercase tracking-wider"
                   >
-                    <CheckCheck size={12} /> Mark all read
+                    <CheckCheck size={12} /> {tNav("markAllRead")}
                   </button>
                 )}
               </div>
               <div className="max-h-75 overflow-y-auto flex flex-col hide-scrollbar">
                 {notifications.length === 0 ? (
                   <div className="p-6 text-center text-xs text-base-400">
-                    No new notifications.
+                    {tNav("noNotifications")}
                   </div>
                 ) : (
                   notifications.map((notif) => {
@@ -235,9 +245,7 @@ export default function Navbar() {
             </div>
           )}
         </div>
-
         <div className="w-px h-5 bg-white/10 hidden sm:block"></div>
-
         <button
           onClick={toggleCart}
           className="relative text-base-400 hover:text-white transition-colors group"
@@ -247,21 +255,19 @@ export default function Navbar() {
             className="group-hover:scale-110 transition-transform"
           />
           {isMounted && totalItems > 0 && (
-            <span className="absolute -top-1.5 -right-2 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(170,79,255,0.5)] animate-in zoom-in">
+            <span className="absolute -top-1.5 -inset-e-2 bg-primary-500 text-white text-[10px] font-bold w-4 h-4 flex items-center justify-center rounded-full shadow-[0_0_10px_rgba(170,79,255,0.5)] animate-in zoom-in">
               {totalItems}
             </span>
           )}
         </button>
-
         <div className="w-px h-5 bg-white/10"></div>
-
         {isMounted && isAuthenticated && user ? (
           <div className="relative" ref={profileRef}>
             <button
               onClick={() => setIsProfileOpen(!isProfileOpen)}
               className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             >
-              <div className="hidden sm:flex flex-col items-end text-right">
+              <div className="hidden sm:flex flex-col items-end text-end">
                 <span className="text-xs font-bold text-white">
                   {user.name}
                 </span>
@@ -279,22 +285,21 @@ export default function Navbar() {
                 />
               </div>
             </button>
-
             {isProfileOpen && (
-              <div className="absolute right-0 top-12 w-48 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
+              <div className="absolute inset-e-0 top-12 w-48 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
                 <div className="p-2 flex flex-col gap-1">
                   <Link
                     href="/profile"
                     onClick={() => setIsProfileOpen(false)}
                     className="flex items-center gap-2 px-3 py-2 text-sm text-base-300 hover:text-white hover:bg-base-900 rounded-lg transition-colors"
                   >
-                    <User size={16} /> My Profile
+                    <User size={16} /> {tNav("profile")}
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors w-full text-left"
+                    className="flex items-center gap-2 px-3 py-2 text-sm text-rose-400 hover:text-rose-300 hover:bg-rose-500/10 rounded-lg transition-colors w-full text-start"
                   >
-                    <LogOut size={16} /> Sign Out
+                    <LogOut size={16} /> {tNav("signOut")}
                   </button>
                 </div>
               </div>
@@ -306,14 +311,14 @@ export default function Navbar() {
               href="/login"
               className="text-sm font-bold text-base-300 hover:text-white transition-colors hidden sm:block"
             >
-              Log In
+              {tNav("login")}
             </Link>
             <Link
               href="/register"
               className="relative group px-4 py-2 rounded-xl font-bold text-sm text-white overflow-hidden shadow-[0_0_15px_rgba(170,79,255,0.2)] hover:shadow-[0_0_25px_rgba(170,79,255,0.4)] transition-shadow"
             >
               <span className="absolute inset-0 w-full h-full bg-linear-to-r from-primary-600 to-primary-400 group-hover:scale-105 transition-transform duration-300"></span>
-              <span className="relative z-10">Sign Up</span>
+              <span className="relative z-10">{tNav("signUp")}</span>
             </Link>
           </div>
         )}

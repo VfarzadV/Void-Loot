@@ -1,7 +1,9 @@
 "use client";
+
 import { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Flame,
   Plus,
@@ -14,7 +16,22 @@ import {
   Award,
 } from "lucide-react";
 
-const MOCK_POSTS = [
+interface Post {
+  id: number;
+  author: string;
+  avatar: string;
+  role: string;
+  time: string;
+  title: string;
+  content: string;
+  category: string;
+  tags: string[];
+  upvotes: number;
+  comments: number;
+  hot: boolean;
+}
+
+const MOCK_POSTS: Post[] = [
   {
     id: 1,
     author: "NeonNinja",
@@ -62,25 +79,29 @@ const MOCK_POSTS = [
   },
 ];
 
-const CATEGORIES = [
-  "All Topics",
-  "Announcements",
-  "Hardware",
-  "LFG",
-  "Game Reviews",
-  "Support",
-];
-
 export default function CommunityPage() {
+  const t = useTranslations("community");
   const [activeCategory, setActiveCategory] = useState("All Topics");
   const [searchQuery, setSearchQuery] = useState("");
 
-  const filteredPosts = MOCK_POSTS.filter(
-    (post) =>
-      (activeCategory === "All Topics" || post.category === activeCategory) &&
-      (post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        post.content.toLowerCase().includes(searchQuery.toLowerCase())),
-  );
+  const CATEGORIES = [
+    t("allTopics"),
+    t("announcements"),
+    t("hardware"),
+    t("lfg"),
+    t("gameReviews"),
+    t("support"),
+  ];
+
+  const filteredPosts = MOCK_POSTS.filter((post) => {
+    const matchesCategory =
+      activeCategory === t("allTopics") ||
+      post.category.toLowerCase() === activeCategory.toLowerCase();
+    const matchesSearch =
+      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      post.content.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-10 max-w-[1600px] mx-auto overflow-hidden">
@@ -91,37 +112,43 @@ export default function CommunityPage() {
               <Users size={24} className="text-primary-400" />
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-              Void <span className="text-primary-500">Community</span>
+              Void{" "}
+              <span className="text-primary-500">
+                {t("title").replace("Void ", "")}
+              </span>
             </h1>
           </div>
           <p className="text-sm text-base-400 max-w-2xl mt-2">
-            Connect with thousands of gamers, find groups, discuss hardware, and
-            share your ultimate gaming setups.
+            {t("subtitle")}
           </p>
         </div>
-        <button type="button" className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all shrink-0">
-          <Plus size={18} /> Create Post
+        <button
+          type="button"
+          className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all shrink-0"
+        >
+          <Plus size={18} /> {t("createPost")}
         </button>
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         <aside className="lg:col-span-3 flex flex-col gap-6">
           <div className="relative w-full group">
             <Search
               size={18}
-              className="absolute left-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+              className="absolute start-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
             />
             <input
               aria-label="Search community posts"
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="Search forums..."
-              className="w-full bg-base-950 border border-base-800 rounded-xl py-3 pl-11 pr-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
+              placeholder={t("searchPlaceholder")}
+              className="w-full bg-base-950 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
             />
           </div>
           <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-4 flex flex-col gap-2">
-            <h3 className="text-xs font-black text-base-500 uppercase tracking-widest pl-2 mb-2">
-              Spaces
+            <h3 className="text-xs font-black text-base-500 uppercase tracking-widest ps-2 mb-2">
+              {t("spaces")}
             </h3>
             {CATEGORIES.map((cat) => (
               <button
@@ -147,20 +174,34 @@ export default function CommunityPage() {
             ))}
           </div>
         </aside>
+
         <div className="lg:col-span-6 flex flex-col gap-6">
           <div className="flex items-center justify-between bg-base-950/40 p-4 rounded-2xl border border-white/5">
             <div className="flex gap-2">
-              <button type="button" aria-pressed="true" className="px-4 py-2 rounded-lg bg-base-900 text-white text-xs font-bold border border-white/10 flex items-center gap-2">
-                <Flame size={14} className="text-orange-500" /> Hot
+              <button
+                type="button"
+                aria-pressed="true"
+                className="px-4 py-2 rounded-lg bg-base-900 text-white text-xs font-bold border border-white/10 flex items-center gap-2"
+              >
+                <Flame size={14} className="text-orange-500" /> {t("hot")}
               </button>
-              <button type="button" aria-pressed="false" className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors">
-                New
+              <button
+                type="button"
+                aria-pressed="false"
+                className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors"
+              >
+                {t("new")}
               </button>
-              <button type="button" aria-pressed="false" className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors">
-                Top
+              <button
+                type="button"
+                aria-pressed="false"
+                className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors"
+              >
+                {t("top")}
               </button>
             </div>
           </div>
+
           {filteredPosts.length === 0 ? (
             <div className="text-center py-20 text-base-400">
               No posts found for this category or search.
@@ -217,24 +258,36 @@ export default function CommunityPage() {
                   ))}
                 </div>
                 <div className="flex items-center gap-4 pt-4 border-t border-white/5">
-                  <button type="button" aria-label={`Like ${post.title}; ${post.upvotes} likes`} className="flex items-center gap-1.5 text-base-400 hover:text-primary-400 transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-primary-500/30">
+                  <button
+                    type="button"
+                    aria-label={`Like ${post.title}; ${post.upvotes} likes`}
+                    className="flex items-center gap-1.5 text-base-400 hover:text-primary-400 transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-primary-500/30"
+                  >
                     <ThumbsUp size={16} aria-hidden="true" /> {post.upvotes}
                   </button>
-                  <button type="button" className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10">
-                    <MessageCircle size={16} /> {post.comments} Comments
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10"
+                  >
+                    <MessageCircle size={16} /> {post.comments} {t("comments")}
                   </button>
-                  <button type="button" className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold ml-auto">
-                    <Share2 size={16} /> Share
+                  <button
+                    type="button"
+                    className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold ms-auto"
+                  >
+                    <Share2 size={16} /> {t("share")}
                   </button>
                 </div>
               </div>
             ))
           )}
         </div>
+
         <aside className="lg:col-span-3 flex flex-col gap-6">
           <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6">
             <h3 className="text-sm font-black text-white flex items-center gap-2 border-b border-white/5 pb-3 mb-4">
-              <Award size={18} className="text-yellow-500" /> Top Contributors
+              <Award size={18} className="text-yellow-500" />{" "}
+              {t("topContributors")}
             </h3>
             <div className="flex flex-col gap-4">
               {[

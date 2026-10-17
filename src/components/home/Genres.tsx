@@ -1,7 +1,9 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
+import { useTranslations } from "next-intl"; 
 import {
   Swords,
   Crosshair,
@@ -85,6 +87,8 @@ const fetchGenres = async (): Promise<RawgGenre[]> => {
 };
 
 export default function Genres() {
+  const t = useTranslations("home.genres"); 
+
   const { data: genres = [] } = useQuery({
     queryKey: ["genresList"],
     queryFn: fetchGenres,
@@ -98,12 +102,12 @@ export default function Genres() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <span className="w-8 h-0.5 bg-primary-500 rounded-full"></span>
-            Categories
+            {t("categories")}
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-base-50 tracking-tight">
-            Explore by{" "}
+            {t("exploreBy").split(" ")[0]}{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-400 to-primary-600">
-              Genre
+              {t("exploreBy").split(" ").slice(1).join(" ")}
             </span>
           </h2>
         </div>
@@ -148,7 +152,7 @@ export default function Genres() {
                     {genre.name}
                   </h3>
                   <p className="text-sm text-base-300 leading-relaxed group-hover:text-base-200 transition-colors drop-shadow">
-                    {genre.games_count.toLocaleString()} Games
+                    {genre.games_count.toLocaleString()} {t("gamesCount")}
                   </p>
                 </div>
               </div>

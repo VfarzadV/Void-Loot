@@ -3,6 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 const BRANDS = [
   { name: "HyperX", image: "/images/HyperX.jpg" },
@@ -18,20 +19,25 @@ const BRANDS = [
 ];
 
 export default function BrandsRow() {
+  const t = useTranslations("home.brandsAndGifts");
+
   return (
     <section className="w-full px-8 lg:px-16 relative z-10">
       <div className="flex items-end justify-between mb-8 border-b border-white/5 pb-3">
         <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-          Shop by <span className="text-primary-400">Brand</span>
+          {t("shopByBrand").split(" ")[0]}{" "}
+          <span className="text-primary-400">
+            {t("shopByBrand").split(" ").slice(1).join(" ")}
+          </span>
         </h2>
         <Link
           href="/brands"
           className="hidden md:flex items-center gap-1.5 text-primary-400 hover:text-primary-300 text-xs font-bold tracking-wider uppercase transition-colors group"
         >
-          View All{" "}
+          {t("viewAll")}{" "}
           <ArrowRight
             size={14}
-            className="group-hover:translate-x-1 transition-transform"
+            className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
           />
         </Link>
       </div>

@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 import {
   CreditCard,
   Bitcoin,
@@ -19,9 +20,9 @@ import { toast } from "sonner";
 
 export default function CheckoutPage() {
   const router = useRouter();
+  const t = useTranslations("checkout");
   const { items, clearCart } = useCartStore();
   const { user, addOrder } = useAuthStore();
-
   const [isMounted, setIsMounted] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -44,26 +45,21 @@ export default function CheckoutPage() {
     e.preventDefault();
     if (items.length === 0) return;
     setIsProcessing(true);
-
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
-
       const newOrderId = `VOID-${Math.floor(Math.random() * 1000000)}`;
       setOrderId(newOrderId);
-
       if (user && addOrder) {
         const today = new Date().toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
           year: "numeric",
         });
-
         const itemsSummary =
           items.length === 1
             ? `${items[0].quantity}x ${items[0].title}`
             : `${items.length} Items (inc. ${items[0].title})`;
-
         addOrder({
           id: newOrderId,
           date: today,
@@ -72,7 +68,6 @@ export default function CheckoutPage() {
           items: itemsSummary,
         });
       }
-
       clearCart();
       toast.success("Payment successful! Welcome to the Void.");
     }, 2500);
@@ -134,7 +129,7 @@ export default function CheckoutPage() {
           onClick={() => router.back()}
           className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-bold transition-colors"
         >
-          <ArrowLeft size={16} /> Return to Store
+          <ArrowLeft size={16} className="rtl:rotate-180" /> Return to Store
         </button>
       </div>
     );
@@ -148,10 +143,13 @@ export default function CheckoutPage() {
           onClick={() => router.back()}
           className="p-2 rounded-lg bg-base-900 border border-white/5 text-base-400 hover:text-white transition-colors"
         >
-          <ArrowLeft size={18} />
+          <ArrowLeft size={18} className="rtl:rotate-180" />
         </button>
         <h1 className="text-3xl font-black text-white tracking-tight">
-          Secure <span className="text-primary-400">Checkout</span>
+          {t("title").split(" ")[0]}{" "}
+          <span className="text-primary-400">
+            {t("title").split(" ").slice(1).join(" ")}
+          </span>
         </h1>
       </div>
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
@@ -163,15 +161,15 @@ export default function CheckoutPage() {
           >
             <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
-                Billing Information
+                {t("billingInfo")}
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-1.5">
                   <label
                     htmlFor="checkout-first-name"
-                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                   >
-                    First Name
+                    {t("firstName")}
                   </label>
                   <input
                     id="checkout-first-name"
@@ -184,9 +182,9 @@ export default function CheckoutPage() {
                 <div className="flex flex-col gap-1.5">
                   <label
                     htmlFor="checkout-last-name"
-                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                   >
-                    Last Name
+                    {t("lastName")}
                   </label>
                   <input
                     id="checkout-last-name"
@@ -199,9 +197,9 @@ export default function CheckoutPage() {
                 <div className="flex flex-col gap-1.5 md:col-span-2">
                   <label
                     htmlFor="checkout-email"
-                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                   >
-                    Email Address (For digital delivery)
+                    {t("email")}
                   </label>
                   <input
                     id="checkout-email"
@@ -215,13 +213,17 @@ export default function CheckoutPage() {
             </div>
             <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
-                Payment Method
+                {t("paymentMethod")}
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("card")}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "card" ? "border-primary-500 bg-primary-500/10 shadow-[0_0_15px_rgba(170,79,255,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
+                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === "card"
+                      ? "border-primary-500 bg-primary-500/10 shadow-[0_0_15px_rgba(170,79,255,0.2)]"
+                      : "border-base-800 bg-base-900/30 hover:border-white/10"
+                  }`}
                 >
                   <CreditCard
                     size={24}
@@ -232,15 +234,23 @@ export default function CheckoutPage() {
                     }
                   />
                   <span
-                    className={`text-xs font-bold ${paymentMethod === "card" ? "text-primary-400" : "text-base-400"}`}
+                    className={`text-xs font-bold ${
+                      paymentMethod === "card"
+                        ? "text-primary-400"
+                        : "text-base-400"
+                    }`}
                   >
-                    Credit Card
+                    {t("creditCard")}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("crypto")}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "crypto" ? "border-orange-500 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
+                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === "crypto"
+                      ? "border-orange-500 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
+                      : "border-base-800 bg-base-900/30 hover:border-white/10"
+                  }`}
                 >
                   <Bitcoin
                     size={24}
@@ -251,15 +261,23 @@ export default function CheckoutPage() {
                     }
                   />
                   <span
-                    className={`text-xs font-bold ${paymentMethod === "crypto" ? "text-orange-400" : "text-base-400"}`}
+                    className={`text-xs font-bold ${
+                      paymentMethod === "crypto"
+                        ? "text-orange-400"
+                        : "text-base-400"
+                    }`}
                   >
-                    Crypto
+                    {t("crypto")}
                   </span>
                 </button>
                 <button
                   type="button"
                   onClick={() => setPaymentMethod("wallet")}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${paymentMethod === "wallet" ? "border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.2)]" : "border-base-800 bg-base-900/30 hover:border-white/10"}`}
+                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
+                    paymentMethod === "wallet"
+                      ? "border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
+                      : "border-base-800 bg-base-900/30 hover:border-white/10"
+                  }`}
                 >
                   <Wallet
                     size={24}
@@ -270,9 +288,13 @@ export default function CheckoutPage() {
                     }
                   />
                   <span
-                    className={`text-xs font-bold ${paymentMethod === "wallet" ? "text-emerald-400" : "text-base-400"}`}
+                    className={`text-xs font-bold ${
+                      paymentMethod === "wallet"
+                        ? "text-emerald-400"
+                        : "text-base-400"
+                    }`}
                   >
-                    Void Wallet
+                    {t("voidWallet")}
                   </span>
                 </button>
               </div>
@@ -281,9 +303,9 @@ export default function CheckoutPage() {
                   <div className="flex flex-col gap-1.5">
                     <label
                       htmlFor="checkout-card-number"
-                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                     >
-                      Card Number
+                      {t("cardNumber")}
                     </label>
                     <input
                       id="checkout-card-number"
@@ -297,9 +319,9 @@ export default function CheckoutPage() {
                     <div className="flex flex-col gap-1.5">
                       <label
                         htmlFor="checkout-card-expiry"
-                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                       >
-                        Expiry Date
+                        {t("expiryDate")}
                       </label>
                       <input
                         id="checkout-card-expiry"
@@ -312,9 +334,9 @@ export default function CheckoutPage() {
                     <div className="flex flex-col gap-1.5">
                       <label
                         htmlFor="checkout-card-cvc"
-                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1"
+                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
                       >
-                        CVC
+                        {t("cvc")}
                       </label>
                       <input
                         id="checkout-card-cvc"
@@ -333,7 +355,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-900/30 border border-white/5 sticky top-28 flex flex-col gap-6">
             <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
-              Order Summary
+              {t("orderSummary")}
             </h2>
             <div className="flex flex-col gap-4 max-h-75 overflow-y-auto hide-scrollbar">
               {items.map((item) => (
@@ -346,7 +368,7 @@ export default function CheckoutPage() {
                       unoptimized
                       className="object-cover opacity-80"
                     />
-                    <span className="absolute top-1 right-1 bg-primary-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center text-white z-10">
+                    <span className="absolute top-1 inset-e-1 bg-primary-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center text-white z-10">
                       {item.quantity}
                     </span>
                   </div>
@@ -363,22 +385,24 @@ export default function CheckoutPage() {
             </div>
             <div className="flex flex-col gap-3 pt-4 border-t border-white/5 text-sm">
               <div className="flex justify-between items-center text-base-300">
-                <span>Subtotal</span>
+                <span>{t("subtotal")}</span>
                 <span className="font-bold text-white">
                   ${subtotal.toFixed(2)}
                 </span>
               </div>
               <div className="flex justify-between items-center text-base-300">
-                <span>Estimated Tax (5%)</span>
+                <span>{t("tax")}</span>
                 <span className="font-bold text-white">${tax.toFixed(2)}</span>
               </div>
               <div className="flex justify-between items-center text-base-300">
-                <span>Shipping</span>
-                <span className="font-bold text-emerald-400">Free</span>
+                <span>{t("shipping")}</span>
+                <span className="font-bold text-emerald-400">{t("free")}</span>
               </div>
             </div>
             <div className="flex justify-between items-center pt-4 border-t border-white/10">
-              <span className="text-base font-bold text-white">Total</span>
+              <span className="text-base font-bold text-white">
+                {t("total")}
+              </span>
               <span className="text-2xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
                 ${total.toFixed(2)}
               </span>
@@ -391,18 +415,17 @@ export default function CheckoutPage() {
             >
               {isProcessing ? (
                 <>
-                  <Loader2 size={18} className="animate-spin" /> Processing
-                  Payment...
+                  <Loader2 size={18} className="animate-spin" />{" "}
+                  {t("processing")}
                 </>
               ) : (
                 <>
-                  <ShieldCheck size={18} /> Pay ${total.toFixed(2)}
+                  <ShieldCheck size={18} /> {t("payButton")} ${total.toFixed(2)}
                 </>
               )}
             </button>
             <p className="text-[10px] text-center text-base-500 mt-2">
-              By placing your order, you agree to Void Loot&apos;s Terms of
-              Service and Privacy Policy.
+              {t("terms")}
             </p>
           </div>
         </div>

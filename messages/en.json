@@ -28,5 +28,264 @@
     "lootBox": "Void Loot Box",
     "profile": "Profile",
     "settings": "Settings"
+  },
+  "settings": {
+    "title": "Platform Settings",
+    "subtitle": "Manage your account details, security preferences, and connected gaming platforms.",
+    "tabs": {
+      "account": "Account Profile",
+      "security": "Security & Login",
+      "connections": "Connected Apps",
+      "preferences": "App Preferences",
+      "notifications": "Notifications"
+    },
+    "account": {
+      "title": "Public Profile",
+      "desc": "This information will be displayed publicly on your profile.",
+      "displayName": "Display Name",
+      "username": "Username",
+      "bio": "Bio",
+      "bioPlaceholder": "Tell the community about yourself...",
+      "save": "Save Changes"
+    },
+    "security": {
+      "title": "Security & Password",
+      "desc": "Keep your account secure with a strong password and 2FA.",
+      "current": "Current Password",
+      "new": "New Password",
+      "newPlaceholder": "Must be at least 8 characters",
+      "confirm": "Confirm New Password",
+      "confirmPlaceholder": "Must match new password",
+      "updateBtn": "Update Password",
+      "2faTitle": "Two-Factor Authentication (2FA)",
+      "2faEnabled": "Authenticator App is Enabled",
+      "2faDesc": "Your account is protected by an authenticator app.",
+      "disableBtn": "Disable"
+    },
+    "connections": {
+      "title": "Connected Platforms",
+      "desc": "Link your gaming accounts to sync achievements and friends.",
+      "connected": "Connected",
+      "notLinked": "Not Linked",
+      "disconnect": "Disconnect",
+      "connectBtn": "Connect Account"
+    },
+    "preferences": {
+      "title": "App Preferences",
+      "desc": "Customize your Void Loot experience.",
+      "darkMode": "Dark Mode",
+      "lightMode": "Light Mode",
+      "systemSync": "System Sync",
+      "languageRegion": "Language & Region"
+    },
+    "notifications": {
+      "title": "Notification Centers",
+      "desc": "Choose what we email you about.",
+      "order": "Order Updates",
+      "orderDesc": "Shipping, delivery, and refund statuses.",
+      "wishlist": "Wishlist Sales",
+      "wishlistDesc": "When a game on your wishlist goes on sale.",
+      "cloud": "Cloud Rig Status",
+      "cloudDesc": "Server maintenance and queue alerts.",
+      "promo": "Marketing & Promos",
+      "promoDesc": "Special offers and new hardware drops."
+    }
+  },
+  "home": {
+    "hero": {
+      "topTrending": "Top Trending",
+      "exploreGame": "Explore Game",
+      "watchTrailer": "Watch Trailer"
+    },
+    "genres": {
+      "categories": "Categories",
+      "exploreBy": "Explore by Genre",
+      "gamesCount": "Games"
+    },
+    "trending": {
+      "hotTrending": "Hot & Trending",
+      "popularRightNow": "Popular Right Now",
+      "loading": "Loading trending titles...",
+      "viewAll": "View All"
+    },
+    "categories": {
+      "nexusHardware": "Nexus Hardware & Gear",
+      "featuredCategories": "Featured Store Categories",
+      "viewAllProducts": "View All Products",
+      "nextGenConsole": "Next-Gen Console",
+      "psConsoles": "PlayStation Consoles",
+      "psDesc": "Experience exclusive titles in stunning 4K with ultra-high frame rates.",
+      "ultimatePower": "Ultimate Power",
+      "xboxConsoles": "Xbox Consoles",
+      "xboxDesc": "The world's most powerful hardware built for peak gaming performance.",
+      "rigs": "Gaming Rigs & Cases",
+      "rigsDesc": "Custom Rigs & Powerhouses",
+      "keyboards": "Mechanical Keyboards",
+      "keyboardsDesc": "Mechanical & RGB",
+      "headsets": "Gaming Headsets",
+      "headsetsDesc": "Immersive Surround Audio",
+      "chairs": "Gaming Chairs",
+      "chairsDesc": "Ergonomic & Pro Comfort",
+      "nexusGear": "NEXUS GEAR",
+      "exploreProducts": "Explore Products"
+    },
+    "flashSale": {
+      "limitedTime": "Limited Time Offer",
+      "flashSale": "Flash Sale Deals",
+      "endsIn": "Ends in:",
+      "stockLeft": "Stock Left:",
+      "limitedStock": "Limited Stock",
+      "addToCart": "Add to Cart"
+    },
+    "brandsAndGifts": {
+      "shopByBrand": "Shop by Brand",
+      "viewAll": "View All",
+      "digitalGiftCards": "Digital Gift Cards",
+      "instantCode": "Instant Delivery Code"
+    },
+    "featured": {
+      "unlocking": "Unlocking Masterpiece...",
+      "gameOfMonth": "Game of the Month",
+      "metascore": "Metascore",
+      "released": "Released",
+      "getItNow": "Get it Now",
+      "wishlisted": "Wishlisted",
+      "addToWishlist": "Add to Wishlist"
+    },
+    "news": {
+      "stayUpdated": "Stay Updated",
+      "latestDrops": "Latest Drops & News",
+      "readAllIntel": "Read All Intel",
+      "majorUpdate": "Major Update",
+      "nextChapter": "The Next Chapter",
+      "viewDetails": "View Details",
+      "trendingBadge": "Trending",
+      "newReleaseBadge": "New Release",
+      "releasedPrefix": "Released:"
+    },
+    "banner": {
+      "titlePrefix": "JOIN THE",
+      "titleHighlight": "VOID",
+      "titleSuffix": "COMMUNITY",
+      "description": "Unlock exclusive drops and early access. Your journey starts here.",
+      "buttonText": "Enter The Void"
+    },
+    "showcase": {
+      "viewAll": "View All",
+      "addToCart": "Add to Cart"
+    },
+    "popularHardware": {
+      "trendingItems": "Trending Store Items",
+      "mostPopular": "Most Popular Hardware & Gear",
+      "viewAllItems": "View All Items",
+      "inStock": "in stock",
+      "addToCart": "Add to Cart"
+    },
+    "storeFeatures": {
+      "fastDelivery": {
+        "title": "Lightning Fast Delivery",
+        "desc": "Instant codes & express shipping"
+      },
+      "secureCheckout": {
+        "title": "Secure Checkout",
+        "desc": "256-bit encrypted payments"
+      },
+      "returns": {
+        "title": "Hassle-Free Returns",
+        "desc": "7-day money-back guarantee"
+      },
+      "authenticity": {
+        "title": "Verified Authenticity",
+        "desc": "100% genuine original products"
+      }
+    },
+    "platformShowcase": {
+      "playstationTitle": "PlayStation Hits",
+      "pcTitle": "PC Master Race"
+    }
+  },
+  "footer": {
+    "desc": "The ultimate destination for next-gen gamers. Explore massive game libraries, premium hardware, and exclusive digital deals all in one immersive platform.",
+    "platformTitle": "Platform",
+    "browseGames": "Browse Games",
+    "trendingStore": "Trending Store",
+    "flashDeals": "Flash Deals",
+    "voidCommunity": "Void Community",
+    "supportTitle": "Support",
+    "helpCenter": "Help Center (FAQ)",
+    "orderTracking": "Order Tracking",
+    "hardwareCompare": "Hardware Compare",
+    "contactUs": "Contact Us",
+    "stayConnected": "Stay Connected",
+    "subscribeDesc": "Subscribe to get special offers, free giveaways, and once-in-a-lifetime deals before anyone else.",
+    "emailPlaceholder": "Enter your email address",
+    "subscribeBtn": "Subscribe Now",
+    "allRights": "All rights reserved.",
+    "designedBy": "Designed by Farzad.",
+    "privacyPolicy": "Privacy Policy",
+    "termsOfService": "Terms of Service",
+    "cookieSettings": "Cookie Settings"
+  },
+  "checkout": {
+    "title": "Secure Checkout",
+    "subtitle": "Enter your billing details, select a payment method, and complete your purchase.",
+    "billingInfo": "Billing Information",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "email": "Email Address (For digital delivery)",
+    "paymentMethod": "Payment Method",
+    "creditCard": "Credit Card",
+    "crypto": "Crypto",
+    "voidWallet": "Void Wallet",
+    "cardNumber": "Card Number",
+    "expiryDate": "Expiry Date",
+    "cvc": "CVC",
+    "orderSummary": "Order Summary",
+    "subtotal": "Subtotal",
+    "tax": "Estimated Tax (5%)",
+    "shipping": "Shipping",
+    "free": "Free",
+    "total": "Total",
+    "payButton": "Pay",
+    "processing": "Processing Payment...",
+    "terms": "By placing your order, you agree to Void Loot's Terms of Service and Privacy Policy."
+  },
+  "cloud": {
+    "title": "Void Cloud",
+    "subtitle": "Enterprise-Grade Gaming Servers",
+    "ping": "PING",
+    "activeRig": "Active Cloud Rig",
+    "rigDesc": "Your dedicated instance is running optimally. Seamlessly stream AAA titles with ultra-low latency.",
+    "targetRes": "Target Res",
+    "targetFps": "Target FPS",
+    "rayTracing": "Ray Tracing",
+    "sessionLimit": "Session Limit",
+    "unlimited": "Unlimited",
+    "resumePlaying": "Resume Playing",
+    "viewAll": "View All",
+    "cloudLibrary": "Cloud Library",
+    "allGames": "All Games",
+    "readyToPlay": "Ready to Play",
+    "cloudReady": "Cloud Ready",
+    "streamNow": "Stream Now"
+  },
+  "community": {
+    "title": "Void Community",
+    "subtitle": "Connect with thousands of gamers, find groups, discuss hardware, and share your ultimate gaming setups.",
+    "createPost": "Create Post",
+    "searchPlaceholder": "Search forums...",
+    "spaces": "Spaces",
+    "allTopics": "All Topics",
+    "announcements": "Announcements",
+    "hardware": "Hardware",
+    "lfg": "LFG",
+    "gameReviews": "Game Reviews",
+    "support": "Support",
+    "hot": "Hot",
+    "new": "New",
+    "top": "Top",
+    "comments": "Comments",
+    "share": "Share",
+    "topContributors": "Top Contributors"
   }
 }

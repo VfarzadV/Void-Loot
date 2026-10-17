@@ -1,6 +1,8 @@
 "use client";
+
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useTranslations } from "next-intl"; 
 import {
   Home,
   LayoutGrid,
@@ -43,16 +45,18 @@ const NavItem = ({
       }`}
     />
     {active && (
-      <span className="absolute left-0 w-1 h-7 bg-primary-500 rounded-r-full shadow-[0_0_10px_rgba(170,79,255,0.8)]" />
+      <span className="absolute right-0 w-1 h-7 bg-primary-500 rounded-l-full shadow-[0_0_10px_rgba(170,79,255,0.8)]" />
     )}
   </Link>
 );
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const t = useTranslations("sidebar");
 
   return (
-    <aside className="fixed left-0 top-0 h-screen w-20 flex flex-col items-center py-6 bg-base-950/90 backdrop-blur-xl border-r border-base-800/40 z-50">
+    <aside className="fixed inset-s-0 top-0 h-screen w-20 flex flex-col items-center py-6 bg-base-950/90 backdrop-blur-xl border-e border-base-800/40 z-50">
+      {" "}
       <Link
         href="/"
         aria-label="Void Loot home"
@@ -61,56 +65,62 @@ export default function Sidebar() {
         <Hexagon size={28} strokeWidth={2.5} />
       </Link>
       <nav aria-label="Main navigation" className="flex flex-col gap-3 grow">
-        <NavItem href="/" label="Home" icon={Home} active={pathname === "/"} />
+        {/* 3. جایگزین کردن متن‌های ثابت با متغیرهای ترجمه */}
+        <NavItem
+          href="/"
+          label={t("home")}
+          icon={Home}
+          active={pathname === "/en" || pathname === "/fa"}
+        />
         <NavItem
           href="/shop"
-          label="Hardware shop"
+          label={t("hardwareShop")}
           icon={LayoutGrid}
-          active={pathname.startsWith("/shop")}
+          active={pathname.includes("/shop")}
         />
         <NavItem
           href="/games"
-          label="Games"
+          label={t("games")}
           icon={Gamepad2}
-          active={pathname.startsWith("/games")}
+          active={pathname.includes("/games")}
         />
         <NavItem
           href="/media"
-          label="Media"
+          label={t("media")}
           icon={Film}
-          active={pathname.startsWith("/media")}
+          active={pathname.includes("/media")}
         />
         <NavItem
           href="/live"
-          label="Live streams"
+          label={t("liveStreams")}
           icon={Radio}
-          active={pathname.startsWith("/live")}
+          active={pathname.includes("/live")}
         />
         <NavItem
           href="/cloud"
-          label="Cloud gaming"
+          label={t("cloudGaming")}
           icon={Cloud}
-          active={pathname.startsWith("/cloud")}
+          active={pathname.includes("/cloud")}
         />
         <NavItem
           href="/loot-box"
-          label="Void Loot Box"
+          label={t("lootBox")}
           icon={Box}
-          active={pathname.startsWith("/loot-box")}
+          active={pathname.includes("/loot-box")}
         />
       </nav>
       <div className="flex flex-col gap-3 mt-auto">
         <NavItem
           href="/profile"
-          label="Profile"
+          label={t("profile")}
           icon={User}
-          active={pathname.startsWith("/profile")}
+          active={pathname.includes("/profile")}
         />
         <NavItem
           href="/settings"
-          label="Settings"
+          label={t("settings")}
           icon={Settings}
-          active={pathname.startsWith("/settings")}
+          active={pathname.includes("/settings")}
         />
       </div>
     </aside>

@@ -1,8 +1,10 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { ArrowRight, ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useTranslations } from "next-intl";
 import { toast } from "sonner";
 
 const GIFT_CARDS = [
@@ -38,25 +40,28 @@ const GIFT_CARDS = [
 
 export default function GiftCards() {
   const addItem = useCartStore((state) => state.addItem);
+  const t = useTranslations("home.brandsAndGifts");
 
   return (
     <section className="w-full px-8 lg:px-16 relative z-10">
       <div className="flex items-end justify-between mb-6 border-b border-white/5 pb-3">
         <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight">
-          Digital <span className="text-primary-400">Gift Cards</span>
+          {t("digitalGiftCards").split(" ")[0]}{" "}
+          <span className="text-primary-400">
+            {t("digitalGiftCards").split(" ").slice(1).join(" ")}
+          </span>
         </h2>
         <Link
           href="/shop"
           className="hidden md:flex items-center gap-1.5 text-primary-400 hover:text-primary-300 text-xs font-bold tracking-wider uppercase transition-colors group"
         >
-          View All{" "}
+          {t("viewAll")}{" "}
           <ArrowRight
             size={14}
-            className="group-hover:translate-x-1 transition-transform"
+            className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
           />
         </Link>
       </div>
-
       <div className="grid grid-cols-2 md:grid-cols-4 gap-5">
         {GIFT_CARDS.map((card) => (
           <div
@@ -77,7 +82,7 @@ export default function GiftCards() {
               <h3 className="text-sm font-bold text-base-50 group-hover:text-primary-300 transition-colors">
                 {card.title} {card.value}
               </h3>
-              <p className="text-[10px] text-base-400">Instant Delivery Code</p>
+              <p className="text-[10px] text-base-400">{t("instantCode")}</p>
             </div>
             <div className="w-full pt-4 border-t border-base-800/50 flex items-center justify-between">
               <span className="text-lg font-black text-white">

@@ -1,10 +1,12 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { Star, ArrowRight, Heart } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useQuery } from "@tanstack/react-query";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useTranslations } from "next-intl"; 
 
 interface Product {
   id: number;
@@ -32,6 +34,7 @@ export default function PopularHardware() {
   });
   const addItem = useCartStore((state) => state.addItem);
   const { toggleItem, isInWishlist } = useWishlistStore();
+  const t = useTranslations("home.popularHardware"); 
 
   if (isLoading) {
     return (
@@ -71,12 +74,12 @@ export default function PopularHardware() {
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <span className="w-8 h-0.5 bg-purple-500 rounded-full"></span>
-            Trending Store Items
+            {t("trendingItems")}
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-base-50 tracking-tight">
-            Most Popular{" "}
+            {t("mostPopular").split(" ")[0]}{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-purple-600">
-              Hardware & Gear
+              {t("mostPopular").split(" ").slice(1).join(" ")}
             </span>
           </h2>
         </div>
@@ -84,10 +87,10 @@ export default function PopularHardware() {
           href="/shop/popular"
           className="hidden md:flex items-center gap-2 text-base-300 hover:text-white font-semibold transition-colors group text-sm"
         >
-          View All Items{" "}
+          {t("viewAllItems")}{" "}
           <ArrowRight
             size={16}
-            className="group-hover:translate-x-1 transition-transform"
+            className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
           />
         </Link>
       </div>
@@ -147,7 +150,7 @@ export default function PopularHardware() {
                 </div>
                 <span className="font-bold text-white">{product.rating}</span>
                 <span className="text-base-500">
-                  ({product.stock} in stock)
+                  ({product.stock} {t("inStock")})
                 </span>
               </div>
             </div>
@@ -167,7 +170,7 @@ export default function PopularHardware() {
                 }}
                 className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
               >
-                Add to Cart
+                {t("addToCart")}
               </button>
             </div>
           </div>

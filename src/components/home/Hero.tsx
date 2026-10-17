@@ -4,13 +4,8 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useQuery } from "@tanstack/react-query";
-import {
-  ChevronRight,
-  Play,
-  Star,
-  Calendar,
-  Gamepad2,
-} from "lucide-react";
+import { useTranslations } from "next-intl";
+import { ChevronRight, Play, Star, Calendar, Gamepad2 } from "lucide-react";
 
 interface RawgGenre {
   name: string;
@@ -73,6 +68,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [isLayoutHovered, setIsLayoutHovered] = useState(false);
+  const t = useTranslations("home.hero");
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["heroGames", slugs],
     queryFn: () => fetchHeroGames(slugs),
@@ -141,7 +137,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
         <div className="flex flex-col items-start gap-4 glass-panel p-6 lg:p-8 border-l-4 border-l-primary-500/80 bg-base-900/30 backdrop-blur-xl transition-all duration-700 ease-in-out">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary-500/10 border border-primary-500/20 text-primary-400 text-[10px] font-bold tracking-widest uppercase">
             <span className="w-2 h-2 rounded-full bg-primary-500 animate-pulse"></span>
-            RAWG Top Trending
+            {t("topTrending")}
           </div>
           <div className="min-h-24 flex flex-col justify-center">
             <h1
@@ -184,7 +180,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
               href={`/games/${activeGame.id}`}
               className="group flex items-center gap-3 bg-base-50 hover:bg-white text-base-950 px-6 py-3 rounded-xl font-bold transition-all duration-300 shadow-[0_0_20px_rgba(255,255,255,0.1)]"
             >
-              Explore Game{" "}
+              {t("exploreGame")}{" "}
               <ChevronRight
                 size={18}
                 className="group-hover:translate-x-1 transition-transform"
@@ -198,7 +194,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                 size={18}
                 className="text-primary-400 group-hover:scale-110 transition-transform"
               />{" "}
-              Watch Trailer
+              {t("watchTrailer")}
             </Link>
           </div>
         </div>

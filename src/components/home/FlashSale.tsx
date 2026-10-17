@@ -5,6 +5,7 @@ import { useQuery } from "@tanstack/react-query";
 import { Zap, Clock, Star } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import WishlistButton from "../cart/WishlistButton";
+import { useTranslations } from "next-intl";
 
 interface DealProduct {
   id: number;
@@ -27,6 +28,7 @@ const fetchFlashDeals = async (): Promise<DealProduct[]> => {
 };
 
 export default function FlashSale() {
+  const t = useTranslations("home.flashSale");
   const [timeLeft, setTimeLeft] = useState({
     hours: 8,
     minutes: 42,
@@ -61,20 +63,20 @@ export default function FlashSale() {
         <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-purple-500/10 rounded-full blur-3xl pointer-events-none" />
         <div className="flex flex-col gap-2 relative z-10">
           <div className="flex items-center gap-2 text-purple-400 text-xs font-bold tracking-widest uppercase">
-            <Zap size={16} className="text-yellow-400 animate-bounce" /> Limited
-            Time Offer
+            <Zap size={16} className="text-yellow-400 animate-bounce" />{" "}
+            {t("limitedTime")}
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-            Flash{" "}
+            {t("flashSale").split(" ")[0]}{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-purple-400 to-pink-500">
-              Sale Deals
+              {t("flashSale").split(" ").slice(1).join(" ")}
             </span>
           </h2>
         </div>
         <div className="flex items-center gap-3 relative z-10">
           <div className="flex items-center gap-1.5 text-xs text-base-300 font-semibold mr-2">
-            <Clock size={16} className="text-purple-400 animate-pulse" /> Ends
-            in:
+            <Clock size={16} className="text-purple-400 animate-pulse" />{" "}
+            {t("endsIn")}
           </div>
           <div className="flex items-center gap-2 font-mono font-bold text-white">
             <span className="bg-purple-900/60 border border-purple-500/40 px-3 py-1.5 rounded-xl shadow-md">
@@ -140,8 +142,10 @@ export default function FlashSale() {
                 </div>
                 <div className="flex flex-col gap-1.5 mt-2">
                   <div className="flex justify-between text-[10px] text-base-400 font-medium">
-                    <span>Stock Left: {deal.stock}</span>
-                    <span className="text-pink-400">Limited Stock</span>
+                    <span>
+                      {t("stockLeft")} {deal.stock}
+                    </span>
+                    <span className="text-pink-400">{t("limitedStock")}</span>
                   </div>
                   <div className="w-full h-1.5 bg-base-900 rounded-full overflow-hidden border border-purple-500/20">
                     <div
@@ -174,7 +178,7 @@ export default function FlashSale() {
                   }}
                   className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
                 >
-                  Add to Cart
+                  {t("addToCart")}
                 </button>
               </div>
             </div>

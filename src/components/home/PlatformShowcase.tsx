@@ -1,9 +1,11 @@
 "use client";
+
 import Link from "next/link";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
 import { ArrowRight, Monitor, Gamepad, Star } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useTranslations } from "next-intl";
 import WishlistButton from "../cart/WishlistButton";
 
 interface PlatformShowcaseProps {
@@ -11,6 +13,7 @@ interface PlatformShowcaseProps {
   title: string;
   icon: "pc" | "playstation";
 }
+
 interface RawgGame {
   id: number;
   name: string;
@@ -35,6 +38,7 @@ export default function PlatformShowcase({
 }: PlatformShowcaseProps) {
   const addItem = useCartStore((state) => state.addItem);
   const IconComponent = icon === "playstation" ? Gamepad : Monitor;
+  const t = useTranslations("home.showcase"); 
 
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["platformGames", platformId],
@@ -60,10 +64,10 @@ export default function PlatformShowcase({
           href={`/games?platform=${platformId}`}
           className="hidden md:flex items-center gap-1.5 text-primary-400 hover:text-primary-300 text-xs font-bold tracking-wider uppercase transition-colors group"
         >
-          View All{" "}
+          {t("viewAll")}{" "}
           <ArrowRight
             size={14}
-            className="group-hover:translate-x-1 transition-transform"
+            className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
           />
         </Link>
       </div>
@@ -134,7 +138,7 @@ export default function PlatformShowcase({
                     }}
                     className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
                   >
-                    Add to Cart
+                    {t("addToCart")}
                   </button>
                 </div>
               </div>

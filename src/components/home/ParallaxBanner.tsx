@@ -1,7 +1,12 @@
+"use client";
+
 import Link from "next/link";
 import { Hexagon, ArrowRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 export default function ParallaxBanner() {
+  const t = useTranslations("home.banner");
+
   return (
     <section
       className="relative w-full max-w-7xl mx-auto h-64 flex items-center justify-center overflow-hidden border border-primary-500/20 rounded-2xl my-8 bg-fixed bg-center bg-cover"
@@ -19,10 +24,12 @@ export default function ParallaxBanner() {
           strokeWidth={2}
         />
         <h2 className="text-2xl md:text-4xl font-black text-white tracking-tighter drop-shadow-md">
-          JOIN THE <span className="text-primary-400">VOID</span> COMMUNITY
+          {t("titlePrefix")}{" "}
+          <span className="text-primary-400">{t("titleHighlight")}</span>{" "}
+          {t("titleSuffix")}
         </h2>
         <p className="text-base-300 text-sm leading-relaxed max-w-md">
-          Unlock exclusive drops and early access. Your journey starts here.
+          {t("description")}
         </p>
         <Link
           href="/register"
@@ -30,10 +37,10 @@ export default function ParallaxBanner() {
         >
           <span className="absolute inset-0 w-full h-full bg-linear-to-r from-primary-600 to-primary-400 transition-transform duration-300"></span>
           <span className="relative z-10 flex items-center gap-2">
-            Enter The Void{" "}
+            {t("buttonText")}{" "}
             <ArrowRight
               size={16}
-              className="group-hover:translate-x-1 transition-transform"
+              className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
             />
           </span>
         </Link>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Trophy, Calendar, Download, Plus, Heart } from "lucide-react";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useTranslations } from "next-intl";
 
 interface RawgGame {
   id: number;
@@ -18,8 +19,8 @@ interface RawgGame {
 export default function FeaturedGame({ slug }: { slug: string }) {
   const [game, setGame] = useState<RawgGame | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-
   const { toggleItem, isInWishlist } = useWishlistStore();
+  const t = useTranslations("home.featured"); 
 
   useEffect(() => {
     async function fetchFeaturedGame() {
@@ -48,7 +49,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
         <div className="flex items-center gap-3 text-yellow-500/50 relative z-10">
           <Trophy className="animate-bounce" size={28} />
           <span className="font-bold tracking-widest uppercase text-sm">
-            Unlocking Masterpiece...
+            {t("unlocking")}
           </span>
         </div>
       </section>
@@ -56,6 +57,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
   }
 
   if (!game) return null;
+
   const isWishlisted = isInWishlist(game.id);
 
   return (
@@ -73,10 +75,10 @@ export default function FeaturedGame({ slug }: { slug: string }) {
         <div className="absolute inset-0 bg-linear-to-b from-base-950 via-transparent to-transparent opacity-80" />
       </div>
       <div className="container mx-auto px-6 lg:px-12 relative z-10 w-full flex justify-start">
-        <div className="max-w-2xl flex flex-col gap-5 glass-panel p-6 md:p-8 border-l-4 border-l-yellow-500/80 bg-base-950/40 backdrop-blur-xl hover:bg-base-950/50 transition-colors duration-500">
+        <div className="max-w-2xl flex flex-col gap-5 glass-panel p-6 md:p-8 border-s-4 border-s-yellow-500/80 bg-base-950/40 backdrop-blur-xl hover:bg-base-950/50 transition-colors duration-500">
           <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-yellow-500/10 border border-yellow-500/20 text-yellow-500 text-[10px] font-bold tracking-widest uppercase w-fit shadow-[0_0_15px_rgba(234,179,8,0.2)]">
             <Trophy size={12} />
-            Game of the Month
+            {t("gameOfMonth")}
           </div>
           <h2 className="text-4xl md:text-5xl font-black text-base-50 tracking-tight leading-none drop-shadow-lg">
             {game.name}
@@ -91,7 +93,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
                   {game.metacritic}
                 </div>
                 <span className="text-[10px] text-base-400 uppercase tracking-widest font-semibold">
-                  Metascore
+                  {t("metascore")}
                 </span>
               </div>
             )}
@@ -106,7 +108,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
                     {game.released.substring(0, 4)}
                   </span>
                   <span className="text-[10px] text-base-400 uppercase tracking-widest">
-                    Released
+                    {t("released")}
                   </span>
                 </div>
               </div>
@@ -121,7 +123,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
                 size={18}
                 className="group-hover:-translate-y-1 transition-transform"
               />
-              Get it Now
+              {t("getItNow")}
             </Link>
             <button
               type="button"
@@ -144,7 +146,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
                   className="text-base-400 group-hover:text-yellow-400 transition-colors"
                 />
               )}
-              {isWishlisted ? "Wishlisted" : "Add to Wishlist"}
+              {isWishlisted ? t("wishlisted") : t("addToWishlist")}
             </button>
           </div>
         </div>

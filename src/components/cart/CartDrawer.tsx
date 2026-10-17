@@ -1,9 +1,11 @@
 "use client";
+
 import { useState, useEffect, useRef } from "react";
 import Image from "next/image";
 import { X, ShoppingBag, Trash2, Plus, Minus, ArrowRight } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
 
 export default function CartDrawer() {
   const { isOpen, toggleCart, items, removeItem, updateQuantity, clearCart } =
@@ -11,6 +13,8 @@ export default function CartDrawer() {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const drawerRef = useRef<HTMLDivElement>(null);
+  const tNav = useTranslations("nav");
+  const tCommon = useTranslations("common");
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
@@ -19,7 +23,6 @@ export default function CartDrawer() {
 
   useEffect(() => {
     if (!isOpen || !drawerRef.current) return;
-
     const drawer = drawerRef.current;
     const previouslyFocused =
       document.activeElement instanceof HTMLElement
@@ -39,12 +42,10 @@ export default function CartDrawer() {
         toggleCart();
         return;
       }
-
       if (event.key !== "Tab") return;
       const focusable = focusableElements();
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
-
       if (!first || !last) {
         event.preventDefault();
         drawer.focus();
@@ -106,7 +107,7 @@ export default function CartDrawer() {
               className="text-primary-500"
               aria-hidden="true"
             />{" "}
-            My Loot
+            {tNav("myLoot")}
           </h2>
           <button
             onClick={toggleCart}
@@ -121,7 +122,7 @@ export default function CartDrawer() {
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 opacity-50">
               <ShoppingBag size={48} className="text-base-600" />
               <p className="text-sm font-bold text-base-400">
-                Your cart is empty.
+                {tNav("emptyCart")}
               </p>
             </div>
           ) : (
@@ -161,7 +162,6 @@ export default function CartDrawer() {
                         onClick={() =>
                           updateQuantity(item.id, item.quantity - 1)
                         }
-                        aria-label={`Decrease quantity of ${item.title}`}
                         className="text-base-400 hover:text-white"
                       >
                         <Minus size={14} aria-hidden="true" />
@@ -173,7 +173,6 @@ export default function CartDrawer() {
                         onClick={() =>
                           updateQuantity(item.id, item.quantity + 1)
                         }
-                        aria-label={`Increase quantity of ${item.title}`}
                         className="text-base-400 hover:text-white"
                       >
                         <Plus size={14} aria-hidden="true" />
@@ -189,7 +188,7 @@ export default function CartDrawer() {
           <div className="p-6 border-t border-white/5 bg-base-950 shrink-0 flex flex-col gap-4">
             <div className="flex items-center justify-between">
               <span className="text-sm text-base-400 font-bold uppercase tracking-wider">
-                Total
+                {tCommon("total")}
               </span>
               <span className="text-2xl font-black text-white">
                 ${totalPrice.toFixed(2)}
@@ -202,18 +201,18 @@ export default function CartDrawer() {
               }}
               className="w-full flex items-center justify-center gap-2 py-4 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all group"
             >
-              Proceed to Checkout{" "}
+              {tNav("checkout")}{" "}
               <ArrowRight
                 size={18}
                 aria-hidden="true"
-                className="group-hover:translate-x-1 transition-transform"
+                className="group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform"
               />
             </button>
             <button
               onClick={clearCart}
               className="text-xs font-bold text-base-500 hover:text-white transition-colors text-center w-full"
             >
-              Clear Cart
+              {tNav("clearCart")}
             </button>
           </div>
         )}

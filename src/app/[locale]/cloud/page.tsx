@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   Cloud,
   Wifi,
@@ -104,6 +105,8 @@ const CLOUD_LIBRARY: CloudGame[] = [
 ];
 
 export default function CloudGamingPage() {
+  const t = useTranslations("cloud");
+
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-8 max-w-[1600px] mx-auto overflow-hidden">
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-10 pb-6 border-b border-white/5">
@@ -113,13 +116,13 @@ export default function CloudGamingPage() {
           </div>
           <div className="flex flex-col gap-1">
             <h1 className="text-3xl md:text-5xl font-black text-white tracking-tight">
-              Void
+              Void{" "}
               <span className="text-primary-400 drop-shadow-[0_0_15px_rgba(170,79,255,0.5)]">
                 Cloud
               </span>
             </h1>
             <p className="text-xs text-base-400 font-bold tracking-widest uppercase">
-              Enterprise-Grade Gaming Servers
+              {t("subtitle")}
             </p>
           </div>
         </div>
@@ -133,11 +136,12 @@ export default function CloudGamingPage() {
           <div className="flex items-center gap-2 bg-emerald-500/10 border border-emerald-500/20 px-4 py-2.5 rounded-xl shadow-[0_0_15px_rgba(16,185,129,0.1)]">
             <Wifi size={16} className="text-emerald-400 animate-pulse" />
             <span className="text-xs font-bold text-emerald-400 tracking-wider">
-              PING: 12ms
+              {t("ping")}: 12ms
             </span>
           </div>
         </div>
       </div>
+
       <div className="w-full grid lg:grid-cols-3 gap-6 mb-16">
         <div className="lg:col-span-2 relative overflow-hidden rounded-3xl glass-panel bg-base-950/80 p-8 md:p-10 flex flex-col justify-between min-h-85 border border-primary-500/20 hover:border-primary-500/40 transition-colors">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(170,79,255,0.15)_0%,transparent_60%)] pointer-events-none" />
@@ -157,15 +161,14 @@ export default function CloudGamingPage() {
                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-primary-500"></span>
                 </span>
                 <span className="text-primary-400 text-[10px] font-black uppercase tracking-widest">
-                  Active Cloud Rig
+                  {t("activeRig")}
                 </span>
               </div>
               <h2 className="text-3xl md:text-4xl font-black text-white drop-shadow-md">
                 NVIDIA RTX 4080
               </h2>
               <p className="text-sm text-base-400 font-medium max-w-sm leading-relaxed mt-1">
-                Your dedicated instance is running optimally. Seamlessly stream
-                AAA titles with ultra-low latency.
+                {t("rigDesc")}
               </p>
             </div>
             <div className="flex items-center gap-3 bg-base-900/50 backdrop-blur-md p-2 rounded-2xl border border-white/5 shrink-0">
@@ -180,48 +183,51 @@ export default function CloudGamingPage() {
               </div>
             </div>
           </div>
+
           <div className="relative z-10 grid grid-cols-2 sm:grid-cols-4 gap-4 mt-10">
             <div className="flex flex-col gap-1.5 glass-panel bg-base-950/40 p-4 rounded-2xl border border-white/5">
               <div className="flex items-center gap-1.5 text-[10px] text-base-400 uppercase tracking-wider font-bold">
-                <Monitor size={12} /> Target Res
+                <Monitor size={12} /> {t("targetRes")}
               </div>
               <span className="text-sm font-black text-white">4K UHD HDR</span>
             </div>
             <div className="flex flex-col gap-1.5 glass-panel bg-base-950/40 p-4 rounded-2xl border border-white/5">
               <div className="flex items-center gap-1.5 text-[10px] text-base-400 uppercase tracking-wider font-bold">
-                <Zap size={12} /> Target FPS
+                <Zap size={12} /> {t("targetFps")}
               </div>
               <span className="text-sm font-black text-white">120 FPS</span>
             </div>
             <div className="flex flex-col gap-1.5 glass-panel bg-base-950/40 p-4 rounded-2xl border border-primary-500/20 relative overflow-hidden">
               <div className="absolute inset-0 bg-primary-500/5" />
               <div className="flex items-center gap-1.5 text-[10px] text-primary-300 uppercase tracking-wider font-bold relative z-10">
-                <Cpu size={12} /> Ray Tracing
+                <Cpu size={12} /> {t("rayTracing")}
               </div>
               <span className="text-sm font-black text-primary-400 relative z-10 drop-shadow-[0_0_8px_rgba(170,79,255,0.8)]">
-                Enabled (DLSS 3)
+                DLSS 3
               </span>
             </div>
             <div className="flex flex-col gap-1.5 glass-panel bg-base-950/40 p-4 rounded-2xl border border-white/5">
               <div className="flex items-center gap-1.5 text-[10px] text-base-400 uppercase tracking-wider font-bold">
-                <Clock size={12} /> Session Limit
+                <Clock size={12} /> {t("sessionLimit")}
               </div>
               <span className="text-sm font-black text-emerald-400">
-                Unlimited
+                {t("unlimited")}
               </span>
             </div>
           </div>
         </div>
+
         <div className="lg:col-span-1 flex flex-col gap-5">
           <div className="flex items-center justify-between border-b border-white/5 pb-3">
             <h3 className="text-lg font-black text-white flex items-center gap-2">
-              <Activity size={18} className="text-primary-500" /> Resume Playing
+              <Activity size={18} className="text-primary-500" />{" "}
+              {t("resumePlaying")}
             </h3>
             <Link
               href="#"
               className="text-[10px] font-bold text-primary-400 uppercase tracking-wider hover:text-primary-300"
             >
-              View All
+              {t("viewAll")}
             </Link>
           </div>
           <div className="flex flex-col gap-4 h-full">
@@ -242,13 +248,13 @@ export default function CloudGamingPage() {
                     <div className="w-8 h-8 rounded-full bg-primary-600 flex items-center justify-center shadow-[0_0_15px_rgba(170,79,255,0.6)]">
                       <Play
                         size={14}
-                        className="text-white ml-0.5"
+                        className="text-white ms-0.5"
                         fill="currentColor"
                       />
                     </div>
                   </div>
                 </div>
-                <div className="flex flex-col grow pr-2">
+                <div className="flex flex-col grow pe-2">
                   <h4 className="text-sm font-bold text-white line-clamp-1 group-hover:text-primary-400 transition-colors">
                     {game.title}
                   </h4>
@@ -273,18 +279,19 @@ export default function CloudGamingPage() {
           </div>
         </div>
       </div>
+
       <div className="flex flex-col gap-8">
         <div className="flex items-center justify-between border-b border-white/5 pb-4">
           <h3 className="text-xl md:text-2xl font-black text-white flex items-center gap-3">
             <span className="w-1.5 h-6 bg-primary-500 rounded-full"></span>
-            Cloud Library
+            {t("cloudLibrary")}
           </h3>
           <div className="flex items-center gap-2">
             <span className="px-3 py-1 rounded-lg bg-base-900 border border-white/5 text-xs font-bold text-white">
-              All Games
+              {t("allGames")}
             </span>
             <span className="px-3 py-1 rounded-lg text-xs font-bold text-base-400 hover:text-white cursor-pointer transition-colors">
-              Ready to Play
+              {t("readyToPlay")}
             </span>
           </div>
         </div>
@@ -303,12 +310,16 @@ export default function CloudGamingPage() {
                   className="object-cover transition-transform duration-700 group-hover:scale-105 opacity-70 group-hover:opacity-100"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/20 to-transparent" />
-                <div className="absolute top-3 left-3 bg-base-950/80 backdrop-blur-md border border-primary-500/30 text-primary-400 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_10px_rgba(170,79,255,0.2)] flex items-center gap-1.5">
-                  <Cloud size={10} /> Cloud Ready
+                <div className="absolute top-3 inset-s-3 bg-base-950/80 backdrop-blur-md border border-primary-500/30 text-primary-400 text-[9px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_10px_rgba(170,79,255,0.2)] flex items-center gap-1.5">
+                  <Cloud size={10} /> {t("cloudReady")}
                 </div>
                 <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10 scale-90 group-hover:scale-100 transform bg-black/30 backdrop-blur-sm">
-                  <button type="button" aria-label={`Stream ${game.title} now`} className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 text-white font-black text-sm shadow-[0_0_30px_rgba(170,79,255,0.6)] hover:bg-primary-500 hover:scale-105 transition-all">
-                    <Play size={16} fill="currentColor" /> Stream Now
+                  <button
+                    type="button"
+                    aria-label={`Stream ${game.title} now`}
+                    className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600 text-white font-black text-sm shadow-[0_0_30px_rgba(170,79,255,0.6)] hover:bg-primary-500 hover:scale-105 transition-all"
+                  >
+                    <Play size={16} fill="currentColor" /> {t("streamNow")}
                   </button>
                 </div>
               </div>

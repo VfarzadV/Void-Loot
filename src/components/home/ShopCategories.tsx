@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { useTranslations } from "next-intl";
 import {
   ArrowRight,
   Gamepad2,
@@ -11,18 +12,19 @@ import {
 } from "lucide-react";
 
 export default function ShopCategories() {
+  const t = useTranslations("home.categories");
   return (
     <section className="w-full px-6 lg:px-12  relative z-10 flex flex-col gap-8">
       <div className="flex items-end justify-between">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <span className="w-8 h-0.5 bg-primary-500 rounded-full"></span>
-            Nexus Hardware & Gear
+            {t("nexusHardware")}
           </div>
           <h2 className="text-3xl md:text-4xl font-black text-base-50 tracking-tight">
-            Featured{" "}
+            {t("featuredCategories").split(" ")[0]}{" "}
             <span className="text-transparent bg-clip-text bg-linear-to-r from-primary-400 to-primary-600">
-              Store Categories
+              {t("featuredCategories").split(" ").slice(1).join(" ")}
             </span>
           </h2>
         </div>
@@ -30,7 +32,7 @@ export default function ShopCategories() {
           href="/shop"
           className="hidden md:flex items-center gap-2 text-base-300 hover:text-white font-semibold transition-colors group text-sm"
         >
-          View All Products{" "}
+          {t("viewAllProducts")}{" "}
           <ArrowRight
             size={16}
             className="group-hover:translate-x-1 transition-transform"
@@ -45,15 +47,12 @@ export default function ShopCategories() {
           <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
           <div className="relative z-10 flex flex-col gap-3">
             <span className="text-xs font-bold text-purple-300 uppercase tracking-widest">
-              Next-Gen Console
+              {t("nextGenConsole")}
             </span>
             <h3 className="text-3xl lg:text-4xl font-black text-white drop-shadow-md">
-              PlayStation Consoles
+              {t("psConsoles")}
             </h3>
-            <p className="text-xs text-base-300 max-w-55">
-              Experience exclusive titles in stunning 4K with ultra-high frame
-              rates.
-            </p>
+            <p className="text-xs text-base-300 max-w-55">{t("psDesc")}</p>
           </div>
           <div className="relative z-10 w-24 h-24 flex items-center justify-center">
             <div className="w-16 h-20 bg-linear-to-b from-purple-600/40 to-indigo-950/80 rounded-xl shadow-[0_0_25px_rgba(168,85,247,0.4)] flex items-center justify-center text-white font-bold text-xs border border-purple-400/40 backdrop-blur-md group-hover:scale-110 transition-transform duration-500">
@@ -68,15 +67,12 @@ export default function ShopCategories() {
           <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
           <div className="relative z-10 flex flex-col gap-3">
             <span className="text-xs font-bold text-purple-300 uppercase tracking-widest">
-              Ultimate Power
+              {t("ultimatePower")}
             </span>
             <h3 className="text-3xl lg:text-4xl font-black text-white drop-shadow-md">
-              Xbox Consoles
+              {t("xboxConsoles")}
             </h3>
-            <p className="text-xs text-base-300 max-w-55">
-              The world&apos;s most powerful hardware built for peak gaming
-              performance.
-            </p>
+            <p className="text-xs text-base-300 max-w-55">{t("xboxDesc")}</p>
           </div>
           <div className="relative z-10 w-24 h-24 flex items-center justify-center">
             <div className="w-20 h-16 bg-linear-to-b from-purple-600/40 to-indigo-950/80 rounded-xl shadow-[0_0_25px_rgba(168,85,247,0.4)] flex items-center justify-center text-white font-bold text-xs border border-purple-400/40 backdrop-blur-md group-hover:scale-110 transition-transform duration-500">
@@ -122,7 +118,7 @@ export default function ShopCategories() {
               <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-32 h-32 bg-purple-500/15 rounded-full blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-500" />
               <div className="relative z-10 flex items-center justify-between">
                 <span className="text-[10px] font-mono text-purple-400 bg-purple-500/10 px-2.5 py-1 rounded-full border border-purple-500/20">
-                  NEXUS GEAR
+                  {t("nexusGear")}
                 </span>
                 <ArrowRight
                   size={16}
@@ -139,7 +135,7 @@ export default function ShopCategories() {
                 <p className="text-xs text-base-400">{item.desc}</p>
               </div>
               <div className="relative z-10 pt-4 border-t border-purple-500/10 flex items-center justify-between text-xs text-purple-300 font-semibold">
-                <span>Explore Products</span>
+                <span>{t("exploreProducts")}</span>
                 <span className="group-hover:translate-x-1 transition-transform">
                   →
                 </span>
