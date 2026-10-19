@@ -13,8 +13,9 @@ import {
 
 export default function ShopCategories() {
   const t = useTranslations("home.categories");
+
   return (
-    <section className="w-full px-6 lg:px-12  relative z-10 flex flex-col gap-8">
+    <section className="w-full px-6 lg:px-12 relative z-10 flex flex-col gap-8">
       <div className="flex items-end justify-between">
         <div className="flex flex-col gap-2">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
@@ -39,9 +40,10 @@ export default function ShopCategories() {
           />
         </Link>
       </div>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Link
-          href="/shop/playstation"
+          href="/shop?search=playstation"
           className="group relative overflow-hidden rounded-2xl bg-linear-to-r from-purple-950 via-purple-900/50 to-base-950 border border-purple-500/30 p-8 flex items-center justify-between min-h-55 transition-all duration-500 hover:border-purple-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
         >
           <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
@@ -61,7 +63,7 @@ export default function ShopCategories() {
           </div>
         </Link>
         <Link
-          href="/shop/xbox"
+          href="/shop?search=xbox"
           className="group relative overflow-hidden rounded-2xl bg-linear-to-r from-purple-950 via-purple-900/50 to-base-950 border border-purple-500/30 p-8 flex items-center justify-between min-h-55 transition-all duration-500 hover:border-purple-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
         >
           <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
@@ -81,30 +83,31 @@ export default function ShopCategories() {
           </div>
         </Link>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
-            title: "Gaming Rigs & Cases",
-            desc: "Custom Rigs & Powerhouses",
-            href: "/shop/cases",
+            title: t("rigs"),
+            desc: t("rigsDesc"),
+            href: "/shop?category=laptops",
             icon: Cpu,
           },
           {
-            title: "Mechanical Keyboards",
-            desc: "Mechanical & RGB",
-            href: "/shop/keyboards",
+            title: t("keyboards"),
+            desc: t("keyboardsDesc"),
+            href: "/shop?category=mobile-accessories",
             icon: Keyboard,
           },
           {
-            title: "Gaming Headsets",
-            desc: "Immersive Surround Audio",
-            href: "/shop/headsets",
+            title: t("headsets"),
+            desc: t("headsetsDesc"),
+            href: "/shop?category=mobile-accessories",
             icon: Headphones,
           },
           {
-            title: "Gaming Chairs",
-            desc: "Ergonomic & Pro Comfort",
-            href: "/shop/chairs",
+            title: t("chairs"),
+            desc: t("chairsDesc"),
+            href: "/shop",
             icon: Armchair,
           },
         ].map((item, idx) => {
@@ -136,9 +139,7 @@ export default function ShopCategories() {
               </div>
               <div className="relative z-10 pt-4 border-t border-purple-500/10 flex items-center justify-between text-xs text-purple-300 font-semibold">
                 <span>{t("exploreProducts")}</span>
-                <span className="group-hover:translate-x-1 transition-transform">
-                  →
-                </span>
+                <span className="group-hover:translate-x-1 transition-transform"></span>
               </div>
             </Link>
           );

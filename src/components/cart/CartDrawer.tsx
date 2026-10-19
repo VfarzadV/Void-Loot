@@ -13,6 +13,7 @@ export default function CartDrawer() {
   const [isMounted, setIsMounted] = useState(false);
   const router = useRouter();
   const drawerRef = useRef<HTMLDivElement>(null);
+
   const tNav = useTranslations("nav");
   const tCommon = useTranslations("common");
 
@@ -23,17 +24,20 @@ export default function CartDrawer() {
 
   useEffect(() => {
     if (!isOpen || !drawerRef.current) return;
+
     const drawer = drawerRef.current;
     const previouslyFocused =
       document.activeElement instanceof HTMLElement
         ? document.activeElement
         : null;
+
     const focusableElements = () =>
       Array.from(
         drawer.querySelectorAll<HTMLElement>(
           'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])',
         ),
       );
+
     const [firstFocusable] = focusableElements();
     (firstFocusable ?? drawer).focus();
 
@@ -43,9 +47,11 @@ export default function CartDrawer() {
         return;
       }
       if (event.key !== "Tab") return;
+
       const focusable = focusableElements();
       const first = focusable[0];
       const last = focusable[focusable.length - 1];
+
       if (!first || !last) {
         event.preventDefault();
         drawer.focus();
@@ -81,9 +87,10 @@ export default function CartDrawer() {
           aria-hidden="true"
           tabIndex={-1}
           onClick={toggleCart}
-          className="fixed inset-0 bg-base-950/80 backdrop-blur-sm z-50 transition-opacity"
+          className="fixed inset-0 bg-base-950/80 backdrop-blur-sm z-50 transition-opacity cursor-default"
         />
       )}
+
       <div
         ref={drawerRef}
         id="cart-drawer"
@@ -93,8 +100,8 @@ export default function CartDrawer() {
         inert={!isOpen}
         aria-labelledby="cart-title"
         tabIndex={-1}
-        className={`fixed top-0 right-0 h-full w-full sm:w-100 glass-panel bg-base-950/95 border-l border-white/10 z-50 transform transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col ${
-          isOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed top-0 inset-e-0 h-full w-full sm:w-100 glass-panel bg-base-950/95 border-s border-white/10 z-50 transform transition-transform duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] flex flex-col ${
+          isOpen ? "translate-x-0" : "translate-x-full rtl:-translate-x-full"
         }`}
       >
         <div className="flex items-center justify-between p-6 border-b border-white/5 shrink-0">
@@ -117,6 +124,7 @@ export default function CartDrawer() {
             <X size={18} aria-hidden="true" />
           </button>
         </div>
+
         <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-center gap-4 opacity-50">
@@ -184,6 +192,7 @@ export default function CartDrawer() {
             ))
           )}
         </div>
+
         {items.length > 0 && (
           <div className="p-6 border-t border-white/5 bg-base-950 shrink-0 flex flex-col gap-4">
             <div className="flex items-center justify-between">
@@ -205,7 +214,7 @@ export default function CartDrawer() {
               <ArrowRight
                 size={18}
                 aria-hidden="true"
-                className="group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform"
+                className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
               />
             </button>
             <button

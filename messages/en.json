@@ -3,7 +3,11 @@
     "searchPlaceholder": "Search games & gear...",
     "clear": "Clear",
     "total": "Total",
-    "viewAll": "View All"
+    "viewAll": "View All",
+    "next": "Next",
+    "previous": "Previous",
+    "addToCart": "Add to Cart",
+    "addedToLoot": "{item} added to loot!"
   },
   "nav": {
     "notifications": "Notifications",
@@ -248,7 +252,16 @@
     "total": "Total",
     "payButton": "Pay",
     "processing": "Processing Payment...",
-    "terms": "By placing your order, you agree to Void Loot's Terms of Service and Privacy Policy."
+    "terms": "By placing your order, you agree to Void Loot's Terms of Service and Privacy Policy.",
+    "emptyCart": "Your cart is empty",
+    "emptyCartDesc": "You need some loot before you can checkout.",
+    "returnStore": "Return to Store",
+    "orderConfirmed": "Order Confirmed!",
+    "orderSuccessDesc": "Your transaction was successful. The digital keys have been sent to your email and hardware is being prepped for shipment.",
+    "orderIdStr": "Order ID",
+    "totalPaid": "Total Paid",
+    "viewDashboard": "View in Dashboard",
+    "paymentSuccessToast": "Payment successful! Welcome to the Void."
   },
   "cloud": {
     "title": "Void Cloud",
@@ -286,7 +299,8 @@
     "top": "Top",
     "comments": "Comments",
     "share": "Share",
-    "topContributors": "Top Contributors"
+    "topContributors": "Top Contributors",
+    "noPostsFound": "No posts found for this category or search."
   },
   "deals": {
     "limitedTime": "Limited Time Offers",

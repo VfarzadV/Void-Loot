@@ -41,7 +41,7 @@ const MOCK_POSTS: Post[] = [
     title: "RTX 5090 Leaked Specs - Is it worth the upgrade?",
     content:
       "Just saw the latest leaks regarding the power draw on the new 50-series cards. Are we really going to need 1200W PSUs just to run this thing? Let me know your thoughts.",
-    category: "Hardware",
+    category: "hardware",
     tags: ["#GPU", "#NVIDIA", "#PCBuild"],
     upvotes: 342,
     comments: 89,
@@ -56,7 +56,7 @@ const MOCK_POSTS: Post[] = [
     title: "LFG: Cyberpunk Co-op Mod - Need 2 more players",
     content:
       "Running the new multiplayer mod on a private server. We need a netrunner and a solo. Mic required. Drop your discord tags below!",
-    category: "LFG",
+    category: "lfg",
     tags: ["#Cyberpunk", "#Coop", "#LFG"],
     upvotes: 45,
     comments: 12,
@@ -71,7 +71,7 @@ const MOCK_POSTS: Post[] = [
     title: "Official Void Loot Community Guidelines",
     content:
       "Welcome to the Void! Please read these rules before posting. 1. Be respectful. 2. No piracy links. 3. Use proper flairs for your posts...",
-    category: "Announcements",
+    category: "announcements",
     tags: ["#Rules", "#Welcome"],
     upvotes: 1205,
     comments: 42,
@@ -81,25 +81,27 @@ const MOCK_POSTS: Post[] = [
 
 export default function CommunityPage() {
   const t = useTranslations("community");
-  const [activeCategory, setActiveCategory] = useState("All Topics");
+  const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
   const CATEGORIES = [
-    t("allTopics"),
-    t("announcements"),
-    t("hardware"),
-    t("lfg"),
-    t("gameReviews"),
-    t("support"),
+    { id: "all", label: t("allTopics") },
+    { id: "announcements", label: t("announcements") },
+    { id: "hardware", label: t("hardware") },
+    { id: "lfg", label: t("lfg") },
+    { id: "gamereviews", label: t("gameReviews") },
+    { id: "support", label: t("support") },
   ];
 
   const filteredPosts = MOCK_POSTS.filter((post) => {
     const matchesCategory =
-      activeCategory === t("allTopics") ||
-      post.category.toLowerCase() === activeCategory.toLowerCase();
+      activeCategory === "all" ||
+      post.category.toLowerCase() === activeCategory;
+
     const matchesSearch =
       post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       post.content.toLowerCase().includes(searchQuery.toLowerCase());
+
     return matchesCategory && matchesSearch;
   });
 
@@ -146,17 +148,18 @@ export default function CommunityPage() {
               className="w-full bg-base-950 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
             />
           </div>
+
           <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-4 flex flex-col gap-2">
             <h3 className="text-xs font-black text-base-500 uppercase tracking-widest ps-2 mb-2">
               {t("spaces")}
             </h3>
             {CATEGORIES.map((cat) => (
               <button
-                key={cat}
-                onClick={() => setActiveCategory(cat)}
-                aria-pressed={activeCategory === cat}
+                key={cat.id}
+                onClick={() => setActiveCategory(cat.id)}
+                aria-pressed={activeCategory === cat.id}
                 className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold ${
-                  activeCategory === cat
+                  activeCategory === cat.id
                     ? "bg-primary-500/10 text-primary-400 border border-primary-500/30 shadow-[inset_0_0_15px_rgba(170,79,255,0.1)]"
                     : "text-base-400 hover:bg-base-900 hover:text-white border border-transparent"
                 }`}
@@ -164,12 +167,12 @@ export default function CommunityPage() {
                 <Hash
                   size={16}
                   className={
-                    activeCategory === cat
+                    activeCategory === cat.id
                       ? "text-primary-400"
                       : "text-base-600"
                   }
                 />
-                {cat}
+                {cat.label}
               </button>
             ))}
           </div>
@@ -203,8 +206,8 @@ export default function CommunityPage() {
           </div>
 
           {filteredPosts.length === 0 ? (
-            <div className="text-center py-20 text-base-400">
-              No posts found for this category or search.
+            <div className="text-center py-20 text-base-400 font-bold glass-panel bg-base-950/40 rounded-2xl border-white/5">
+              {t("noPostsFound")}
             </div>
           ) : (
             filteredPosts.map((post) => (
@@ -235,7 +238,7 @@ export default function CommunityPage() {
                     <span className="text-xs text-base-500 flex items-center gap-2">
                       {post.time}{" "}
                       <span className="w-1 h-1 bg-base-700 rounded-full"></span>{" "}
-                      {post.category}
+                      {post.category.toUpperCase()}
                     </span>
                   </div>
                 </div>

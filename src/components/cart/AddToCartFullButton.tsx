@@ -1,6 +1,9 @@
 "use client";
+
 import { ShoppingBag } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 interface ProductItem {
   id: number;
@@ -17,10 +20,12 @@ export default function AddToCartFullButton({
   product,
 }: AddToCartFullButtonProps) {
   const addItem = useCartStore((state) => state.addItem);
+  const t = useTranslations("common");
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     addItem(product);
+    toast.success(t("addedToLoot", { item: product.title }));
   };
 
   return (
@@ -33,7 +38,7 @@ export default function AddToCartFullButton({
         aria-hidden="true"
         className="group-hover:scale-110 transition-transform"
       />
-      Add to Cart
+      {t("addToCart")}
     </button>
   );
 }

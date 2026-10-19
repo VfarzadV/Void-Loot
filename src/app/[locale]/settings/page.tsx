@@ -64,6 +64,7 @@ export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState("account");
   const { theme, setTheme } = useTheme();
   const [mounted, setMounted] = useState(false);
+
   const pathname = usePathname();
   const router = useRouter();
   const currentLocale = pathname.startsWith("/fa") ? "fa" : "en";
@@ -72,6 +73,7 @@ export default function SettingsPage() {
   const handleLanguageChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const nextLocale = e.target.value;
     if (nextLocale === currentLocale) return;
+
     const pathWithoutLocale = pathname.replace(/^\/(en|fa)(?=\/|$)/, "");
     const newPath = `/${nextLocale}${pathWithoutLocale || ""}`;
     router.push(newPath);
@@ -91,6 +93,7 @@ export default function SettingsPage() {
         </h1>
         <p className="text-sm text-base-400 mt-2">{t("subtitle")}</p>
       </div>
+
       <div className="flex flex-col lg:flex-row gap-8 lg:gap-12">
         <aside className="w-full lg:w-72 shrink-0 flex flex-col gap-2">
           {SETTINGS_TABS.map((tab) => {
@@ -116,6 +119,7 @@ export default function SettingsPage() {
             );
           })}
         </aside>
+
         <div className="grow glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-10 flex flex-col min-h-150">
           {activeTab === "account" && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 flex flex-col gap-8">
@@ -125,6 +129,7 @@ export default function SettingsPage() {
                 </h2>
                 <p className="text-xs text-base-400">{t("account.desc")}</p>
               </div>
+
               <div className="flex flex-col md:flex-row gap-8 items-start">
                 <div className="relative w-32 h-32 rounded-3xl overflow-hidden border-2 border-white/10 group shrink-0 bg-base-900">
                   <Image
@@ -138,6 +143,7 @@ export default function SettingsPage() {
                     <Camera size={24} className="text-white" />
                   </div>
                 </div>
+
                 <div className="flex flex-col gap-4 grow w-full">
                   <div className="flex flex-col gap-2">
                     <label
@@ -153,6 +159,7 @@ export default function SettingsPage() {
                       className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]"
                     />
                   </div>
+
                   <div className="flex flex-col gap-2">
                     <label
                       htmlFor="settings-username"
@@ -161,21 +168,20 @@ export default function SettingsPage() {
                       {t("account.username")}
                     </label>
                     <div className="relative">
-                      <span
-                        className={`absolute ${pathname.startsWith("/fa") ? "right-4" : "left-4"} top-1/2 -translate-y-1/2 text-base-500 font-bold`}
-                      >
+                      <span className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 font-bold">
                         @
                       </span>
                       <input
                         id="settings-username"
                         type="text"
                         defaultValue="ShadowHunter99"
-                        className={`w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ${pathname.startsWith("/fa") ? "pr-9 pl-4" : "pl-9 pr-4"} text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]`}
+                        className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ps-9 pe-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)]"
                       />
                     </div>
                   </div>
                 </div>
               </div>
+
               <div className="flex flex-col gap-2">
                 <label
                   htmlFor="settings-bio"
@@ -191,6 +197,7 @@ export default function SettingsPage() {
                   className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.1)] resize-none"
                 />
               </div>
+
               <div className="mt-auto pt-6 border-t border-white/5 flex justify-end">
                 <button className="flex items-center gap-2 px-6 py-3 rounded-xl font-black text-sm text-white bg-primary-600 hover:bg-primary-500 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all">
                   <Save size={16} /> {t("account.save")}
@@ -198,6 +205,7 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
+
           {activeTab === "security" && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 flex flex-col gap-8">
               <div className="flex flex-col gap-1 pb-6 border-b border-white/5">
@@ -206,6 +214,7 @@ export default function SettingsPage() {
                 </h2>
                 <p className="text-xs text-base-400">{t("security.desc")}</p>
               </div>
+
               <div className="flex flex-col gap-4 max-w-xl">
                 <div className="flex flex-col gap-2">
                   <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ml-1">
@@ -213,7 +222,7 @@ export default function SettingsPage() {
                   </label>
                   <input
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="••••••••••••"
                     className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500"
                   />
                 </div>
@@ -241,7 +250,9 @@ export default function SettingsPage() {
                   {t("security.updateBtn")}
                 </button>
               </div>
+
               <div className="w-full h-px bg-white/5 my-2"></div>
+
               <div className="flex flex-col gap-4">
                 <div className="flex items-center gap-3">
                   <Shield size={20} className="text-emerald-500" />
@@ -265,6 +276,7 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
+
           {activeTab === "connections" && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 flex flex-col gap-8">
               <div className="flex flex-col gap-1 pb-6 border-b border-white/5">
@@ -273,6 +285,7 @@ export default function SettingsPage() {
                 </h2>
                 <p className="text-xs text-base-400">{t("connections.desc")}</p>
               </div>
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {CONNECTED_ACCOUNTS.map((account) => (
                   <div
@@ -321,6 +334,7 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
+
           {activeTab === "preferences" && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 flex flex-col gap-8">
               <div className="flex flex-col gap-1 pb-6 border-b border-white/5">
@@ -329,6 +343,7 @@ export default function SettingsPage() {
                 </h2>
                 <p className="text-xs text-base-400">{t("preferences.desc")}</p>
               </div>
+
               <div className="flex flex-col gap-6">
                 <div
                   role="group"
@@ -342,7 +357,7 @@ export default function SettingsPage() {
                         className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${theme === "dark" ? "border-primary-500 bg-base-900/50" : "border-transparent bg-base-900/30 hover:border-white/10"}`}
                       >
                         <div className="w-full h-16 rounded-lg bg-black border border-white/10 flex items-center justify-center relative overflow-hidden">
-                          <div className="absolute left-0 top-0 w-1/3 h-full bg-[#111]"></div>
+                          <div className="absolute inset-s-0 top-0 w-1/3 h-full bg-[#111]"></div>
                         </div>
                         <span
                           className={`text-xs font-bold ${theme === "dark" ? "text-primary-400" : "text-base-500"}`}
@@ -356,7 +371,7 @@ export default function SettingsPage() {
                         className={`flex flex-col items-center gap-3 p-4 rounded-2xl border-2 transition-all ${theme === "light" ? "border-primary-500 bg-base-900/50" : "border-transparent bg-base-900/30 hover:border-white/10"}`}
                       >
                         <div className="w-full h-16 rounded-lg bg-[#fafafa] border border-gray-300 flex items-center justify-center relative overflow-hidden">
-                          <div className="absolute left-0 top-0 w-1/3 h-full bg-[#eee]"></div>
+                          <div className="absolute inset-s-0 top-0 w-1/3 h-full bg-[#eee]"></div>
                         </div>
                         <span
                           className={`text-xs font-bold ${theme === "light" ? "text-primary-400" : "text-base-500"}`}
@@ -379,7 +394,9 @@ export default function SettingsPage() {
                     </>
                   )}
                 </div>
+
                 <div className="w-full h-px bg-white/5 my-2"></div>
+
                 <div className="flex flex-col gap-2">
                   <label
                     htmlFor="settings-language"
@@ -400,6 +417,7 @@ export default function SettingsPage() {
               </div>
             </div>
           )}
+
           {activeTab === "notifications" && (
             <div className="animate-in fade-in slide-in-from-right-4 duration-500 flex flex-col gap-8">
               <div className="flex flex-col gap-1 pb-6 border-b border-white/5">
@@ -410,6 +428,7 @@ export default function SettingsPage() {
                   {t("notifications.desc")}
                 </p>
               </div>
+
               <div className="flex flex-col gap-4">
                 {[
                   {

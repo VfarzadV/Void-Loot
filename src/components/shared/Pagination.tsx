@@ -3,6 +3,7 @@
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import ReactPaginate from "react-paginate";
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 
 interface PaginationProps {
   pageCount: number;
@@ -12,6 +13,8 @@ export default function Pagination({ pageCount }: PaginationProps) {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
+  const t = useTranslations("common");
+
   const currentPage = Number(searchParams.get("page")) || 1;
 
   const handlePageClick = (event: { selected: number }) => {
@@ -26,8 +29,8 @@ export default function Pagination({ pageCount }: PaginationProps) {
   return (
     <ReactPaginate
       breakLabel="..."
-      nextLabel={<>Next <ChevronRight size={18} /></>}
-      previousLabel={<><ChevronLeft size={18} /> Previous</>}
+      nextLabel={<>{t("next")} <ChevronRight size={18} className="rtl:rotate-180" /></>}
+      previousLabel={<><ChevronLeft size={18} className="rtl:rotate-180" /> {t("previous")}</>}
       onPageChange={handlePageClick}
       pageRangeDisplayed={3}
       marginPagesDisplayed={1}

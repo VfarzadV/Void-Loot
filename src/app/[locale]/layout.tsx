@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Vazirmatn, Space_Grotesk } from "next/font/google";
 import "./globals.css";
 import Sidebar from "@/components/layout/Sidebar";
 import Navbar from "@/components/layout/Navbar";
@@ -8,6 +9,9 @@ import { Toaster } from "sonner";
 import Providers from "./providers";
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
+
+const vazirmatn = Vazirmatn({ subsets: ["arabic"], display: "swap" });
+const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], display: "swap" });
 
 export async function generateMetadata({
   params,
@@ -19,7 +23,7 @@ export async function generateMetadata({
     title: "Void Loot",
     description:
       locale === "fa"
-        ? "فروشگاه و پلتفرم جامع بازی و تجهیزات گیمینگ"
+        ? "پلتفرم مدرن گیمینگ با قدرت RAWG"
         : "Modern Gaming Platform Powered by RAWG",
   };
 }
@@ -33,13 +37,14 @@ export default async function RootLayout({
 }>) {
   const { locale } = await params;
   const messages = await getMessages({ locale });
-
   const direction = locale === "fa" ? "rtl" : "ltr";
+  const fontClass =
+    locale === "fa" ? vazirmatn.className : spaceGrotesk.className;
 
   return (
     <html lang={locale} dir={direction} suppressHydrationWarning>
       <body
-        className="bg-base-950 text-base-50 min-h-screen flex"
+        className={`bg-base-950 text-base-50 min-h-screen flex ${fontClass}`}
         suppressHydrationWarning
       >
         <NextIntlClientProvider messages={messages} locale={locale}>
@@ -47,12 +52,12 @@ export default async function RootLayout({
             <Toaster theme="dark" position="bottom-right" richColors />
             <a
               href="#main-content"
-              className="sr-only focus:not-sr-only focus:fixed focus:left-24 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-black"
+              className="sr-only focus:not-sr-only focus:fixed focus:inset-s-24 focus:top-4 focus:z-100 focus:rounded-lg focus:bg-white focus:px-4 focus:py-2 focus:font-bold focus:text-black"
             >
-              {locale === "fa" ? "رفتن به محتوای اصلی" : "Skip to main content"}
+              {locale === "fa" ? "پرش به محتوای اصلی" : "Skip to main content"}
             </a>
             <Sidebar />
-            <div className="flex-1 ms-20 flex flex-col min-h-screen relative">
+            <div className="flex-1 ms-0 md:ms-20 flex flex-col min-h-screen relative pb-20 md:pb-0">
               <Navbar />
               <CartDrawer />
               <main id="main-content" className="grow px-2 md:px-0">

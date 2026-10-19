@@ -62,6 +62,7 @@ export default function Navbar() {
 
   const { toggleCart, items } = useCartStore();
   const { user, isAuthenticated, logout } = useAuthStore();
+
   const [isMounted, setIsMounted] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -70,6 +71,7 @@ export default function Navbar() {
   const [isNotifOpen, setIsNotifOpen] = useState(false);
   const [isProfileOpen, setIsProfileOpen] = useState(false);
   const [notifications, setNotifications] = useState(MOCK_NOTIFICATIONS);
+
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -121,15 +123,34 @@ export default function Navbar() {
 
   return (
     <header className="w-full h-20 px-6 lg:px-12 flex items-center justify-between z-40 sticky top-0 bg-base-950/80 backdrop-blur-xl border-b border-white/5">
-      <Link
-        href="/"
-        className="text-2xl font-black tracking-tighter text-base-50 flex items-center gap-1 group"
-      >
-        Void
-        <span className="text-primary-500 drop-shadow-[0_0_10px_rgba(170,79,255,0.5)] group-hover:text-primary-400 transition-colors">
-          Loot
-        </span>
-      </Link>
+      <div className="flex items-center gap-4">
+        {/* این باتن در حالت دسکتاپ مخفی است. در فاز واکنش‌گرا شدن سایدبار کاربرد خواهد داشت */}
+        <button className="md:hidden text-base-400 hover:text-white">
+          <svg
+            width="24"
+            height="24"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <line x1="3" y1="12" x2="21" y2="12"></line>
+            <line x1="3" y1="6" x2="21" y2="6"></line>
+            <line x1="3" y1="18" x2="21" y2="18"></line>
+          </svg>
+        </button>
+        <Link
+          href="/"
+          className="text-2xl font-black tracking-tighter text-base-50 flex items-center gap-1 group"
+        >
+          Void
+          <span className="text-primary-500 drop-shadow-[0_0_10px_rgba(170,79,255,0.5)] group-hover:text-primary-400 transition-colors">
+            Loot
+          </span>
+        </Link>
+      </div>
 
       <div className="flex items-center gap-4 sm:gap-6">
         <div className="relative items-center hidden sm:flex">
@@ -158,6 +179,7 @@ export default function Navbar() {
               </button>
             )}
           </form>
+
           {!isSearchOpen && (
             <button
               onClick={() => setIsSearchOpen(true)}
@@ -182,6 +204,7 @@ export default function Navbar() {
               <span className="absolute -top-1 -inset-e-1 w-2.5 h-2.5 bg-rose-500 rounded-full border-2 border-base-950"></span>
             )}
           </button>
+
           {isNotifOpen && (
             <div className="absolute inset-e-0 top-10 w-80 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
               <div className="flex items-center justify-between p-4 border-b border-white/5 bg-base-900/30">
@@ -201,6 +224,7 @@ export default function Navbar() {
                   </button>
                 )}
               </div>
+
               <div className="max-h-75 overflow-y-auto flex flex-col hide-scrollbar">
                 {notifications.length === 0 ? (
                   <div className="p-6 text-center text-xs text-base-400">
@@ -245,7 +269,9 @@ export default function Navbar() {
             </div>
           )}
         </div>
+
         <div className="w-px h-5 bg-white/10 hidden sm:block"></div>
+
         <button
           onClick={toggleCart}
           className="relative text-base-400 hover:text-white transition-colors group"
@@ -260,7 +286,9 @@ export default function Navbar() {
             </span>
           )}
         </button>
+
         <div className="w-px h-5 bg-white/10"></div>
+
         {isMounted && isAuthenticated && user ? (
           <div className="relative" ref={profileRef}>
             <button
@@ -285,6 +313,7 @@ export default function Navbar() {
                 />
               </div>
             </button>
+
             {isProfileOpen && (
               <div className="absolute inset-e-0 top-12 w-48 glass-panel bg-base-950/95 backdrop-blur-xl border border-white/10 rounded-2xl shadow-[0_10px_40px_rgba(0,0,0,0.5)] overflow-hidden animate-in fade-in slide-in-from-top-4 duration-300 z-50">
                 <div className="p-2 flex flex-col gap-1">

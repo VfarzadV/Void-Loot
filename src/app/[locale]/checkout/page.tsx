@@ -23,6 +23,7 @@ export default function CheckoutPage() {
   const t = useTranslations("checkout");
   const { items, clearCart } = useCartStore();
   const { user, addOrder } = useAuthStore();
+
   const [isMounted, setIsMounted] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("card");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -44,22 +45,27 @@ export default function CheckoutPage() {
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
     if (items.length === 0) return;
+
     setIsProcessing(true);
+
     setTimeout(() => {
       setIsProcessing(false);
       setIsSuccess(true);
       const newOrderId = `VOID-${Math.floor(Math.random() * 1000000)}`;
       setOrderId(newOrderId);
+
       if (user && addOrder) {
         const today = new Date().toLocaleDateString("en-US", {
           month: "short",
           day: "numeric",
           year: "numeric",
         });
+
         const itemsSummary =
           items.length === 1
             ? `${items[0].quantity}x ${items[0].title}`
             : `${items.length} Items (inc. ${items[0].title})`;
+
         addOrder({
           id: newOrderId,
           date: today,
@@ -68,8 +74,9 @@ export default function CheckoutPage() {
           items: itemsSummary,
         });
       }
+
       clearCart();
-      toast.success("Payment successful! Welcome to the Void.");
+      toast.success(t("paymentSuccessToast"));
     }, 2500);
   };
 
@@ -82,34 +89,35 @@ export default function CheckoutPage() {
           <CheckCircle2 size={48} className="text-emerald-400" />
         </div>
         <h1 className="text-4xl font-black text-white mb-2">
-          Order Confirmed!
+          {t("orderConfirmed")}
         </h1>
         <p className="text-base-400 text-sm mb-8 max-w-md">
-          Your transaction was successful. The digital keys have been sent to
-          your email and hardware is being prepped for shipment.
+          {t("orderSuccessDesc")}
         </p>
+
         <div className="glass-panel p-6 rounded-2xl bg-base-900/50 border border-white/5 mb-8 flex gap-8">
           <div className="flex flex-col">
             <span className="text-xs text-base-500 uppercase tracking-widest font-bold">
-              Order ID
+              {t("orderIdStr")}
             </span>
             <span className="text-lg text-white font-mono">{orderId}</span>
           </div>
           <div className="w-px h-10 bg-white/10"></div>
           <div className="flex flex-col">
             <span className="text-xs text-base-500 uppercase tracking-widest font-bold">
-              Total Paid
+              {t("totalPaid")}
             </span>
             <span className="text-lg text-primary-400 font-black">
               ${total.toFixed(2)}
             </span>
           </div>
         </div>
+
         <Link
           href="/profile"
           className="px-8 py-4 rounded-xl font-black text-sm text-base-950 bg-white hover:bg-base-200 transition-colors shadow-lg"
         >
-          View in Dashboard
+          {t("viewDashboard")}
         </Link>
       </div>
     );
@@ -119,17 +127,15 @@ export default function CheckoutPage() {
     return (
       <div className="w-full min-h-[60vh] flex flex-col items-center justify-center px-6 text-center">
         <h2 className="text-2xl font-black text-white mb-4">
-          Your cart is empty
+          {t("emptyCart")}
         </h2>
-        <p className="text-base-400 text-sm mb-6">
-          You need some loot before you can checkout.
-        </p>
+        <p className="text-base-400 text-sm mb-6">{t("emptyCartDesc")}</p>
         <button
           type="button"
           onClick={() => router.back()}
           className="flex items-center gap-2 text-primary-400 hover:text-primary-300 font-bold transition-colors"
         >
-          <ArrowLeft size={16} className="rtl:rotate-180" /> Return to Store
+          <ArrowLeft size={16} className="rtl:rotate-180" /> {t("returnStore")}
         </button>
       </div>
     );
@@ -152,6 +158,7 @@ export default function CheckoutPage() {
           </span>
         </h1>
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7 flex flex-col gap-8">
           <form
@@ -211,6 +218,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
+
             <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
                 {t("paymentMethod")}
@@ -298,6 +306,7 @@ export default function CheckoutPage() {
                   </span>
                 </button>
               </div>
+
               {paymentMethod === "card" && (
                 <div className="flex flex-col gap-5 mt-4 animate-in fade-in duration-300">
                   <div className="flex flex-col gap-1.5">
@@ -352,6 +361,7 @@ export default function CheckoutPage() {
             </div>
           </form>
         </div>
+
         <div className="lg:col-span-5 flex flex-col gap-6">
           <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-900/30 border border-white/5 sticky top-28 flex flex-col gap-6">
             <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
@@ -383,6 +393,7 @@ export default function CheckoutPage() {
                 </div>
               ))}
             </div>
+
             <div className="flex flex-col gap-3 pt-4 border-t border-white/5 text-sm">
               <div className="flex justify-between items-center text-base-300">
                 <span>{t("subtotal")}</span>
@@ -399,6 +410,7 @@ export default function CheckoutPage() {
                 <span className="font-bold text-emerald-400">{t("free")}</span>
               </div>
             </div>
+
             <div className="flex justify-between items-center pt-4 border-t border-white/10">
               <span className="text-base font-bold text-white">
                 {t("total")}
@@ -407,6 +419,7 @@ export default function CheckoutPage() {
                 ${total.toFixed(2)}
               </span>
             </div>
+
             <button
               form="checkout-form"
               type="submit"

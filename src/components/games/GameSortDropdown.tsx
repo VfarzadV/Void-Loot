@@ -42,8 +42,8 @@ export default function GameSortDropdown() {
   const handleSelect = (value: string) => {
     const params = new URLSearchParams(searchParams.toString());
     params.set("sort", value);
-    params.delete("page"); // Reset to page 1 on sort change
-    router.push(`${pathname}?T${params.toString()}`);
+    params.delete("page");
+    router.push(`${pathname}?${params.toString()}`);
     setIsOpen(false);
   };
 
