@@ -655,5 +655,48 @@
     "priceAsc": "ارزان‌ترین",
     "priceDesc": "گران‌ترین",
     "ratingDesc": "بالاترین امتیاز"
+  },
+  "shopDetails": {
+    "inStock": "موجود در انبار",
+    "outOfStock": "اتمام موجودی",
+    "safeCheckout": "تراکنش امن",
+    "safeCheckoutDesc": "پرداخت رمزنگاری‌شده",
+    "worldwideShipping": "ارسال جهانی",
+    "worldwideShippingDesc": "تحویل اکسپرس ووید",
+    "freeReturns": "مرجوعی رایگان",
+    "freeReturnsDesc": "ضمانت ۱۴ روزه",
+    "support247": "پشتیبانی ۲۴/۷",
+    "support247Desc": "همیشه در دسترس"
+  },
+  "mediaWatch": {
+    "views": "بازدید",
+    "share": "اشتراک‌گذاری",
+    "like": "پسندیدن",
+    "descTitle": "درباره این ویدیو"
+  },
+  "communityPost": {
+    "role": "شوالیه ووید",
+    "reply": "پاسخ",
+    "share": "اشتراک",
+    "like": "پسندیدن",
+    "comments": "نظرات"
+  },
+  "breadcrumbs": {
+    "home": "خانه",
+    "games": "بازی‌ها",
+    "shop": "فروشگاه",
+    "community": "انجمن",
+    "post": "پست",
+    "hardware": "سخت‌افزار",
+    "compare": "مقایسه",
+    "deals": "تخفیف‌ها",
+    "live": "پخش زنده",
+    "media": "رسانه",
+    "watch": "تماشا",
+    "profile": "پروفایل",
+    "support": "پشتیبانی",
+    "tracking": "پیگیری سفارش",
+    "loot-box": "لوت‌باکس",
+    "details": "جزئیات"
   }
 }

@@ -16,32 +16,51 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 export default function LoginPage() {
   const t = useTranslations("login");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isLoggingIn, setIsLoggingIn] = useState(false);
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const router = useRouter();
   const { login, registeredAccount } = useAuthStore();
 
-  const handleLogin = (e: React.FormEvent) => {
-    e.preventDefault();
+  const [showPassword, setShowPassword] = useState(false);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
+
+  const loginSchema = z.object({
+    email: z.string().email("Invalid email format"),
+    password: z.string().min(1, "Password is required"),
+  });
+
+  type LoginFormValues = z.infer<typeof loginSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormValues>({
+    resolver: zodResolver(loginSchema),
+  });
+
+  const onSubmit = (data: LoginFormValues) => {
     setIsLoggingIn(true);
     setTimeout(() => {
       setIsLoggingIn(false);
       if (
         registeredAccount &&
-        email === registeredAccount.email &&
-        password === registeredAccount.password
+        data.email === registeredAccount.email &&
+        data.password === registeredAccount.password
       ) {
         login(registeredAccount);
         toast.success(
           t("welcomeUser", { username: registeredAccount.username }),
         );
         router.push("/");
-      } else if (email === "demo@voidloot.com" && password === "demo1234") {
+      } else if (
+        data.email === "demo@voidloot.com" &&
+        data.password === "demo1234"
+      ) {
         login();
         toast.success(t("demoSuccess"));
         router.push("/");
@@ -89,7 +108,10 @@ export default function LoginPage() {
             </p>
           </div>
 
-          <form className="flex flex-col gap-5" onSubmit={handleLogin}>
+          <form
+            className="flex flex-col gap-5"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="login-email"
@@ -100,18 +122,25 @@ export default function LoginPage() {
               <div className="relative group">
                 <Mail
                   size={18}
-                  className="absolute start-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+                  className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
                 />
                 <input
                   id="login-email"
-                  type="email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  type="text"
                   placeholder={t("emailPlaceholder")}
-                  className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3.5 ps-11 pe-4 text-sm text-white focus:border-primary-500 focus:bg-base-900 transition-all outline-none"
+                  {...register("email")}
+                  className={`w-full bg-base-900/50 border rounded-xl py-3.5 ps-11 pe-4 text-sm text-white focus:bg-base-900 transition-all outline-none ${
+                    errors.email
+                      ? "border-rose-500 focus:border-rose-500"
+                      : "border-base-800 focus:border-primary-500"
+                  }`}
                 />
               </div>
+              {errors.email && (
+                <span className="text-rose-500 text-[10px] ms-1">
+                  {errors.email.message}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -132,29 +161,37 @@ export default function LoginPage() {
               <div className="relative group">
                 <Lock
                   size={18}
-                  className="absolute start-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+                  className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
                 />
                 <input
                   id="login-password"
                   type={showPassword ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
                   placeholder={t("passwordPlaceholder")}
-                  className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3.5 ps-11 pe-12 text-sm text-white focus:border-primary-500 focus:bg-base-900 transition-all outline-none"
+                  {...register("password")}
+                  className={`w-full bg-base-900/50 border rounded-xl py-3.5 ps-11 pe-12 text-sm text-white focus:bg-base-900 transition-all outline-none ${
+                    errors.password
+                      ? "border-rose-500 focus:border-rose-500"
+                      : "border-base-800 focus:border-primary-500"
+                  }`}
                 />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute end-4 top-1/2 -translate-y-1/2 text-base-500 hover:text-white transition-colors"
+                  className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-base-500 hover:text-white transition-colors"
                 >
                   {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
                 </button>
               </div>
+              {errors.password && (
+                <span className="text-rose-500 text-[10px] ms-1">
+                  {errors.password.message}
+                </span>
+              )}
             </div>
 
             <button
               disabled={isLoggingIn}
+              type="submit"
               className="group relative w-full flex justify-center py-3.5 px-4 mt-2 border border-transparent text-sm font-black rounded-xl text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all duration-300 disabled:opacity-70"
             >
               <span className="relative z-10 flex items-center gap-2">

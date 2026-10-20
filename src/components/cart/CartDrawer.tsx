@@ -214,7 +214,7 @@ export default function CartDrawer() {
               <ArrowRight
                 size={18}
                 aria-hidden="true"
-                className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
+                className="group-hover:-translate-x-1 rtl:group-hover:translate-x-1 transition-transform"
               />
             </button>
             <button

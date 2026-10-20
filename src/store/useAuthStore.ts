@@ -9,123 +9,95 @@ export interface Order {
   items: string;
 }
 
-export interface UserProfile {
+export interface UserStats {
+  cloudHours: number;
+  gamesOwned: number;
+  achievements: number;
+}
+
+export interface User {
   name: string;
   username: string;
   email: string;
+  password?: string;
   avatar: string;
-  level: number;
   banner?: string;
+  level: number;
   joinDate?: string;
-  stats?: {
-    gamesOwned: number;
-    cloudHours: number;
-    achievements: number;
-  };
+  stats?: UserStats;
   orders?: Order[];
 }
 
-interface AuthStore {
-  user: UserProfile | null;
+interface AuthState {
+  user: User | null;
   isAuthenticated: boolean;
-  registeredAccount: (UserProfile & { password?: string }) | null;
-  registerAccount: (account: UserProfile & { password?: string }) => void;
-  login: (userData?: UserProfile) => void;
+  registeredAccount: User | null;
+  login: (userData?: User) => void;
   logout: () => void;
+  registerAccount: (userData: User) => void;
+  updateProfile: (updates: Partial<User>) => void;
   addOrder: (order: Order) => void;
-  updateProfile: (updates: Partial<UserProfile>) => void;
 }
 
-const SAFE_BANNER =
-  "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop";
-
-const DEMO_USER: UserProfile = {
-  name: "Farzad",
-  username: "ShadowHunter99",
-  email: "demo@voidloot.com",
-  avatar: "https://i.pravatar.cc/150?u=farzad",
-  level: 42,
-  banner: SAFE_BANNER,
-  joinDate: "October 2026",
-  stats: {
-    gamesOwned: 124,
-    cloudHours: 342,
-    achievements: 1056,
-  },
-  orders: [
-    {
-      id: "ORD-992-FX",
-      date: "Oct 10, 2026",
-      status: "Delivered",
-      total: "$129.99",
-      items: "DualSense Edge Controller",
-    },
-  ],
-};
-
-export const useAuthStore = create<AuthStore>()(
+export const useAuthStore = create<AuthState>()(
   persist(
     (set) => ({
       user: null,
       isAuthenticated: false,
       registeredAccount: null,
 
-      registerAccount: (account) =>
+      login: (userData) =>
+        set({
+          user: userData || {
+            name: "Shadow Hunter",
+            username: "ShadowHunter99",
+            email: "demo@voidloot.com",
+            avatar: "https://i.pravatar.cc/150?u=farzad",
+            banner:
+              "https://images.unsplash.com/photo-1511512578047-dfb367046420?q=80&w=2071&auto=format&fit=crop",
+            level: 42,
+            joinDate: "Oct 2023",
+            stats: { cloudHours: 124, gamesOwned: 45, achievements: 312 },
+            orders: [],
+          },
+          isAuthenticated: true,
+        }),
+
+      logout: () => set({ user: null, isAuthenticated: false }),
+
+      registerAccount: (userData) =>
         set({
           registeredAccount: {
-            ...account,
-            banner: SAFE_BANNER, 
-            joinDate: "Just Now",
-            stats: { gamesOwned: 0, cloudHours: 0, achievements: 0 },
+            ...userData,
+            joinDate: new Date().toLocaleDateString("en-US", {
+              month: "short",
+              year: "numeric",
+            }),
+            stats: { cloudHours: 0, gamesOwned: 0, achievements: 0 },
             orders: [],
           },
         }),
 
-      login: (userData) =>
-        set({ user: userData || DEMO_USER, isAuthenticated: true }),
-      logout: () => set({ user: null, isAuthenticated: false }),
+      updateProfile: (updates) =>
+        set((state) => ({
+          user: state.user ? { ...state.user, ...updates } : null,
+          registeredAccount: state.registeredAccount
+            ? { ...state.registeredAccount, ...updates }
+            : null,
+        })),
 
       addOrder: (order) =>
-        set((state) => {
-          if (!state.user) return state;
-          const updatedUser = {
-            ...state.user,
-            orders: [order, ...(state.user.orders || [])],
-          };
-
-          let updatedRegisteredAccount = state.registeredAccount;
-          if (state.registeredAccount?.email === state.user.email) {
-            updatedRegisteredAccount = {
-              ...state.registeredAccount,
-              orders: [order, ...(state.registeredAccount.orders || [])],
-            };
-          }
-          return {
-            user: updatedUser,
-            registeredAccount: updatedRegisteredAccount,
-          };
-        }),
-
-      updateProfile: (updates) =>
-        set((state) => {
-          if (!state.user) return state;
-          const updatedUser = { ...state.user, ...updates };
-
-          let updatedRegisteredAccount = state.registeredAccount;
-          if (state.registeredAccount?.email === state.user.email) {
-            updatedRegisteredAccount = {
-              ...state.registeredAccount,
-              ...updates,
-            };
-          }
-          return {
-            user: updatedUser,
-            registeredAccount: updatedRegisteredAccount,
-          };
-        }),
+        set((state) => ({
+          user: state.user
+            ? {
+                ...state.user,
+                orders: [order, ...(state.user.orders || [])],
+              }
+            : null,
+        })),
     }),
     {
-      name: "void-loot-auth",
-    },
-  ),
+      name: "void-auth-storage",
+    }
+  )
 );

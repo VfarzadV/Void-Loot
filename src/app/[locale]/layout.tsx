@@ -12,6 +12,9 @@ import { getMessages } from "next-intl/server";
 
 const vazirmatn = Vazirmatn({ subsets: ["arabic"], display: "swap" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], display: "swap" });
+export const viewport = {
+  themeColor: "#aa4fff",
+};
 
 export async function generateMetadata({
   params,
@@ -25,6 +28,7 @@ export async function generateMetadata({
       locale === "fa"
         ? "پلتفرم مدرن گیمینگ با قدرت RAWG"
         : "Modern Gaming Platform Powered by RAWG",
+        manifest: "/manifest.json",
   };
 }
 
@@ -57,10 +61,13 @@ export default async function RootLayout({
               {locale === "fa" ? "پرش به محتوای اصلی" : "Skip to main content"}
             </a>
             <Sidebar />
-            <div className="flex-1 ms-0 md:ms-20 flex flex-col min-h-screen relative pb-20 md:pb-0">
+            <div className="flex-1 ms-0 md:ms-20 flex flex-col min-h-screen relative">
               <Navbar />
               <CartDrawer />
-              <main id="main-content" className="grow px-2 md:px-0">
+              <main
+                id="main-content"
+                className="grow px-2 md:px-0 pb-20 md:pb-0"
+              >
                 {children}
               </main>
               <Footer />

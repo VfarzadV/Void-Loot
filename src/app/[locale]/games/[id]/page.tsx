@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import AddToCartFullButton from "@/components/cart/AddToCartFullButton";
 import { notFound } from "next/navigation";
+import Breadcrumbs from "@/components/shared/Breadcrumbs";
 
 interface Genre {
   id: number;
@@ -216,6 +217,7 @@ export default async function GameDetailsPage({
             <ArrowLeft size={16} className="rtl:rotate-180" />{" "}
             {t("backToStore")}
           </Link>
+          <Breadcrumbs />
 
           <div className="flex flex-wrap items-center gap-3 mb-2">
             {game.metacritic && (

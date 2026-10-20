@@ -17,41 +17,45 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 export default function RegisterPage() {
   const t = useTranslations("register");
-  const [showPassword, setShowPassword] = useState(false);
-  const [isRegistering, setIsRegistering] = useState(false);
-  const [username, setUsername] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const router = useRouter();
   const registerAccount = useAuthStore((state) => state.registerAccount);
 
-  const handleRegister = (e: React.FormEvent) => {
-    e.preventDefault();
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(email)) {
-      toast.error(t("toastInvalidEmail"));
-      return;
-    }
-    if (password.length < 6) {
-      toast.error(t("toastShortPassword"));
-      return;
-    }
+  const [showPassword, setShowPassword] = useState(false);
+  const [isRegistering, setIsRegistering] = useState(false);
 
+  const registerSchema = z.object({
+    username: z.string().min(3, "Minimum 3 characters required"),
+    email: z.string().email(t("toastInvalidEmail")),
+    password: z.string().min(6, t("toastShortPassword")),
+  });
+
+  type RegisterFormValues = z.infer<typeof registerSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<RegisterFormValues>({
+    resolver: zodResolver(registerSchema),
+  });
+
+  const onSubmit = (data: RegisterFormValues) => {
     setIsRegistering(true);
-
     setTimeout(() => {
       registerAccount({
-        name: username,
-        username: username,
-        email: email,
-        password: password,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${username}`,
+        name: data.username,
+        username: data.username,
+        email: data.email,
+        password: data.password,
+        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`,
         level: 1,
       });
-
       setIsRegistering(false);
       toast.success(t("toastSuccess"));
       router.push("/login");
@@ -89,12 +93,13 @@ export default function RegisterPage() {
             <h1 className="text-2xl font-black text-white mb-2 tracking-tight">
               {t("title")}
             </h1>
-            <p className="text-sm text-base-400">
-              {t("subtitle")}
-            </p>
+            <p className="text-sm text-base-400">{t("subtitle")}</p>
           </div>
 
-          <form className="flex flex-col gap-4" onSubmit={handleRegister}>
+          <form
+            className="flex flex-col gap-4"
+            onSubmit={handleSubmit(onSubmit)}
+          >
             <div className="flex flex-col gap-1.5">
               <label
                 htmlFor="register-username"
@@ -105,18 +110,25 @@ export default function RegisterPage() {
               <div className="relative group">
                 <User
                   size={16}
-                  className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+                  className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
                 />
                 <input
                   id="register-username"
                   type="text"
-                  required
-                  value={username}
-                  onChange={(e) => setUsername(e.target.value)}
                   placeholder={t("usernamePlaceholder")}
-                  className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:border-primary-500 focus:bg-base-900 transition-all outline-none"
+                  {...register("username")}
+                  className={`w-full bg-base-900/50 border rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:bg-base-900 transition-all outline-none ${
+                    errors.username
+                      ? "border-rose-500 focus:border-rose-500"
+                      : "border-base-800 focus:border-primary-500"
+                  }`}
                 />
               </div>
+              {errors.username && (
+                <span className="text-rose-500 text-[10px] ms-1">
+                  {errors.username.message}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -129,18 +141,25 @@ export default function RegisterPage() {
               <div className="relative group">
                 <Mail
                   size={16}
-                  className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+                  className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
                 />
                 <input
                   id="register-email"
                   type="text"
-                  required
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
                   placeholder={t("emailPlaceholder")}
-                  className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:border-primary-500 focus:bg-base-900 transition-all outline-none"
+                  {...register("email")}
+                  className={`w-full bg-base-900/50 border rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:bg-base-900 transition-all outline-none ${
+                    errors.email
+                      ? "border-rose-500 focus:border-rose-500"
+                      : "border-base-800 focus:border-primary-500"
+                  }`}
                 />
               </div>
+              {errors.email && (
+                <span className="text-rose-500 text-[10px] ms-1">
+                  {errors.email.message}
+                </span>
+              )}
             </div>
 
             <div className="flex flex-col gap-1.5">
@@ -153,16 +172,18 @@ export default function RegisterPage() {
               <div className="relative group">
                 <Lock
                   size={16}
-                  className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+                  className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
                 />
                 <input
                   id="register-password"
                   type={showPassword ? "text" : "password"}
-                  required
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
                   placeholder={t("passwordPlaceholder")}
-                  className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ps-11 pe-12 text-sm text-white focus:border-primary-500 focus:bg-base-900 transition-all outline-none"
+                  {...register("password")}
+                  className={`w-full bg-base-900/50 border rounded-xl py-3 ps-11 pe-12 text-sm text-white focus:bg-base-900 transition-all outline-none ${
+                    errors.password
+                      ? "border-rose-500 focus:border-rose-500"
+                      : "border-base-800 focus:border-primary-500"
+                  }`}
                 />
                 <button
                   type="button"
@@ -172,10 +193,16 @@ export default function RegisterPage() {
                   {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
                 </button>
               </div>
+              {errors.password && (
+                <span className="text-rose-500 text-[10px] ms-1">
+                  {errors.password.message}
+                </span>
+              )}
             </div>
 
             <button
               disabled={isRegistering}
+              type="submit"
               className="group relative w-full flex justify-center py-3.5 px-4 mt-4 border border-transparent text-sm font-black rounded-xl text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all disabled:opacity-70"
             >
               <span className="relative z-10 flex items-center gap-2">
@@ -198,9 +225,7 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 pt-6 border-t border-white/5 flex items-center justify-center gap-2">
-            <span className="text-sm text-base-400">
-              {t("alreadyMember")}
-            </span>
+            <span className="text-sm text-base-400">{t("alreadyMember")}</span>
             <Link
               href="/login"
               className="text-sm font-bold text-white hover:text-primary-400 transition-colors"

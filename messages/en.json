@@ -655,5 +655,48 @@
     "priceAsc": "Price: Low to High",
     "priceDesc": "Price: High to Low",
     "ratingDesc": "Highest Rating"
+  },
+  "shopDetails": {
+    "inStock": "In Stock",
+    "outOfStock": "Out of Stock",
+    "safeCheckout": "Secure Checkout",
+    "safeCheckoutDesc": "Encrypted payments",
+    "worldwideShipping": "Global Shipping",
+    "worldwideShippingDesc": "Void Express delivery",
+    "freeReturns": "Free Returns",
+    "freeReturnsDesc": "14-day guarantee",
+    "support247": "24/7 Support",
+    "support247Desc": "Always available"
+  },
+  "mediaWatch": {
+    "views": "Views",
+    "share": "Share",
+    "like": "Like",
+    "descTitle": "About this video"
+  },
+  "communityPost": {
+    "role": "Void Knight",
+    "reply": "Reply",
+    "share": "Share",
+    "like": "Like",
+    "comments": "Comments"
+  },
+  "breadcrumbs": {
+    "home": "Home",
+    "games": "Games",
+    "shop": "Store",
+    "community": "Community",
+    "post": "Post",
+    "hardware": "Hardware",
+    "compare": "Compare",
+    "deals": "Deals",
+    "live": "Live Streams",
+    "media": "Media",
+    "watch": "Watch",
+    "profile": "Profile",
+    "support": "Support",
+    "tracking": "Tracking",
+    "loot-box": "Loot Box",
+    "details": "Details"
   }
 }
