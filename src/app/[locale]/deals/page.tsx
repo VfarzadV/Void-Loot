@@ -100,7 +100,7 @@ export default async function DealsPage() {
                   product={{
                     id: deal.id,
                     title: deal.title,
-                    price: parseFloat(salePrice), 
+                    price: parseFloat(salePrice),
                     image: deal.thumbnail,
                   }}
                 />
@@ -108,7 +108,7 @@ export default async function DealsPage() {
                   src={deal.thumbnail}
                   alt={deal.title}
                   fill
-                  unoptimized
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-contain p-4 group-hover:scale-110 transition-transform duration-700 relative z-0"
                 />
               </div>

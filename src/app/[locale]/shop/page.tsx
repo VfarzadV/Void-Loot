@@ -303,7 +303,7 @@ export default async function ShopPage({
                       src={product.thumbnail}
                       alt={product.title}
                       fill
-                      unoptimized
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-contain p-4 group-hover:scale-110 transition-transform duration-700 relative z-0 drop-shadow-xl"
                     />
                   </Link>

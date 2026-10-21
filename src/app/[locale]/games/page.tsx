@@ -25,18 +25,29 @@ interface RawgGame {
   parent_platforms: Platform[];
 }
 
-async function getGames(page: number, search: string, sort: string) {
+async function getGames(
+  page: number,
+  search: string,
+  sort: string,
+  platform: string,
+  genre: string,
+) {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
   let url = `https://api.rawg.io/api/games?key=${apiKey}&page=${page}&page_size=20`;
 
   if (search) {
     url += `&search=${encodeURIComponent(search)}`;
   }
-
   if (sort) {
     url += `&ordering=${sort}`;
   } else if (!search) {
     url += `&ordering=-added`;
+  }
+  if (platform) {
+    url += `&parent_platforms=${platform}`;
+  }
+  if (genre) {
+    url += `&genres=${genre}`;
   }
 
   const res = await fetch(url, { next: { revalidate: 3600 } });
@@ -47,15 +58,31 @@ async function getGames(page: number, search: string, sort: string) {
 export default async function GamesPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; search?: string; sort?: string }>;
+  searchParams: Promise<{
+    page?: string;
+    search?: string;
+    sort?: string;
+    platform?: string;
+    genre?: string;
+  }>;
 }) {
   const params = await searchParams;
   const currentPage = Number(params.page) || 1;
   const searchQuery = params.search || "";
   const currentSort = params.sort || "";
+  const currentPlatform = params.platform || "";
+  const currentGenre = params.genre || "";
+
   const t = await getTranslations("games");
 
-  const data = await getGames(currentPage, searchQuery, currentSort);
+  const data = await getGames(
+    currentPage,
+    searchQuery,
+    currentSort,
+    currentPlatform,
+    currentGenre,
+  );
+
   const games: RawgGame[] = data?.results || [];
 
   return (
@@ -73,7 +100,6 @@ export default async function GamesPage({
               : t("subtitleDefault")}
           </p>
         </div>
-
         <Form
           action="/games"
           aria-label="Search games"
@@ -81,6 +107,12 @@ export default async function GamesPage({
         >
           {currentSort && (
             <input type="hidden" name="sort" value={currentSort} />
+          )}
+          {currentPlatform && (
+            <input type="hidden" name="platform" value={currentPlatform} />
+          )}
+          {currentGenre && (
+            <input type="hidden" name="genre" value={currentGenre} />
           )}
           <Search
             size={18}
@@ -94,7 +126,7 @@ export default async function GamesPage({
             placeholder={t("searchPlaceholder")}
             className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white placeholder-base-500 focus:outline-none focus:border-primary-500 focus:bg-base-900 transition-all shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
           />
-          {searchQuery && (
+          {(searchQuery || currentPlatform || currentGenre) && (
             <Link
               href={`/games${currentSort ? `?sort=${currentSort}` : ""}`}
               className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
@@ -141,7 +173,7 @@ export default async function GamesPage({
                     src={game.background_image || "/images/placeholder.jpg"}
                     alt={game.name}
                     fill
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover transition-transform duration-700 group-hover:scale-105"
                   />
                   <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />
@@ -159,7 +191,6 @@ export default async function GamesPage({
                     </div>
                   )}
                 </Link>
-
                 <WishlistButton
                   product={{
                     id: game.id,
@@ -168,7 +199,6 @@ export default async function GamesPage({
                     image: game.background_image || "/images/placeholder.jpg",
                   }}
                 />
-
                 <div className="p-4 flex flex-col grow gap-3 pointer-events-none">
                   <div className="grow pointer-events-auto">
                     <Link href={`/games/${game.id}`}>
@@ -191,7 +221,6 @@ export default async function GamesPage({
                       )}
                     </div>
                   </div>
-
                   <div className="pt-3 border-t border-base-800/50 flex items-center justify-between pointer-events-auto">
                     <div className="flex items-center gap-1.5 text-base-400">
                       {game.parent_platforms?.some((p) =>
@@ -212,7 +241,6 @@ export default async function GamesPage({
           })}
         </div>
       )}
-
       {games.length > 0 && (
         <Pagination
           pageCount={Math.min(Math.ceil((data?.count || 0) / 20), 500)}

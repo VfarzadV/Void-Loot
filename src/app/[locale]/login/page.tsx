@@ -24,13 +24,12 @@ export default function LoginPage() {
   const t = useTranslations("login");
   const router = useRouter();
   const { login, registeredAccount } = useAuthStore();
-
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const loginSchema = z.object({
-    email: z.string().email("Invalid email format"),
-    password: z.string().min(1, "Password is required"),
+    email: z.string().email(t("accessDenied")),
+    password: z.string().min(1, t("accessDenied")),
   });
 
   type LoginFormValues = z.infer<typeof loginSchema>;
@@ -77,7 +76,7 @@ export default function LoginPage() {
           src="https://media.rawg.io/media/games/26d/26d4437715bee60138cb4a44dbe8bf2f.jpg"
           alt="Login Background"
           fill
-          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover opacity-30 object-center"
         />
         <div className="absolute inset-0 bg-base-950/60 backdrop-blur-sm"></div>

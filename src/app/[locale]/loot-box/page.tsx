@@ -16,16 +16,21 @@ import {
 import { useCartStore } from "@/store/useCartStore";
 import { toast } from "sonner";
 
-const LootBoxCanvas = dynamic(() => import("@/components/3d/LootBoxCanvas"), {
-  ssr: false,
-  loading: () => (
+const Loader = () => {
+  const t = useTranslations("lootBox");
+  return (
     <div className="w-full h-full flex flex-col items-center justify-center gap-4">
       <div className="w-16 h-16 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin" />
       <p className="text-xs font-mono text-primary-400 tracking-widest uppercase animate-pulse">
-        Establishing Neural Link...
+        {t("neuralLink")}
       </p>
     </div>
-  ),
+  );
+};
+
+const LootBoxCanvas = dynamic(() => import("@/components/3d/LootBoxCanvas"), {
+  ssr: false,
+  loading: () => <Loader />,
 });
 
 export default function LootBoxPage() {

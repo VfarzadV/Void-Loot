@@ -6,7 +6,7 @@ import { Star, ArrowRight, Heart } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useQuery } from "@tanstack/react-query";
 import { useWishlistStore } from "@/store/useWishlistStore";
-import { useTranslations } from "next-intl"; 
+import { useTranslations } from "next-intl";
 
 interface Product {
   id: number;
@@ -34,7 +34,7 @@ export default function PopularHardware() {
   });
   const addItem = useCartStore((state) => state.addItem);
   const { toggleItem, isInWishlist } = useWishlistStore();
-  const t = useTranslations("home.popularHardware"); 
+  const t = useTranslations("home.popularHardware");
 
   if (isLoading) {
     return (
@@ -130,7 +130,7 @@ export default function PopularHardware() {
                 src={product.thumbnail}
                 alt={product.title}
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
               />
             </div>

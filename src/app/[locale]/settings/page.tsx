@@ -136,7 +136,7 @@ export default function SettingsPage() {
                     src="https://i.pravatar.cc/150?u=farzad"
                     alt="Avatar"
                     fill
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover"
                   />
                   <div className="absolute inset-0 bg-black/60 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer backdrop-blur-sm">

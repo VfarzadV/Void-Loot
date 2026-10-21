@@ -201,7 +201,7 @@ export default async function GameDetailsPage({
             src={game.background_image || "/images/placeholder.jpg"}
             alt={game.name}
             fill
-            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
             className="object-cover opacity-40 object-top"
           />
@@ -331,7 +331,6 @@ export default async function GameDetailsPage({
                         width={48}
                         height={48}
                         className="rounded-lg object-cover"
-                        unoptimized
                       />
                     ) : (
                       <div className="w-12 h-12 rounded-lg bg-base-900 flex items-center justify-center text-primary-500">
@@ -419,7 +418,7 @@ export default async function GameDetailsPage({
                       src={shot.image}
                       alt="Gameplay screenshot"
                       fill
-                      unoptimized
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover group-hover:scale-105 transition-transform duration-500"
                     />
                   </div>
@@ -489,7 +488,7 @@ export default async function GameDetailsPage({
                     src={rg.background_image || "/images/placeholder.jpg"}
                     alt={rg.name}
                     fill
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                 </div>

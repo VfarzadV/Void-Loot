@@ -69,7 +69,7 @@ export default function RegisterPage() {
           src="https://images.unsplash.com/photo-1542751371-adc38448a05e?q=80&w=2070&auto=format&fit=crop"
           alt="Register Background"
           fill
-          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover opacity-20 object-center"
         />
         <div className="absolute inset-0 bg-base-950/70 backdrop-blur-md"></div>

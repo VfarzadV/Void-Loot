@@ -89,7 +89,7 @@ export default function ProfilePage() {
             }
             alt="Profile Banner"
             fill
-            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             className="object-cover opacity-75 group-hover:scale-105 transition-transform duration-1000 ease-out"
           />
           <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/40 to-transparent opacity-95" />
@@ -112,7 +112,7 @@ export default function ProfilePage() {
                 src={user.avatar}
                 alt={user.name}
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
               <div
@@ -173,7 +173,12 @@ export default function ProfilePage() {
                     className={isActive ? "text-primary-400" : "text-base-500"}
                   />
                   {tab.label}
-                  {isActive && <ChevronRight size={16} className="ms-auto rtl:rotate-180" />}
+                  {isActive && (
+                    <ChevronRight
+                      size={16}
+                      className="ms-auto rtl:rotate-180"
+                    />
+                  )}
                 </button>
               );
             })}
@@ -200,7 +205,9 @@ export default function ProfilePage() {
               </div>
               <div className="flex justify-between items-center">
                 <span className="text-base-500">{t("plan")}</span>
-                <span className="font-bold text-primary-400">{t("premium")}</span>
+                <span className="font-bold text-primary-400">
+                  {t("premium")}
+                </span>
               </div>
             </div>
           </div>
@@ -254,7 +261,8 @@ export default function ProfilePage() {
               <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-8 flex flex-col gap-6">
                 <div className="flex items-center justify-between border-b border-white/5 pb-4">
                   <h2 className="text-xl font-black text-white flex items-center gap-2">
-                    <Activity size={20} className="text-primary-500" /> {t("recentActivity")}
+                    <Activity size={20} className="text-primary-500" />{" "}
+                    {t("recentActivity")}
                   </h2>
                 </div>
                 <div className="flex flex-col gap-6 relative ps-4 mt-2">
@@ -290,7 +298,7 @@ export default function ProfilePage() {
                                 src={log.itemImage}
                                 alt={log.itemTitle}
                                 fill
-                                unoptimized
+                                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                                 className="object-cover opacity-80"
                               />
                             </div>
@@ -301,7 +309,9 @@ export default function ProfilePage() {
                               <span
                                 className={`text-[10px] font-bold uppercase tracking-widest ${colorClass}`}
                               >
-                                {isAdd ? t("addedToCart") : t("removedFromCart")}
+                                {isAdd
+                                  ? t("addedToCart")
+                                  : t("removedFromCart")}
                               </span>
                             </div>
                             <span className="text-[10px] text-base-500 font-mono shrink-0 pe-2">
@@ -320,7 +330,8 @@ export default function ProfilePage() {
           {activeTab === "orders" && ordersList.length > 0 && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-8 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white flex items-center gap-2 border-b border-white/5 pb-4">
-                <Package size={20} className="text-primary-500" /> {t("allOrders")}
+                <Package size={20} className="text-primary-500" />{" "}
+                {t("allOrders")}
               </h2>
               <div className="flex flex-col gap-4">
                 {ordersList.map((order) => (
@@ -383,7 +394,7 @@ export default function ProfilePage() {
                             src={item.image}
                             alt={item.title}
                             fill
-                            unoptimized
+                            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                             className="object-cover group-hover:scale-110 transition-transform duration-500"
                           />
                         </div>
@@ -442,9 +453,7 @@ export default function ProfilePage() {
                 <h2 className="text-2xl font-black text-white">
                   {t("accountSettings")}
                 </h2>
-                <p className="text-sm text-base-400">
-                  {t("manageInfo")}
-                </p>
+                <p className="text-sm text-base-400">{t("manageInfo")}</p>
               </div>
 
               <form

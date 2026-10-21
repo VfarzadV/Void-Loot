@@ -1,7 +1,14 @@
 import Image from "next/image";
 import Link from "next/link";
 import { getTranslations } from "next-intl/server";
-import { Play, Info, Clock, MonitorPlay, Flame, LucideIcon } from "lucide-react";
+import {
+  Play,
+  Info,
+  Clock,
+  MonitorPlay,
+  Flame,
+  LucideIcon,
+} from "lucide-react";
 
 interface VideoItem {
   id: number;
@@ -114,13 +121,17 @@ const VideoRow = ({
               src={video.image}
               alt={video.title}
               fill
-              unoptimized
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover group-hover:scale-105 transition-transform duration-700 opacity-70 group-hover:opacity-100"
             />
             <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors" />
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-100 scale-90">
               <div className="w-12 h-12 rounded-full bg-primary-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_20px_rgba(170,79,255,0.5)]">
-                <Play size={20} className="ms-1 rtl:rotate-180" fill="currentColor" />
+                <Play
+                  size={20}
+                  className="ms-1 rtl:rotate-180"
+                  fill="currentColor"
+                />
               </div>
             </div>
             <div className="absolute bottom-2 inset-e-2 bg-black/80 backdrop-blur-md px-2 py-1 rounded text-[10px] font-bold text-white border border-white/10 flex items-center gap-1">
@@ -152,7 +163,8 @@ export default async function MediaPage() {
       <div className="flex items-center gap-3 mb-8">
         <MonitorPlay size={28} className="text-primary-500" />
         <h1 className="text-3xl md:text-4xl font-black text-white tracking-tight">
-          {t("titlePrefix")}<span className="text-primary-400">{t("titleHighlight")}</span>
+          {t("titlePrefix")}
+          <span className="text-primary-400">{t("titleHighlight")}</span>
         </h1>
       </div>
 
@@ -161,7 +173,7 @@ export default async function MediaPage() {
           src={FEATURED_VIDEO.image}
           alt={t("featured.title")}
           fill
-          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority
           className="object-cover transition-transform duration-1000 group-hover:scale-105"
         />
@@ -183,10 +195,17 @@ export default async function MediaPage() {
             {t("featured.description")}
           </p>
           <div className="flex items-center gap-3 mt-4">
-            <button type="button" className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-black text-sm hover:bg-base-200 transition-colors shadow-lg">
-              <Play size={18} fill="currentColor" className="rtl:rotate-180" /> {t("playNow")}
+            <button
+              type="button"
+              className="flex items-center gap-2 bg-white text-black px-6 py-3 rounded-xl font-black text-sm hover:bg-base-200 transition-colors shadow-lg"
+            >
+              <Play size={18} fill="currentColor" className="rtl:rotate-180" />{" "}
+              {t("playNow")}
             </button>
-            <button type="button" className="flex items-center gap-2 bg-base-900/60 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-xl font-bold text-sm hover:bg-base-800 transition-colors">
+            <button
+              type="button"
+              className="flex items-center gap-2 bg-base-900/60 backdrop-blur-md text-white border border-white/20 px-6 py-3 rounded-xl font-bold text-sm hover:bg-base-800 transition-colors"
+            >
               <Info size={18} /> {t("moreInfo")}
             </button>
           </div>

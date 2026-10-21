@@ -54,7 +54,7 @@ export default function BrandsRow() {
                 src={brand.image}
                 alt={brand.name}
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover z-10 group-hover:scale-110 transition-transform duration-500"
               />
             </div>

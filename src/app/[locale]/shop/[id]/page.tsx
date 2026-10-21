@@ -125,7 +125,7 @@ export default async function ProductDetailsPage({
               src={product.images[0]}
               alt={product.title}
               fill
-              unoptimized
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-contain p-8 group-hover:scale-110 transition-transform duration-700 relative z-0 drop-shadow-2xl"
             />
           </div>
@@ -141,7 +141,7 @@ export default async function ProductDetailsPage({
                     src={img}
                     alt={`${product.title} view ${idx + 1}`}
                     fill
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-contain p-2"
                   />
                 </div>

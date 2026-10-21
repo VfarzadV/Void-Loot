@@ -10,7 +10,7 @@ import {
   Gamepad2,
 } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl"; 
+import { useTranslations } from "next-intl";
 
 interface RawgNewsItem {
   id: number;
@@ -91,7 +91,7 @@ export default function GamingNews() {
               src={featuredNews.background_image || "/images/placeholder.jpg"}
               alt={featuredNews.name}
               fill
-              unoptimized
+              sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
               className="object-cover transition-transform duration-700 group-hover:scale-105"
             />
             <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/60 to-transparent opacity-90 group-hover:opacity-80 transition-opacity duration-500" />
@@ -141,7 +141,7 @@ export default function GamingNews() {
                 src={newsItem.background_image || "/images/placeholder.jpg"}
                 alt={newsItem.name}
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover transition-transform duration-700 group-hover:scale-110"
               />
               <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/80 to-base-950/20 opacity-95 group-hover:opacity-85 transition-opacity duration-500" />

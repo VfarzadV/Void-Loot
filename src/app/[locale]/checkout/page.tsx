@@ -17,15 +17,19 @@ import {
 import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { toast } from "sonner";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import * as z from "zod";
 
 export default function CheckoutPage() {
   const router = useRouter();
   const t = useTranslations("checkout");
   const { items, clearCart } = useCartStore();
   const { user, addOrder } = useAuthStore();
-
   const [isMounted, setIsMounted] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState("card");
+  const [paymentMethod, setPaymentMethod] = useState<
+    "card" | "crypto" | "wallet"
+  >("card");
   const [isProcessing, setIsProcessing] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [orderId, setOrderId] = useState("");
@@ -35,6 +39,56 @@ export default function CheckoutPage() {
     return () => clearTimeout(timer);
   }, []);
 
+  const checkoutSchema = z
+    .object({
+      firstName: z.string().min(2, "First name is required"),
+      lastName: z.string().min(2, "Last name is required"),
+      email: z.string().email("Invalid email format"),
+      cardNumber: z.string().optional(),
+      expiryDate: z.string().optional(),
+      cvc: z.string().optional(),
+    })
+    .superRefine((data, ctx) => {
+      if (paymentMethod === "card") {
+        if (!/^\d{16}$/.test(data.cardNumber?.replace(/\s/g, "") || "")) {
+          ctx.addIssue({
+            path: ["cardNumber"],
+            code: z.ZodIssueCode.custom,
+            message: "Must be 16 digits",
+          });
+        }
+        if (!/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(data.expiryDate || "")) {
+          ctx.addIssue({
+            path: ["expiryDate"],
+            code: z.ZodIssueCode.custom,
+            message: "Invalid (MM/YY)",
+          });
+        }
+        if (!/^\d{3,4}$/.test(data.cvc || "")) {
+          ctx.addIssue({
+            path: ["cvc"],
+            code: z.ZodIssueCode.custom,
+            message: "Invalid CVC",
+          });
+        }
+      }
+    });
+
+  type CheckoutFormValues = z.infer<typeof checkoutSchema>;
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<CheckoutFormValues>({
+    resolver: zodResolver(checkoutSchema),
+    defaultValues: {
+      firstName: user?.name?.split(" ")[0] || "",
+      lastName: user?.name?.split(" ")[1] || "",
+      email: user?.email || "",
+    },
+  });
+
   const subtotal = items.reduce(
     (total, item) => total + item.price * item.quantity,
     0,
@@ -42,10 +96,8 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
 
-  const handleCheckout = (e: React.FormEvent) => {
-    e.preventDefault();
+  const onSubmit = () => {
     if (items.length === 0) return;
-
     setIsProcessing(true);
 
     setTimeout(() => {
@@ -60,12 +112,10 @@ export default function CheckoutPage() {
           day: "numeric",
           year: "numeric",
         });
-
         const itemsSummary =
           items.length === 1
             ? `${items[0].quantity}x ${items[0].title}`
             : `${items.length} Items (inc. ${items[0].title})`;
-
         addOrder({
           id: newOrderId,
           date: today,
@@ -94,7 +144,6 @@ export default function CheckoutPage() {
         <p className="text-base-400 text-sm mb-8 max-w-md">
           {t("orderSuccessDesc")}
         </p>
-
         <div className="glass-panel p-6 rounded-2xl bg-base-900/50 border border-white/5 mb-8 flex gap-8">
           <div className="flex flex-col">
             <span className="text-xs text-base-500 uppercase tracking-widest font-bold">
@@ -112,7 +161,6 @@ export default function CheckoutPage() {
             </span>
           </div>
         </div>
-
         <Link
           href="/profile"
           className="px-8 py-4 rounded-xl font-black text-sm text-base-950 bg-white hover:bg-base-200 transition-colors shadow-lg"
@@ -163,7 +211,7 @@ export default function CheckoutPage() {
         <div className="lg:col-span-7 flex flex-col gap-8">
           <form
             id="checkout-form"
-            onSubmit={handleCheckout}
+            onSubmit={handleSubmit(onSubmit)}
             className="flex flex-col gap-8"
           >
             <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
@@ -172,49 +220,49 @@ export default function CheckoutPage() {
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="checkout-first-name"
-                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
-                  >
+                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
                     {t("firstName")}
                   </label>
                   <input
-                    id="checkout-first-name"
-                    required
+                    {...register("firstName")}
                     type="text"
-                    defaultValue={user?.name?.split(" ")[0] || ""}
-                    className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
+                    className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white focus:outline-none transition-colors ${errors.firstName ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
                   />
+                  {errors.firstName && (
+                    <span className="text-[10px] text-rose-500 ms-1">
+                      {errors.firstName.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5">
-                  <label
-                    htmlFor="checkout-last-name"
-                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
-                  >
+                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
                     {t("lastName")}
                   </label>
                   <input
-                    id="checkout-last-name"
-                    required
+                    {...register("lastName")}
                     type="text"
-                    defaultValue={user?.name?.split(" ")[1] || ""}
-                    className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
+                    className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white focus:outline-none transition-colors ${errors.lastName ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
                   />
+                  {errors.lastName && (
+                    <span className="text-[10px] text-rose-500 ms-1">
+                      {errors.lastName.message}
+                    </span>
+                  )}
                 </div>
                 <div className="flex flex-col gap-1.5 md:col-span-2">
-                  <label
-                    htmlFor="checkout-email"
-                    className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
-                  >
+                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
                     {t("email")}
                   </label>
                   <input
-                    id="checkout-email"
-                    required
+                    {...register("email")}
                     type="email"
-                    defaultValue={user?.email || ""}
-                    className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors"
+                    className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white focus:outline-none transition-colors ${errors.email ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
                   />
+                  {errors.email && (
+                    <span className="text-[10px] text-rose-500 ms-1">
+                      {errors.email.message}
+                    </span>
+                  )}
                 </div>
               </div>
             </div>
@@ -310,50 +358,53 @@ export default function CheckoutPage() {
               {paymentMethod === "card" && (
                 <div className="flex flex-col gap-5 mt-4 animate-in fade-in duration-300">
                   <div className="flex flex-col gap-1.5">
-                    <label
-                      htmlFor="checkout-card-number"
-                      className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
-                    >
+                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
                       {t("cardNumber")}
                     </label>
                     <input
-                      id="checkout-card-number"
-                      required
+                      {...register("cardNumber")}
                       type="text"
                       placeholder="0000 0000 0000 0000"
-                      className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none focus:border-primary-500 transition-colors"
+                      className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none transition-colors ${errors.cardNumber ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
                     />
+                    {errors.cardNumber && (
+                      <span className="text-[10px] text-rose-500 ms-1">
+                        {errors.cardNumber.message}
+                      </span>
+                    )}
                   </div>
                   <div className="grid grid-cols-2 gap-5">
                     <div className="flex flex-col gap-1.5">
-                      <label
-                        htmlFor="checkout-card-expiry"
-                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
-                      >
+                      <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
                         {t("expiryDate")}
                       </label>
                       <input
-                        id="checkout-card-expiry"
-                        required
+                        {...register("expiryDate")}
                         type="text"
                         placeholder="MM/YY"
-                        className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none focus:border-primary-500 transition-colors"
+                        className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none transition-colors ${errors.expiryDate ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
                       />
+                      {errors.expiryDate && (
+                        <span className="text-[10px] text-rose-500 ms-1">
+                          {errors.expiryDate.message}
+                        </span>
+                      )}
                     </div>
                     <div className="flex flex-col gap-1.5">
-                      <label
-                        htmlFor="checkout-card-cvc"
-                        className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1"
-                      >
+                      <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
                         {t("cvc")}
                       </label>
                       <input
-                        id="checkout-card-cvc"
-                        required
+                        {...register("cvc")}
                         type="text"
                         placeholder="123"
-                        className="w-full bg-base-900/50 border border-base-800 rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none focus:border-primary-500 transition-colors"
+                        className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none transition-colors ${errors.cvc ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
                       />
+                      {errors.cvc && (
+                        <span className="text-[10px] text-rose-500 ms-1">
+                          {errors.cvc.message}
+                        </span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -375,8 +426,8 @@ export default function CheckoutPage() {
                       src={item.image}
                       alt={item.title}
                       fill
-                      unoptimized
                       className="object-cover opacity-80"
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     />
                     <span className="absolute top-1 inset-e-1 bg-primary-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center text-white z-10">
                       {item.quantity}

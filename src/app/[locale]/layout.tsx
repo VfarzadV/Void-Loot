@@ -23,13 +23,23 @@ export async function generateMetadata({
   params: Promise<{ locale: string }>;
 }>): Promise<Metadata> {
   const { locale } = await params;
+
   return {
     title: "Void Loot",
     description:
       locale === "fa"
-        ? "پلتفرم مدرن گیمینگ قدرت گرفته از RAWG"
+        ? "پلتفرم مدرن گیمینگ با قدرت RAWG"
         : "Modern Gaming Platform Powered by RAWG",
     manifest: "/manifest.json",
+    icons: {
+      icon: [
+        { url: '/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/favicon-16x16.png', sizes: '16x16', type: 'image/png' }
+      ],
+      apple: [
+        { url: '/apple-touch-icon.png', sizes: '180x180', type: 'image/png' }
+      ]
+    }
   };
 }
 

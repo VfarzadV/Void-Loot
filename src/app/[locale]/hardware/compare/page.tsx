@@ -89,11 +89,10 @@ export default function ComparePage() {
           <Cpu size={32} className="text-primary-400" />
         </div>
         <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight mb-3">
-          {t("title")} <span className="text-primary-500">{t("titleHighlight")}</span>
+          {t("title")}{" "}
+          <span className="text-primary-500">{t("titleHighlight")}</span>
         </h1>
-        <p className="text-sm text-base-400 max-w-lg">
-          {t("subtitle")}
-        </p>
+        <p className="text-sm text-base-400 max-w-lg">{t("subtitle")}</p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-16 items-start">
@@ -125,8 +124,8 @@ export default function ComparePage() {
                 src={item1.image}
                 alt={item1.name}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-contain p-4"
-                unoptimized
               />
             </div>
             <h2 className="text-2xl font-black text-white mb-2">
@@ -135,7 +134,10 @@ export default function ComparePage() {
             <span className="text-xl font-bold text-primary-400 mb-6">
               ${item1.price}
             </span>
-            <button type="button" className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
+            <button
+              type="button"
+              className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white"
+            >
               {t("viewProduct")}
             </button>
           </div>
@@ -169,8 +171,8 @@ export default function ComparePage() {
                 src={item2.image}
                 alt={item2.name}
                 fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-contain p-4"
-                unoptimized
               />
             </div>
             <h2 className="text-2xl font-black text-white mb-2">
@@ -179,7 +181,10 @@ export default function ComparePage() {
             <span className="text-xl font-bold text-primary-400 mb-6">
               ${item2.price}
             </span>
-            <button type="button" className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white">
+            <button
+              type="button"
+              className="w-full py-3 rounded-xl bg-base-900 hover:bg-primary-600 font-bold text-sm transition-colors border border-white/5 hover:border-primary-500 text-white"
+            >
               {t("viewProduct")}
             </button>
           </div>
@@ -215,7 +220,8 @@ export default function ComparePage() {
         </div>
         <div className="mt-12 flex items-center justify-center gap-4 text-xs font-bold text-base-400">
           <div className="flex items-center gap-2">
-            <div className="w-3 h-3 bg-primary-500 rounded-sm"></div> {t("winner")}
+            <div className="w-3 h-3 bg-primary-500 rounded-sm"></div>{" "}
+            {t("winner")}
           </div>
           <div className="flex items-center gap-2">
             <div className="w-3 h-3 bg-base-700 rounded-sm"></div> {t("loser")}

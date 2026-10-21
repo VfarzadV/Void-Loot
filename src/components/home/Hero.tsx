@@ -125,7 +125,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
             src={activeGame.background_image}
             alt="Background"
             fill
-            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
             className="object-cover"
           />
@@ -267,7 +267,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                     src={game.background_image}
                     alt={game.name}
                     fill
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     priority
                     className={`object-cover transition-transform duration-700 ${isHovered || positionIndex === 0 ? "scale-105" : "scale-100"}`}
                   />

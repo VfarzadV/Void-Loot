@@ -96,7 +96,7 @@ export default function TrendingGames() {
                   src={game.background_image || "/images/placeholder.jpg"}
                   alt={game.name}
                   fill
-                  unoptimized
+                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />

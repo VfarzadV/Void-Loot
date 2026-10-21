@@ -222,7 +222,6 @@ export default function CommunityPage() {
                     width={40}
                     height={40}
                     className="rounded-full border border-white/10"
-                    unoptimized
                   />
                   <div className="flex flex-col">
                     <div className="flex items-center gap-2">
@@ -321,7 +320,6 @@ export default function CommunityPage() {
                       width={32}
                       height={32}
                       className="rounded-full"
-                      unoptimized
                     />
                     <span className="text-sm font-bold text-white">
                       {user.name}

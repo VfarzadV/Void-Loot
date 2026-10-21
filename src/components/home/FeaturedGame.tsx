@@ -67,7 +67,7 @@ export default function FeaturedGame({ slug }: { slug: string }) {
           src={game.background_image}
           alt={game.name}
           fill
-          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           className="object-cover opacity-30 object-top"
         />
         <div className="absolute inset-0 bg-linear-to-r from-base-950 via-base-950/80 to-transparent" />

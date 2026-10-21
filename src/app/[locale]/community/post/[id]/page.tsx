@@ -1,5 +1,6 @@
 import Link from "next/link";
 import Image from "next/image";
+import { notFound } from "next/navigation";
 import { getTranslations } from "next-intl/server";
 import {
   ArrowLeft,
@@ -10,12 +11,64 @@ import {
   Clock,
 } from "lucide-react";
 
+const MOCK_POSTS = [
+  {
+    id: 1,
+    author: "NeonNinja",
+    avatar: "https://i.pravatar.cc/150?u=neon",
+    role: "Void Knight",
+    time: "2 hours ago",
+    title: "RTX 5090 Leaked Specs - Is it worth the upgrade?",
+    content:
+      "Just saw the latest leaks regarding the power draw on the new 50-series cards. Are we really going to need 1200W PSUs just to run this thing? Currently sitting on a 3080 and considering the jump, but the required upgrades for the rest of the rig seem insane. Has anyone else seen the GN video on this? Let me know your thoughts.",
+    category: "hardware",
+    tags: ["#GPU", "#NVIDIA", "#PCBuild"],
+    upvotes: 342,
+    comments: 89,
+    hot: true,
+  },
+  {
+    id: 2,
+    author: "ShadowHunter99",
+    avatar: "https://i.pravatar.cc/150?u=farzad",
+    role: "Premium Member",
+    time: "5 hours ago",
+    title: "LFG: Cyberpunk Co-op Mod - Need 2 more players",
+    content:
+      "Running the new multiplayer mod on a private server. We need a netrunner and a solo. Mic required. Drop your discord tags below!",
+    category: "lfg",
+    tags: ["#Cyberpunk", "#Coop", "#LFG"],
+    upvotes: 45,
+    comments: 12,
+    hot: false,
+  },
+  {
+    id: 3,
+    author: "PixelQueen",
+    avatar: "https://i.pravatar.cc/150?u=pixel",
+    role: "Moderator",
+    time: "1 day ago",
+    title: "Official Void Loot Community Guidelines",
+    content:
+      "Welcome to the Void! Please read these rules before posting.\n1. Be respectful.\n2. No piracy links.\n3. Use proper flairs for your posts.",
+    category: "announcements",
+    tags: ["#Rules", "#Welcome"],
+    upvotes: 1205,
+    comments: 42,
+    hot: true,
+  },
+];
+
 export default async function PostDetailsPage({
   params,
 }: {
   params: Promise<{ id: string }>;
 }) {
+  const { id } = await params;
   const t = await getTranslations("communityPost");
+
+  const post = MOCK_POSTS.find((p) => p.id.toString() === id);
+  if (!post) notFound();
 
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-8 max-w-300 mx-auto overflow-hidden">
@@ -31,24 +84,24 @@ export default async function PostDetailsPage({
           <div className="flex items-center gap-4">
             <div className="relative w-14 h-14 rounded-full overflow-hidden border-2 border-primary-500/50 shadow-[0_0_15px_rgba(170,79,255,0.3)]">
               <Image
-                src="https://i.pravatar.cc/150?u=neon"
-                alt="Author"
+                src={post.avatar}
+                alt={post.author}
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
             <div className="flex flex-col gap-1">
               <div className="flex items-center gap-2">
                 <span className="text-base font-black text-white">
-                  NeonNinja
+                  {post.author}
                 </span>
                 <span className="text-[10px] bg-primary-500/20 text-primary-400 border border-primary-500/30 px-2 py-0.5 rounded font-bold uppercase tracking-wider">
-                  {t("role")}
+                  {post.role !== "Void Knight" ? post.role : t("role")}
                 </span>
               </div>
               <span className="text-xs text-base-500 flex items-center gap-1.5 font-medium">
-                <Clock size={12} /> 2 hours ago
+                <Clock size={12} /> {post.time}
               </span>
             </div>
           </div>
@@ -59,21 +112,16 @@ export default async function PostDetailsPage({
 
         <div className="flex flex-col gap-4">
           <span className="text-[10px] font-bold text-primary-400 uppercase tracking-widest">
-            HARDWARE
+            {post.category}
           </span>
           <h1 className="text-2xl md:text-4xl font-black text-white tracking-tight leading-snug">
-            RTX 5090 Leaked Specs - Is it worth the upgrade?
+            {post.title}
           </h1>
           <p className="text-sm md:text-base text-base-300 leading-relaxed whitespace-pre-line my-4">
-            Just saw the latest leaks regarding the power draw on the new
-            50-series cards. Are we really going to need 1200W PSUs just to run
-            this thing? Currently sitting on a 3080 and considering the jump,
-            but the required upgrades for the rest of the rig seem insane. Has
-            anyone else seen the GN video on this? Let me know your thoughts.
+            {post.content}
           </p>
-
           <div className="flex flex-wrap gap-2 mb-6">
-            {["#GPU", "#NVIDIA", "#PCBuild"].map((tag) => (
+            {post.tags.map((tag) => (
               <span
                 key={tag}
                 className="text-xs font-medium text-primary-400 bg-primary-900/20 px-2.5 py-1 rounded-md border border-primary-500/20"
@@ -85,7 +133,7 @@ export default async function PostDetailsPage({
 
           <div className="flex items-center gap-4 pt-6 border-t border-white/5">
             <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-primary-600/20 border border-primary-500/40 text-primary-400 text-sm font-bold hover:bg-primary-500 hover:text-white transition-all shadow-[0_0_15px_rgba(170,79,255,0.2)]">
-              <ThumbsUp size={18} /> 342
+              <ThumbsUp size={18} /> {post.upvotes}
             </button>
             <button className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-base-900 border border-white/5 text-base-300 hover:text-white transition-colors text-sm font-bold">
               <Share2 size={18} /> {t("share")}
@@ -106,7 +154,7 @@ export default async function PostDetailsPage({
                 src="https://i.pravatar.cc/150?u=user2"
                 alt="Commenter"
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
@@ -122,7 +170,7 @@ export default async function PostDetailsPage({
               </p>
               <div className="flex items-center gap-4 mt-2">
                 <button className="text-[11px] font-bold text-base-500 hover:text-primary-400 transition-colors flex items-center gap-1">
-                  <ThumbsUp size={12} /> 45
+                  <ThumbsUp size={12} /> {Math.floor(post.comments / 2)}
                 </button>
                 <button className="text-[11px] font-bold text-base-500 hover:text-white transition-colors">
                   {t("reply")}

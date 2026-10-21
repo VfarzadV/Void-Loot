@@ -293,7 +293,7 @@ export default function LivePage() {
             src={FEATURED_STREAM.thumbnail}
             alt={FEATURED_STREAM.title}
             fill
-            unoptimized
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
             className="object-cover opacity-80"
           />
@@ -339,7 +339,7 @@ export default function LivePage() {
                 src={FEATURED_STREAM.avatar}
                 alt={FEATURED_STREAM.streamer}
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover"
               />
             </div>
@@ -474,7 +474,7 @@ export default function LivePage() {
                     src={stream.thumbnail}
                     alt={stream.title}
                     fill
-                    unoptimized
+                    sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
                   />
                   <div className="absolute top-2 inset-s-2 bg-red-600 px-1.5 py-0.5 rounded text-[9px] font-black text-white uppercase tracking-wider">
@@ -491,7 +491,7 @@ export default function LivePage() {
                       src={stream.avatar}
                       alt={stream.streamer}
                       fill
-                      unoptimized
+                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                       className="object-cover"
                     />
                   </div>

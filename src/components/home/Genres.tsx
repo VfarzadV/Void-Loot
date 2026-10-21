@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { useTranslations } from "next-intl"; 
+import { useTranslations } from "next-intl";
 import {
   Swords,
   Crosshair,
@@ -87,7 +87,7 @@ const fetchGenres = async (): Promise<RawgGenre[]> => {
 };
 
 export default function Genres() {
-  const t = useTranslations("home.genres"); 
+  const t = useTranslations("home.genres");
 
   const { data: genres = [] } = useQuery({
     queryKey: ["genresList"],
@@ -124,7 +124,7 @@ export default function Genres() {
           const IconComponent = ui.icon;
           return (
             <Link
-              href={`/games?search=${genre.slug}`}
+              href={`/games?genre=${genre.slug}`}
               key={genre.id}
               className={`group relative overflow-hidden rounded-2xl glass-panel min-h-52 p-6 transition-all duration-500 hover:-translate-y-1 border border-base-800/80 bg-base-950 ${ui.accent} ${ui.glow}`}
             >
@@ -132,7 +132,7 @@ export default function Genres() {
                 src={genre.image_background}
                 alt={genre.name}
                 fill
-                unoptimized
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-cover opacity-30 group-hover:opacity-50 group-hover:scale-110 transition-all duration-700 ease-out"
               />
               <div className="absolute inset-0 bg-linear-to-t from-base-950 via-base-950/70 to-transparent" />
