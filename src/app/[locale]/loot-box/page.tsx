@@ -97,9 +97,9 @@ export default function LootBoxPage() {
     >
       <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-size-[60px_60px] opacity-40 pointer-events-none z-0" />
       <div
-        className={`absolute top-1/4 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 -translate-y-1/2 w-200 h-200 rounded-full blur-[150px] pointer-events-none transition-colors duration-1000 z-0 ${isUnlocking ? "bg-red-600/20" : "bg-primary-600/15"}`}
+        className={`absolute top-1/4 inset-s-1/2 -translate-x-1/2 rtl:translate-x-1/2 -translate-y-1/2 w-200 h-200 rounded-full blur-[150px] pointer-events-none transition-colors duration-1000 z-0 ${isUnlocking ? "bg-red-600/20" : "bg-primary-600/15"}`}
       />
-      <div className="absolute bottom-10 start-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
+      <div className="absolute bottom-10 inset-s-10 w-96 h-96 bg-cyan-500/10 rounded-full blur-[120px] pointer-events-none z-0" />
 
       <div className="relative z-10 flex items-center justify-between border-b border-white/5 pb-4 max-w-7xl mx-auto w-full">
         <Link
@@ -121,7 +121,7 @@ export default function LootBoxPage() {
       >
         <LootBoxCanvas isUnlocking={isUnlocking} onBoxClick={handleOpenBox} />
         {!reward && !isUnlocking && (
-          <div className="absolute bottom-6 start-1/2 -translate-x-1/2 rtl:translate-x-1/2 pointer-events-none text-center animate-in slide-in-from-bottom-4 duration-1000">
+          <div className="absolute bottom-6 inset-s-1/2 -translate-x-1/2 rtl:translate-x-1/2 pointer-events-none text-center animate-in slide-in-from-bottom-4 duration-1000">
             <span className="text-[11px] font-mono uppercase tracking-widest text-base-400 bg-base-950/90 px-6 py-2.5 rounded-full border border-white/10 backdrop-blur-xl shadow-[0_0_20px_rgba(0,0,0,0.5)]">
               {t("dragInstruction")}
             </span>

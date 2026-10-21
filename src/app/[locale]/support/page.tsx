@@ -119,7 +119,7 @@ export default function SupportPage() {
         </div>
 
         <div className="lg:col-span-7 w-full glass-panel bg-base-950/60 p-6 md:p-10 rounded-3xl border border-white/5 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 end-0 w-64 h-64 bg-primary-500/5 rounded-full blur-[80px] pointer-events-none" />
+          <div className="absolute top-0 inset-e-0 w-64 h-64 bg-primary-500/5 rounded-full blur-[80px] pointer-events-none" />
 
           <h2 className="text-2xl font-black text-white flex items-center gap-2 mb-8 relative z-10">
             <Send size={24} className="text-primary-500" /> {t("submitTicket")}
@@ -183,7 +183,7 @@ export default function SupportPage() {
                 </select>
                 <ChevronDown
                   size={16}
-                  className="absolute end-4 top-1/2 -translate-y-1/2 text-base-500 pointer-events-none group-focus-within:text-primary-400 transition-colors"
+                  className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-base-500 pointer-events-none group-focus-within:text-primary-400 transition-colors"
                 />
               </div>
             </div>

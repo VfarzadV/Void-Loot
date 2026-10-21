@@ -2,7 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Flame, Clock, Tag, ArrowRight, Star } from "lucide-react";
 import WishlistButton from "@/components/cart/WishlistButton";
-import { getTranslations } from "next-intl/server"; 
+import { getTranslations } from "next-intl/server";
 
 interface DealProduct {
   id: number;
@@ -37,7 +37,7 @@ export default async function DealsPage() {
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-8 max-w-[1600px] mx-auto overflow-hidden">
       <div className="relative w-full h-[40vh] min-h-87.5 rounded-3xl overflow-hidden mb-12 flex items-center p-8 md:p-12 border border-primary-500/20">
         <div className="absolute inset-0 bg-linear-to-r from-primary-950/80 via-base-950 to-base-950 z-0"></div>
-        <div className="absolute top-1/2 start-0 -translate-y-1/2 w-96 h-96 bg-primary-600/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
+        <div className="absolute top-1/2 inset-s-0 -translate-y-1/2 w-96 h-96 bg-primary-600/20 rounded-full blur-[100px] pointer-events-none z-0"></div>
         <div className="relative z-10 flex flex-col gap-4 max-w-xl">
           <div className="flex items-center gap-2 text-primary-400 text-xs font-bold tracking-widest uppercase">
             <Flame size={16} className="animate-pulse" /> {t("limitedTime")}
@@ -93,14 +93,14 @@ export default async function DealsPage() {
               className="group relative flex flex-col overflow-hidden rounded-2xl glass-panel bg-base-950 border border-base-800/60 transition-all duration-500 hover:-translate-y-2 hover:border-primary-500/50 hover:shadow-[0_10px_30px_rgba(170,79,255,0.15)]"
             >
               <div className="relative w-full aspect-4/3 bg-white/5 flex items-center justify-center p-6 overflow-hidden">
-                <span className="absolute top-3 start-3 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_15px_rgba(170,79,255,0.5)] z-10 animate-bounce">
+                <span className="absolute top-3 inset-s-0 bg-primary-600 text-white text-[10px] font-black uppercase tracking-widest px-2.5 py-1 rounded-md shadow-[0_0_15px_rgba(170,79,255,0.5)] z-10 animate-bounce">
                   -{Math.round(deal.discountPercentage)}%
                 </span>
                 <WishlistButton
                   product={{
                     id: deal.id,
                     title: deal.title,
-                    price: deal.price,
+                    price: parseFloat(salePrice), 
                     image: deal.thumbnail,
                   }}
                 />

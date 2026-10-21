@@ -1,4 +1,5 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
@@ -35,7 +36,6 @@ export default function FlashSale() {
     seconds: 30,
   });
   const addItem = useCartStore((state) => state.addItem);
-
   const { data: deals = [] } = useQuery({
     queryKey: ["flashDealsList"],
     queryFn: fetchFlashDeals,
@@ -93,12 +93,15 @@ export default function FlashSale() {
           </div>
         </div>
       </div>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {deals.map((deal) => {
-          const salePrice = (
-            deal.price -
-            (deal.price * deal.discountPercentage) / 100
-          ).toFixed(2);
+          const salePrice = Number(
+            (deal.price - (deal.price * deal.discountPercentage) / 100).toFixed(
+              2,
+            ),
+          );
+
           return (
             <div
               key={deal.id}
@@ -113,7 +116,7 @@ export default function FlashSale() {
                   product={{
                     id: deal.id,
                     title: deal.title,
-                    price: deal.price,
+                    price: salePrice, 
                     image: deal.thumbnail,
                   }}
                 />
@@ -125,6 +128,7 @@ export default function FlashSale() {
                   className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
+
               <div className="flex flex-col gap-2 grow">
                 <span className="text-[11px] font-mono text-purple-400 uppercase tracking-wider">
                   {deal.category.replace("-", " ")}
@@ -157,13 +161,14 @@ export default function FlashSale() {
                   </div>
                 </div>
               </div>
+
               <div className="pt-4 mt-4 border-t border-purple-500/10 flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-xs text-base-500 line-through">
                     ${deal.price.toFixed(2)}
                   </span>
                   <span className="text-lg font-black text-pink-400">
-                    ${salePrice}
+                    ${salePrice.toFixed(2)}
                   </span>
                 </div>
                 <button
@@ -172,7 +177,7 @@ export default function FlashSale() {
                     addItem({
                       id: deal.id,
                       title: deal.title,
-                      price: deal.price,
+                      price: salePrice,
                       image: deal.thumbnail,
                     });
                   }}

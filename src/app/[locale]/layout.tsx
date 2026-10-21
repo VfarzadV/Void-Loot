@@ -12,6 +12,7 @@ import { getMessages } from "next-intl/server";
 
 const vazirmatn = Vazirmatn({ subsets: ["arabic"], display: "swap" });
 const spaceGrotesk = Space_Grotesk({ subsets: ["latin"], display: "swap" });
+
 export const viewport = {
   themeColor: "#aa4fff",
 };
@@ -26,9 +27,9 @@ export async function generateMetadata({
     title: "Void Loot",
     description:
       locale === "fa"
-        ? "پلتفرم مدرن گیمینگ با قدرت RAWG"
+        ? "پلتفرم مدرن گیمینگ قدرت گرفته از RAWG"
         : "Modern Gaming Platform Powered by RAWG",
-        manifest: "/manifest.json",
+    manifest: "/manifest.json",
   };
 }
 
@@ -45,12 +46,28 @@ export default async function RootLayout({
   const fontClass =
     locale === "fa" ? vazirmatn.className : spaceGrotesk.className;
 
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    name: "Void Loot",
+    url: "https://voidloot.com",
+    potentialAction: {
+      "@type": "SearchAction",
+      target: "https://voidloot.com/en/games?search={search_term_string}",
+      "query-input": "required name=search_term_string",
+    },
+  };
+
   return (
     <html lang={locale} dir={direction} suppressHydrationWarning>
       <body
         className={`bg-base-950 text-base-50 min-h-screen flex ${fontClass}`}
         suppressHydrationWarning
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
         <NextIntlClientProvider messages={messages} locale={locale}>
           <Providers>
             <Toaster theme="dark" position="bottom-right" richColors />

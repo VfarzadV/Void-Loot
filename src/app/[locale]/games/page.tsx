@@ -84,7 +84,7 @@ export default async function GamesPage({
           )}
           <Search
             size={18}
-            className="absolute start-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
+            className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
           />
           <input
             type="text"
@@ -97,7 +97,7 @@ export default async function GamesPage({
           {searchQuery && (
             <Link
               href={`/games${currentSort ? `?sort=${currentSort}` : ""}`}
-              className="absolute end-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
+              className="absolute inset-e-4 top-1/2 -translate-y-1/2 text-xs text-base-500 hover:text-white"
             >
               {t("clear")}
             </Link>
@@ -147,7 +147,7 @@ export default async function GamesPage({
                   <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />
                   {game.metacritic && (
                     <div
-                      className={`absolute top-3 start-3 flex items-center justify-center w-8 h-8 rounded-md font-bold text-xs backdrop-blur-md border ${
+                      className={`absolute top-3 inset-s-3 flex items-center justify-center w-8 h-8 rounded-md font-bold text-xs backdrop-blur-md border ${
                         game.metacritic >= 90
                           ? "bg-green-500/20 text-green-400 border-green-500/50"
                           : game.metacritic >= 75

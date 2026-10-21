@@ -4,6 +4,7 @@ import Hero from "@/components/home/Hero";
 import Genres from "@/components/home/Genres";
 import TrendingGames from "@/components/home/TrendingGames";
 import GlobalNetwork from "@/components/sections/GlobalNetwork";
+import ScrollReveal from "@/components/shared/ScrollReveal";
 
 const FeaturedGame = dynamic(() => import("@/components/home/FeaturedGame"));
 const ShopCategories = dynamic(
@@ -27,6 +28,7 @@ const ParallaxBanner = dynamic(
 
 export default function Home() {
   const t = useTranslations("home.platformShowcase");
+
   return (
     <div className="flex flex-col w-full pb-12 gap-y-20 pt-4 overflow-x-hidden">
       <Hero
@@ -36,30 +38,58 @@ export default function Home() {
           "god-of-war-ragnarok",
         ]}
       />
-      <Genres />
+      <ScrollReveal animation="fade-up">
+        <Genres />
+      </ScrollReveal>
       <LaserDivider />
-      <TrendingGames />
+      <ScrollReveal animation="fade-up" delay={0.1}>
+        <TrendingGames />
+      </ScrollReveal>
       <LaserDivider />
-      <FeaturedGame slug="cyberpunk-2077" />
+      <ScrollReveal animation="zoom-in">
+        <FeaturedGame slug="cyberpunk-2077" />
+      </ScrollReveal>
       <LaserDivider />
-      <ShopCategories />
-      <ParallaxBanner />
-      <PopularHardware />
-      <FlashSale />
+      <ScrollReveal animation="fade-up">
+        <ShopCategories />
+      </ScrollReveal>
+      <ScrollReveal animation="zoom-in" delay={0.1}>
+        <ParallaxBanner />
+      </ScrollReveal>
+      <ScrollReveal animation="fade-up">
+        <PopularHardware />
+      </ScrollReveal>
+      <ScrollReveal animation="fade-up">
+        <FlashSale />
+      </ScrollReveal>
       <LaserDivider />
-      <PlatformShowcase
-        platformId={2}
-        title={t("playstationTitle")}
-        icon="playstation"
-      />
-      <PlatformShowcase platformId={1} title={t("pcTitle")} icon="pc" />
+      <ScrollReveal animation="fade-right">
+        <PlatformShowcase
+          platformId={2}
+          title={t("playstationTitle")}
+          icon="playstation"
+        />
+      </ScrollReveal>
+      <ScrollReveal animation="fade-left">
+        <PlatformShowcase platformId={1} title={t("pcTitle")} icon="pc" />
+      </ScrollReveal>
       <LaserDivider />
-      <BrandsRow />
-      <GiftCards />
+      <ScrollReveal animation="fade-up">
+        <BrandsRow />
+      </ScrollReveal>
+      <ScrollReveal animation="zoom-in">
+        <GiftCards />
+      </ScrollReveal>
       <LaserDivider />
-      <GamingNews />
-      <StoreFeatures />
-      <GlobalNetwork />
+      <ScrollReveal animation="fade-up">
+        <GamingNews />
+      </ScrollReveal>
+      <ScrollReveal animation="fade-up" delay={0.1}>
+        <StoreFeatures />
+      </ScrollReveal>
+      <ScrollReveal animation="fade-up">
+        <GlobalNetwork />
+      </ScrollReveal>
     </div>
   );
 }

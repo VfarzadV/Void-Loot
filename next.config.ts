@@ -1,7 +1,9 @@
 import createNextIntlPlugin from "next-intl/plugin";
+import type { NextConfig } from "next";
+// @ts-expect-error next-pwa missing types
 import withPWAInit from "next-pwa";
 
-const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
+const withNextIntl = createNextIntlPlugin("./src/i18n.ts");
 
 const withPWA = withPWAInit({
   dest: "public",
@@ -10,8 +12,7 @@ const withPWA = withPWAInit({
   skipWaiting: true,
 });
 
-/** @type {import('next').NextConfig} */
-const nextConfig = {
+const nextConfig: NextConfig = {
   images: {
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
@@ -19,7 +20,7 @@ const nextConfig = {
       { protocol: "https", hostname: "i.pravatar.cc" },
       { protocol: "https", hostname: "dummyjson.com" },
       { protocol: "https", hostname: "api.dicebear.com" },
-    ] as const,
+    ],
   },
 };
 
