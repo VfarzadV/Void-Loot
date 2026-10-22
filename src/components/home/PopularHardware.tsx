@@ -84,15 +84,15 @@ export default function PopularHardware() {
           </h2>
         </div>
         <Link
-          href="/shop/popular"
-          className="hidden md:flex items-center gap-2 text-base-300 hover:text-white font-semibold transition-colors group text-sm"
-        >
-          {t("viewAllItems")}{" "}
-          <ArrowRight
-            size={16}
-            className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
-          />
-        </Link>
+  href="/shop?sort=rating-desc"
+  className="hidden md:flex items-center gap-2 text-base-300 hover:text-white font-semibold transition-colors group text-sm"
+>
+  {t("viewAllItems")}{" "}
+  <ArrowRight
+    size={16}
+    className="group-hover:translate-x-1 rtl:group-hover:-translate-x-1 transition-transform"
+  />
+</Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {products.map((product) => (

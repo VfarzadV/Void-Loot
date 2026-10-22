@@ -10,9 +10,9 @@ const BRANDS = [
   { name: "ROG", image: "/images/ROG.png" },
   { name: "Razer", image: "/images/RAZER.png" },
   { name: "Logitech", image: "/images/LOGITECH.png" },
-  { name: "SteelSeries", image: "/images/steelseries.png" },
+  { name: "SteelSeries", image: "/images/STEELSERIES.png" },
   { name: "COOLERMASTER", image: "/images/COOLERMASTER.png" },
-  { name: "OMEN", image: "/images/omen.png" },
+  { name: "OMEN", image: "/images/OMEN.png" },
   { name: "ADRUS", image: "/images/ADRUS.png" },
   { name: "Xbox", image: "/images/Xbox.jpg" },
   { name: "PlayStation", image: "/images/PlayStation.webp" },
@@ -31,9 +31,10 @@ export default function BrandsRow() {
           </span>
         </h2>
         <Link
-          href="/brands"
-          className="hidden md:flex items-center gap-1.5 text-primary-400 hover:text-primary-300 text-xs font-bold tracking-wider uppercase transition-colors group"
-        >
+  key={idx}
+  href={`/shop?search=${encodeURIComponent(brand.name)}`}
+  className="flex flex-col items-center gap-4 group min-w-25"
+>
           {t("viewAll")}{" "}
           <ArrowRight
             size={14}
