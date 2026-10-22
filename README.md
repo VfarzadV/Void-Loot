@@ -14,7 +14,7 @@
   [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
   [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](#)
 
-### 🚀 [**Live Demo**](https://my-gaming-site.vercel.app/)
+### 🚀 [**Live Demo**](https://https://void-loot.vercel.app/)
 
 </div>
 
