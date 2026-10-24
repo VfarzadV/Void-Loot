@@ -19,13 +19,30 @@ interface DealProduct {
   stock: number;
 }
 
+interface RawSQLProduct {
+  ProductID: number;
+  Title: string;
+  Category?: string;
+  Price: number;
+  ImageUrl?: string;
+  Stock?: number;
+}
+
 const fetchFlashDeals = async (): Promise<DealProduct[]> => {
-  const res = await fetch(
-    "https://dummyjson.com/products?sortBy=discountPercentage&order=desc&limit=4",
-  );
+  const res = await fetch("/api/flashsale");
   if (!res.ok) throw new Error("Failed to fetch flash deals");
   const data = await res.json();
-  return data.products;
+  
+  return data.map((item: RawSQLProduct) => ({
+    id: item.ProductID,
+    title: item.Title,
+    category: item.Category || "hardware",
+    price: Number(item.Price) || 0,
+    discountPercentage: 20, 
+    rating: 4.8,
+    thumbnail: item.ImageUrl || "/images/placeholder.jpg",
+    stock: item.Stock || 15,
+  }));
 };
 
 export default function FlashSale() {
@@ -35,8 +52,10 @@ export default function FlashSale() {
     minutes: 42,
     seconds: 30,
   });
+
   const addItem = useCartStore((state) => state.addItem);
-  const { data: deals = [] } = useQuery({
+
+  const { data: deals = [], isLoading } = useQuery({
     queryKey: ["flashDealsList"],
     queryFn: fetchFlashDeals,
   });
@@ -55,7 +74,7 @@ export default function FlashSale() {
     return () => clearInterval(timer);
   }, []);
 
-  if (deals.length === 0) return null;
+  if (isLoading || deals.length === 0) return null;
 
   return (
     <section className="w-full px-8 lg:px-16 relative z-10 flex flex-col gap-10">
@@ -93,7 +112,6 @@ export default function FlashSale() {
           </div>
         </div>
       </div>
-
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
         {deals.map((deal) => {
           const salePrice = Number(
@@ -101,10 +119,9 @@ export default function FlashSale() {
               2,
             ),
           );
-
           return (
             <div
-              key={deal.id}
+              key={`flash-${deal.id}`}
               className="group relative overflow-hidden rounded-2xl bg-linear-to-b from-purple-950/40 via-base-950 to-base-950 border border-purple-500/20 p-5 flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:border-purple-500/60 hover:shadow-[0_10px_35px_rgba(168,85,247,0.25)]"
             >
               <div className="relative w-full aspect-4/3 rounded-xl bg-white/5 border border-purple-500/20 overflow-hidden flex items-center justify-center mb-4">
@@ -116,7 +133,7 @@ export default function FlashSale() {
                   product={{
                     id: deal.id,
                     title: deal.title,
-                    price: salePrice, 
+                    price: salePrice,
                     image: deal.thumbnail,
                   }}
                 />
@@ -128,7 +145,6 @@ export default function FlashSale() {
                   className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
                 />
               </div>
-
               <div className="flex flex-col gap-2 grow">
                 <span className="text-[11px] font-mono text-purple-400 uppercase tracking-wider">
                   {deal.category.replace("-", " ")}
@@ -161,7 +177,6 @@ export default function FlashSale() {
                   </div>
                 </div>
               </div>
-
               <div className="pt-4 mt-4 border-t border-purple-500/10 flex items-center justify-between">
                 <div className="flex flex-col">
                   <span className="text-xs text-base-500 line-through">

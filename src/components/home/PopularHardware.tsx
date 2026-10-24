@@ -8,23 +8,21 @@ import { useQuery } from "@tanstack/react-query";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useTranslations } from "next-intl";
 
+// اینترفیس دقیقاً بر اساس خروجی SQL Server شما تنظیم شد
 interface Product {
-  id: number;
-  title: string;
-  category: string;
-  price: number;
-  rating: number;
-  thumbnail: string;
-  stock: number;
+  ProductID: number;
+  Title: string;
+  Price: number;
+  Category?: string;
+  Stock?: number;
+  ImageUrl?: string;
 }
 
 const fetchPopularHardware = async (): Promise<Product[]> => {
-  const res = await fetch(
-    "https://dummyjson.com/products/category/laptops?limit=4",
-  );
-  if (!res.ok) throw new Error("Failed to fetch popular hardware");
-  const data = await res.json();
-  return data.products;
+  const res = await fetch("/api/hardware");
+  if (!res.ok)
+    throw new Error("Failed to fetch popular hardware from SQL Server");
+  return res.json();
 };
 
 export default function PopularHardware() {
@@ -32,6 +30,7 @@ export default function PopularHardware() {
     queryKey: ["popularHardware"],
     queryFn: fetchPopularHardware,
   });
+
   const addItem = useCartStore((state) => state.addItem);
   const { toggleItem, isInWishlist } = useWishlistStore();
   const t = useTranslations("home.popularHardware");
@@ -48,7 +47,7 @@ export default function PopularHardware() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
           {[...Array(4)].map((_, i) => (
             <div
-              key={i}
+              key={`skeleton-loading-${i}`}
               className="flex flex-col overflow-hidden rounded-2xl bg-base-950 border border-purple-500/10 p-5 h-85 animate-pulse"
             >
               <div className="w-full aspect-4/3 rounded-xl bg-base-900/40 mb-4"></div>
@@ -95,77 +94,85 @@ export default function PopularHardware() {
         </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
+        {products.map((product, index) => (
           <div
-            key={product.id}
+            key={`product-${product.ProductID || index}`}
             className="group relative overflow-hidden rounded-2xl bg-linear-to-b from-purple-950/40 via-base-950 to-base-950 border border-purple-500/20 p-5 flex flex-col justify-between transition-all duration-500 hover:-translate-y-2 hover:border-purple-500/60 hover:shadow-[0_10px_35px_rgba(168,85,247,0.25)]"
           >
             <div className="relative w-full aspect-4/3 rounded-xl bg-white/5 border border-purple-500/20 overflow-hidden flex items-center justify-center mb-4">
               <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(168,85,247,0.1)_0%,transparent_70%)]" />
               <button
                 type="button"
-                aria-label={`Add ${product.title} to wishlist`}
+                aria-label={`Add ${product.Title} to wishlist`}
                 onClick={(e) => {
                   e.preventDefault();
                   toggleItem({
-                    id: product.id,
-                    title: product.title,
-                    price: product.price,
-                    image: product.thumbnail,
+                    id: product.ProductID || index,
+                    title: product.Title,
+                    price: product.Price,
+                    image: product.ImageUrl || "/images/placeholder.jpg",
                   });
                 }}
                 className={`absolute top-3 right-3 w-8 h-8 rounded-lg bg-base-950/60 border flex items-center justify-center backdrop-blur-md z-10 transition-all ${
-                  isInWishlist(product.id)
+                  isInWishlist(product.ProductID || index)
                     ? "text-rose-500 border-rose-500/50 bg-rose-500/10 shadow-[0_0_15px_rgba(244,63,94,0.3)]"
                     : "border-purple-500/30 text-purple-300 hover:text-white hover:bg-purple-600/40"
                 }`}
               >
                 <Heart
                   size={16}
-                  className={isInWishlist(product.id) ? "fill-rose-500" : ""}
+                  className={
+                    isInWishlist(product.ProductID || index)
+                      ? "fill-rose-500"
+                      : ""
+                  }
                   aria-hidden="true"
                 />
               </button>
+
               <Image
-                src={product.thumbnail}
-                alt={product.title}
+                src={product.ImageUrl || "/images/placeholder.jpg"}
+                alt={product.Title}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
                 className="object-contain p-4 group-hover:scale-110 transition-transform duration-500"
               />
             </div>
+
             <div className="flex flex-col gap-2 grow">
               <span className="text-[11px] font-mono text-purple-400 uppercase tracking-wider">
-                {product.category}
+                {product.Category || "SQL SERVER"}
               </span>
               <h3
                 className="text-base font-bold text-white group-hover:text-purple-300 transition-colors line-clamp-1"
-                title={product.title}
+                title={product.Title}
               >
-                {product.title}
+                {product.Title}
               </h3>
+
               <div className="flex items-center gap-1.5 text-xs text-base-300 my-1">
                 <div className="flex items-center text-yellow-400">
                   <Star size={14} className="fill-yellow-400" />
                 </div>
-                <span className="font-bold text-white">{product.rating}</span>
+                <span className="font-bold text-white">5.0</span>
                 <span className="text-base-500">
-                  ({product.stock} {t("inStock")})
+                  ({product.Stock || 0} {t("inStock")})
                 </span>
               </div>
             </div>
+
             <div className="pt-4 mt-3 border-t border-purple-500/10 flex items-center justify-between">
               <span className="text-lg font-black text-white">
-                ${product.price.toFixed(2)}
+                ${Number(product.Price).toFixed(2)}
               </span>
               <button
                 onClick={(e) => {
                   e.preventDefault();
                   addItem({
-                    id: product.id,
-                    title: product.title,
-                    price: product.price,
-                    image: product.thumbnail,
+                    id: Number(product.ProductID || index),
+                    title: product.Title,
+                    price: product.Price,
+                    image: product.ImageUrl || "/images/placeholder.jpg",
                   });
                 }}
                 className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"

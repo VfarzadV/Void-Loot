@@ -1,0 +1,57 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlserver"
+  url      = env("DATABASE_URL")
+}
+
+model OrderItems {
+  OrderItemID Int      @id(map: "PK__OrderIte__57ED06A156A527FC") @default(autoincrement())
+  OrderID     Int
+  ProductID   Int
+  Quantity    Int
+  UnitPrice   Decimal  @db.Decimal(10, 2)
+  Orders      Orders   @relation(fields: [OrderID], references: [OrderID], onUpdate: NoAction, map: "FK__OrderItem__Order__300424B4")
+  Products    Products @relation(fields: [ProductID], references: [ProductID], onUpdate: NoAction, map: "FK__OrderItem__Produ__30F848ED")
+}
+
+model Orders {
+  OrderID     Int          @id(map: "PK__Orders__C3905BAFB0E2A9EF") @default(autoincrement())
+  UserID      Int
+  TotalAmount Decimal      @db.Decimal(10, 2)
+  Status      String?      @default("Processing", map: "DF__Orders__Status__2B3F6F97") @db.NVarChar(50)
+  OrderDate   DateTime?    @default(now(), map: "DF__Orders__OrderDat__2C3393D0") @db.DateTime
+  OrderItems  OrderItems[]
+  Users       Users        @relation(fields: [UserID], references: [UserID], onUpdate: NoAction, map: "FK__Orders__UserID__2D27B809")
+}
+
+model Products {
+  ProductID  Int          @id(map: "PK__Products__B40CC6ED4E53D2A5") @default(autoincrement())
+  Title      String       @db.NVarChar(150)
+  Price      Decimal      @db.Decimal(10, 2)
+  Stock      Int          @default(0, map: "DF__Products__Stock__286302EC")
+  Category   String?      @db.NVarChar(50)
+  ImageUrl   String?      @db.NVarChar(255)
+  OrderItems OrderItems[]
+}
+
+model sysdiagrams {
+  name         String @db.NVarChar(128)
+  principal_id Int
+  diagram_id   Int    @id(map: "PK__sysdiagr__C2B05B61974C8796") @default(autoincrement())
+  version      Int?
+  definition   Bytes?
+
+  @@unique([principal_id, name], map: "UK_principal_name")
+}
+
+model Users {
+  UserID       Int       @id(map: "PK__Users__1788CCAC1A8E4050") @default(autoincrement())
+  Username     String    @db.NVarChar(50)
+  Email        String    @unique(map: "UQ__Users__A9D105348ECBDF2E") @db.NVarChar(100)
+  PasswordHash String    @db.NVarChar(255)
+  JoinDate     DateTime? @default(now(), map: "DF__Users__JoinDate__25869641") @db.DateTime
+  Orders       Orders[]
+}

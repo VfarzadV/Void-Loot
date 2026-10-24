@@ -26,7 +26,7 @@ const ParallaxBanner = dynamic(
   () => import("@/components/home/ParallaxBanner"),
 );
 
-export default function Home() {
+export default  function Home() {
   const t = useTranslations("home.platformShowcase");
 
   return (
