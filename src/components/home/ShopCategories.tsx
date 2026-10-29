@@ -43,7 +43,7 @@ export default function ShopCategories() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <Link
-          href="/shop?search=playstation"
+          href="/shop?category=playstation"
           className="group relative overflow-hidden rounded-2xl bg-linear-to-r from-purple-950 via-purple-900/50 to-base-950 border border-purple-500/30 p-8 flex items-center justify-between min-h-55 transition-all duration-500 hover:border-purple-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
         >
           <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
@@ -62,8 +62,9 @@ export default function ShopCategories() {
             </div>
           </div>
         </Link>
+
         <Link
-          href="/shop?search=xbox"
+          href="/shop?category=xbox"
           className="group relative overflow-hidden rounded-2xl bg-linear-to-r from-purple-950 via-purple-900/50 to-base-950 border border-purple-500/30 p-8 flex items-center justify-between min-h-55 transition-all duration-500 hover:border-purple-500 hover:shadow-[0_0_40px_rgba(168,85,247,0.3)]"
         >
           <div className="absolute right-1/3 top-1/2 -translate-y-1/2 w-36 h-36 bg-purple-500/20 rounded-full blur-2xl pointer-events-none group-hover:scale-125 transition-transform duration-700" />
@@ -95,19 +96,19 @@ export default function ShopCategories() {
           {
             title: t("keyboards"),
             desc: t("keyboardsDesc"),
-            href: "/shop?category=mobile-accessories",
+            href: "/shop?category=accessories",
             icon: Keyboard,
           },
           {
             title: t("headsets"),
             desc: t("headsetsDesc"),
-            href: "/shop?category=mobile-accessories",
+            href: "/shop?category=accessories",
             icon: Headphones,
           },
           {
             title: t("chairs"),
             desc: t("chairsDesc"),
-            href: "/shop",
+            href: "/shop?category=chairs",
             icon: Armchair,
           },
         ].map((item, idx) => {

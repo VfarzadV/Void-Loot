@@ -47,7 +47,7 @@ export default  function Home() {
       </ScrollReveal>
       <LaserDivider />
       <ScrollReveal animation="zoom-in">
-        <FeaturedGame slug="cyberpunk-2077" />
+        <FeaturedGame />
       </ScrollReveal>
       <LaserDivider />
       <ScrollReveal animation="fade-up">

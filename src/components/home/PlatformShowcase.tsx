@@ -3,10 +3,18 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { ArrowRight, Monitor, Gamepad, Star } from "lucide-react";
+import {
+  ArrowRight,
+  Monitor,
+  Gamepad,
+  Star,
+} from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useTranslations } from "next-intl";
 import WishlistButton from "../cart/WishlistButton";
+
+import { Swiper, SwiperSlide } from "swiper/react";
+import "swiper/css";
 
 interface PlatformShowcaseProps {
   platformId: number;
@@ -14,21 +22,24 @@ interface PlatformShowcaseProps {
   icon: "pc" | "playstation";
 }
 
-interface RawgGame {
-  id: number;
-  name: string;
-  background_image: string;
-  metacritic: number | null;
+interface SQLGameProduct {
+  ProductID: number;
+  Title: string;
+  Price: number | string;
+  ImageUrl: string | null;
+  Category: string;
+  Stock: number;
+  id?: number;
+  name?: string;
+  background_image?: string;
 }
 
-const fetchPlatformGames = async (platformId: number): Promise<RawgGame[]> => {
-  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-  const res = await fetch(
-    `https://api.rawg.io/api/games?key=${apiKey}&parent_platforms=${platformId}&ordering=-metacritic&page_size=6`,
-  );
+const fetchPlatformGames = async (
+  platformId: number,
+): Promise<SQLGameProduct[]> => {
+  const res = await fetch(`/api/games/platform?id=${platformId}`);
   if (!res.ok) throw new Error("Failed to fetch platform games");
-  const data = await res.json();
-  return data.results;
+  return res.json();
 };
 
 export default function PlatformShowcase({
@@ -48,21 +59,21 @@ export default function PlatformShowcase({
   if (isLoading || games.length === 0) return null;
 
   return (
-    <section className="w-full px-8 lg:px-16 relative z-10">
-      <div className="flex items-end justify-between mb-6 border-b border-white/5 pb-3">
+    <section className="relative z-10 box-border w-full min-w-0 max-w-full overflow-hidden px-6 lg:px-12">
+      <div className="mb-5 flex items-end justify-between border-b border-white/10 pb-3">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-linear-to-br from-primary-600 to-primary-900 p-px shadow-[0_0_15px_rgba(170,79,255,0.3)]">
-            <div className="w-full h-full bg-base-950 rounded-xl flex items-center justify-center">
+          <div className="size-10 rounded-xl bg-linear-to-br from-primary-400 via-primary-600 to-primary-900 p-px shadow-[0_0_20px_rgba(170,79,255,0.2)]">
+            <div className="flex size-full items-center justify-center rounded-xl bg-base-950">
               <IconComponent size={20} className="text-primary-400" />
             </div>
           </div>
-          <h2 className="text-2xl md:text-3xl font-black text-white tracking-tight drop-shadow-md">
+          <h2 className="text-xl font-black tracking-tight text-base-50 md:text-2xl">
             {title}
           </h2>
         </div>
         <Link
           href={`/games?platform=${platformId}`}
-          className="hidden md:flex items-center gap-1.5 text-primary-400 hover:text-primary-300 text-xs font-bold tracking-wider uppercase transition-colors group"
+          className="group hidden items-center gap-1.5 rounded-full border border-primary-500/20 bg-primary-500/5 px-3 py-1.5 text-xs font-bold tracking-wide text-primary-300 transition-colors hover:border-primary-400/40 hover:bg-primary-500/10 hover:text-primary-200 md:flex"
         >
           {t("viewAll")}{" "}
           <ArrowRight
@@ -71,80 +82,102 @@ export default function PlatformShowcase({
           />
         </Link>
       </div>
-      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4">
-        {games.map((game) => {
-          const mockPrice = ((game.id % 40) + 19.99).toFixed(2);
-          return (
-            <div
-              key={game.id}
-              className="group relative flex flex-col overflow-hidden rounded-xl bg-base-950 border border-base-800/60 transition-all duration-300 hover:-translate-y-1.5 hover:border-primary-500/50 hover:shadow-[0_8px_25px_rgba(170,79,255,0.2)]"
-            >
-              <Link
-                href={`/games/${game.id}`}
-                className="relative w-full aspect-3/4 overflow-hidden bg-base-900 block"
-              >
-                <WishlistButton
-                  product={{
-                    id: game.id,
-                    title: game.name,
-                    price: parseFloat(mockPrice),
-                    image: game.background_image || "/images/placeholder.jpg",
-                  }}
-                />
-                <Image
-                  src={game.background_image || "/images/placeholder.jpg"}
-                  alt={game.name}
-                  fill
-                  sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                  className="object-cover transition-transform duration-700 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90 group-hover:opacity-60 transition-opacity duration-300" />
-                <div className="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-primary-500 to-primary-700 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                {game.metacritic && (
-                  <div className="absolute top-2 right-2 flex items-center gap-1 bg-black/70 backdrop-blur-md px-1.5 py-0.5 rounded-md border border-white/10">
-                    <Star
-                      size={10}
-                      className="text-yellow-400 fill-yellow-400"
-                    />
-                    <span className="text-[10px] font-bold text-white">
-                      {game.metacritic}
-                    </span>
-                  </div>
-                )}
-              </Link>
-              <div className="p-3 flex flex-col grow gap-2 relative z-10 bg-base-950">
-                <Link href={`/games/${game.id}`} className="grow">
-                  <h3
-                    className="text-xs font-bold text-base-50 line-clamp-2 group-hover:text-primary-300 transition-colors leading-relaxed"
-                    title={game.name}
+
+      <div className="relative w-full min-w-0 max-w-full overflow-hidden">
+        <Swiper
+          breakpointsBase="container"
+          slidesPerView={2}
+          spaceBetween={12}
+          breakpoints={{
+            480: { slidesPerView: 3, spaceBetween: 12 },
+            640: { slidesPerView: 4, spaceBetween: 14 },
+            820: { slidesPerView: 5, spaceBetween: 16 },
+            1050: { slidesPerView: 6, spaceBetween: 16 },
+          }}
+          grabCursor
+          watchOverflow
+          className="!w-full min-w-0 max-w-full !overflow-hidden !pb-8 !pt-1"
+        >
+          {games.map((game: SQLGameProduct, index: number) => {
+            const gameId = game.ProductID || game.id || index;
+            const gameTitle = game.Title || game.name || "Unknown Game";
+            const gameImage =
+              game.ImageUrl ||
+              game.background_image ||
+              "/images/placeholder.jpg";
+            const mockPrice = game.Price
+              ? Number(game.Price).toFixed(2)
+              : ((gameId % 40) + 19.99).toFixed(2);
+            const metacritic = 85 + (gameId % 14);
+
+            return (
+              <SwiperSlide key={gameId} className="h-auto min-w-0">
+                <div className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-white/10 bg-base-900/70 shadow-[0_4px_18px_rgba(0,0,0,0.14)] transition-all duration-300 hover:-translate-y-1 hover:border-primary-400/50 hover:shadow-[0_10px_28px_rgba(170,79,255,0.18)]">
+                  <Link
+                    href={`/games/${gameId}`}
+                    className="relative block aspect-3/4 w-full shrink-0 overflow-hidden bg-base-900"
                   >
-                    {game.name}
-                  </h3>
-                </Link>
-                <div className="pt-2 border-t border-base-800/50 flex items-center justify-between mt-auto">
-                  <span className="text-sm font-black text-white">
-                    ${mockPrice}
-                  </span>
-                  <button
-                    onClick={(e) => {
-                      e.preventDefault();
-                      addItem({
-                        id: game.id,
-                        title: game.name,
+                    <WishlistButton
+                      product={{
+                        id: gameId,
+                        title: gameTitle,
                         price: parseFloat(mockPrice),
-                        image:
-                          game.background_image || "/images/placeholder.jpg",
-                      });
-                    }}
-                    className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
-                  >
-                    {t("addToCart")}
-                  </button>
+                        image: gameImage,
+                      }}
+                    />
+                    <Image
+                      src={gameImage}
+                      alt={gameTitle}
+                      fill
+                      sizes="(max-width: 479px) 80vw, (max-width: 767px) 42vw, (max-width: 1023px) 32vw, 20vw"
+                      className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    />
+                    <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-black/10 opacity-70 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-primary-400 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
+                    <div className="absolute end-2 top-2 flex items-center gap-1 rounded-full border border-white/15 bg-black/65 px-2 py-1 shadow-sm backdrop-blur-md">
+                      <Star
+                        size={10}
+                        className="text-yellow-400 fill-yellow-400"
+                      />
+                      <span className="text-[10px] font-bold text-white">
+                        {metacritic}
+                      </span>
+                    </div>
+                  </Link>
+                  <div className="relative z-10 flex grow flex-col gap-2.5 bg-linear-to-b from-base-900/80 to-base-950 p-2.5">
+                    <Link href={`/games/${gameId}`} className="grow">
+                      <h3
+                        className="line-clamp-2 text-xs font-bold leading-relaxed text-base-100 transition-colors group-hover:text-primary-300"
+                        title={gameTitle}
+                      >
+                        {gameTitle}
+                      </h3>
+                    </Link>
+                    <div className="mt-auto flex shrink-0 items-center justify-between gap-1 border-t border-white/10 pt-2">
+                      <span className="text-xs font-black text-base-50 sm:text-sm">
+                        ${mockPrice}
+                      </span>
+                      <button
+                        onClick={(e) => {
+                          e.preventDefault();
+                          addItem({
+                            id: gameId,
+                            title: gameTitle,
+                            price: parseFloat(mockPrice),
+                            image: gameImage,
+                          });
+                        }}
+                        className="whitespace-nowrap rounded-lg bg-primary-600 px-2 py-1.5 text-[10px] font-bold text-white shadow-[0_2px_10px_rgba(168,85,247,0.22)] transition-all hover:bg-primary-500 hover:shadow-[0_3px_14px_rgba(168,85,247,0.35)] sm:px-3 sm:py-2 sm:text-xs"
+                      >
+                        {t("addToCart")}
+                      </button>
+                    </div>
+                  </div>
                 </div>
-              </div>
-            </div>
-          );
-        })}
+              </SwiperSlide>
+            );
+          })}
+        </Swiper>
       </div>
     </section>
   );

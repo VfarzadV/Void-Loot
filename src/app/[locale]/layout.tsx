@@ -88,12 +88,12 @@ export default async function RootLayout({
               {locale === "fa" ? "پرش به محتوای اصلی" : "Skip to main content"}
             </a>
             <Sidebar />
-            <div className="flex-1 ms-0 md:ms-20 flex flex-col min-h-screen relative">
+            <div className="flex-1 min-w-0 ms-0 md:ms-20 flex flex-col min-h-screen relative">
               <Navbar />
               <CartDrawer />
               <main
                 id="main-content"
-                className="grow px-2 md:px-0 pb-20 md:pb-0"
+                className="min-w-0 grow px-2 md:px-0 pb-20 md:pb-0"
               >
                 {children}
               </main>

@@ -16,6 +16,7 @@ const withPWA = withPWAInit({
 const nextConfig: NextConfig = {
   allowedDevOrigins: ['172.19.0.1', 'localhost'],
   images: {
+    dangerouslyAllowLocalIP: true,
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "media.rawg.io" },
