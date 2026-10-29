@@ -8,7 +8,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useTranslations } from "next-intl";
 
-// اینترفیس دقیقاً بر اساس خروجی SQL Server شما تنظیم شد
 interface Product {
   ProductID: number;
   Title: string;

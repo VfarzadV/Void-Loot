@@ -82,7 +82,6 @@ export default async function ProductDetailsPage({
       ? {
           "@type": "AggregateRating",
           ratingValue: product.rating,
-          // ایجاد یک عدد ثابت و پایدار برای هر محصول بر اساس ID به جای Math.random
           reviewCount: ((product.id * 23) % 500) + 50,
         }
       : undefined,

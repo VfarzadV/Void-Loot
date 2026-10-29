@@ -91,8 +91,6 @@ export default function TrendingGames() {
                   className="object-cover transition-transform duration-700 group-hover:scale-105"
                 />
                 <div className="absolute inset-0 bg-linear-to-t from-base-950 via-transparent to-transparent opacity-90" />
-
-                {/* نشان کلید دیجیتال جایگزین متاکریتیک شد */}
                 <div className="absolute top-3 left-3 flex items-center justify-center bg-black/70 backdrop-blur-md px-2.5 py-1.5 rounded-md border border-white/10">
                   <Gamepad2
                     size={14}
