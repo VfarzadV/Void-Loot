@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import Form from "next/form";
 import { getTranslations } from "next-intl/server";
+import { prisma } from "@/lib/prisma";
 import {
   Search,
   Monitor,
@@ -9,10 +10,8 @@ import {
   Cpu,
   Filter,
   Star,
-  Laptop,
-  Smartphone,
-  Gamepad2,
-  LucideIcon,
+  Gift,
+  PackageSearch,
 } from "lucide-react";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import WishlistButton from "@/components/cart/WishlistButton";
@@ -31,78 +30,52 @@ interface Product {
   stock: number;
 }
 
-type CategoryTranslationKey =
-  | "cats.all"
-  | "cats.laptops"
-  | "cats.tablets"
-  | "cats.accessories"
-  | "cats.smartphones";
-
-interface CategoryConfig {
-  labelKey: CategoryTranslationKey;
-  slug: string;
-  icon: LucideIcon;
+interface ProductWhereClause {
+  Category?: string | { not: string };
+  Title?: { contains: string };
 }
 
-const CATEGORIES: CategoryConfig[] = [
-  { labelKey: "cats.all", slug: "all", icon: Cpu },
-  { labelKey: "cats.laptops", slug: "laptops", icon: Laptop },
-  { labelKey: "cats.tablets", slug: "tablets", icon: Monitor },
-  {
-    labelKey: "cats.accessories",
-    slug: "mobile-accessories",
-    icon: Headphones,
-  },
-  { labelKey: "cats.smartphones", slug: "smartphones", icon: Smartphone },
+
+const CATEGORIES = [
+  { label: "All Products", slug: "all", icon: Cpu },
+  { label: "Hardware & PC", slug: "hardware", icon: Monitor },
+  { label: "Accessories", slug: "accessories", icon: Headphones },
+  { label: "Gift Cards", slug: "giftcards", icon: Gift },
 ];
 
-async function getProducts(search?: string, category?: string) {
-  const techCategories = [
-    "laptops",
-    "tablets",
-    "mobile-accessories",
-    "smartphones",
-  ];
+async function getProducts(
+  search?: string,
+  category?: string,
+): Promise<Product[]> {
+  
+  const whereClause: ProductWhereClause = {
+    Category: { not: "games" },
+  };
 
-  if ((!category || category === "all") && !search) {
-    const endpoints = techCategories.map(
-      (cat) => `https://dummyjson.com/products/category/${cat}?limit=50`,
-    );
-    const responses = await Promise.all(
-      endpoints.map((url) =>
-        fetch(url, { next: { revalidate: 3600 } }).then((res) => res.json()),
-      ),
-    );
-    let allTechProducts: Product[] = [];
-    responses.forEach((res) => {
-      if (res && res.products) {
-        allTechProducts = [...allTechProducts, ...res.products];
-      }
-    });
-    return allTechProducts;
+  if (category && category !== "all") {
+    
+    whereClause.Category = category;
   }
-
-  let url = "https://dummyjson.com/products?limit=150";
 
   if (search) {
-    url = `https://dummyjson.com/products/search?q=${encodeURIComponent(search)}&limit=150`;
-  } else if (category && category !== "all") {
-    url = `https://dummyjson.com/products/category/${category}?limit=50`;
+    whereClause.Title = { contains: search };
   }
 
-  const res = await fetch(url, { next: { revalidate: 3600 } });
-  if (!res.ok) return [];
-  const data = await res.json();
+  const sqlProducts = await prisma.products.findMany({
+    where: whereClause,
+    orderBy: { ProductID: "desc" },
+  });
 
-  let fetchedProducts = data.products;
-
-  if (search) {
-    fetchedProducts = fetchedProducts.filter((p: Product) =>
-      techCategories.includes(p.category),
-    );
-  }
-
-  return fetchedProducts;
+  return sqlProducts.map((p) => ({
+    id: p.ProductID,
+    title: p.Title,
+    category: p.Category || "uncategorized",
+    price: Number(p.Price?.toString() || 0),
+    rating: 4.8,
+    thumbnail: p.ImageUrl || "/images/placeholder.jpg",
+    availabilityStatus: p.Stock && p.Stock > 0 ? "In Stock" : "Low Stock",
+    stock: p.Stock || 0,
+  }));
 }
 
 export default async function ShopPage({
@@ -143,7 +116,6 @@ export default async function ShopPage({
 
   const totalItems = products.length;
   const pageCount = Math.ceil(totalItems / ITEMS_PER_PAGE);
-
   const paginatedProducts = products.slice(
     (currentPage - 1) * ITEMS_PER_PAGE,
     currentPage * ITEMS_PER_PAGE,
@@ -230,7 +202,7 @@ export default async function ShopPage({
                           className={isActive ? "text-primary-400" : ""}
                         />
                         <span className="text-sm font-bold">
-                          {t(cat.labelKey)}
+                          {cat.slug === "all" ? t("cats.all") : cat.label}
                         </span>
                       </div>
                     </Link>
@@ -268,7 +240,7 @@ export default async function ShopPage({
 
           {products.length === 0 ? (
             <div className="w-full py-20 flex flex-col items-center text-center">
-              <Gamepad2 size={48} className="text-base-800 mb-4" />
+              <PackageSearch size={48} className="text-base-800 mb-4" />
               <h3 className="text-xl font-bold text-white mb-2">
                 {t("noHardwareTitle")}
               </h3>
@@ -304,10 +276,9 @@ export default async function ShopPage({
                       alt={product.title}
                       fill
                       sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                      className="object-contain p-4 group-hover:scale-110 transition-transform duration-700 relative z-0 drop-shadow-xl"
+                      className="object-cover md:object-contain p-0 md:p-4 group-hover:scale-110 transition-transform duration-700 relative z-0 drop-shadow-xl"
                     />
                   </Link>
-
                   <div className="p-5 flex flex-col grow gap-2 border-t border-base-800/50">
                     <span className="text-[10px] font-bold text-primary-400 uppercase tracking-widest">
                       {product.category.replace("-", " ")}
@@ -329,7 +300,6 @@ export default async function ShopPage({
                         {product.rating.toFixed(1)}
                       </span>
                     </div>
-
                     <div className="flex items-center justify-between mt-auto pt-4 border-t border-white/5">
                       <span className="text-xl font-black text-white">
                         ${product.price.toFixed(2)}

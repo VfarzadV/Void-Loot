@@ -34,7 +34,9 @@ model Products {
   Stock      Int          @default(0, map: "DF__Products__Stock__286302EC")
   Category   String?      @db.NVarChar(50)
   ImageUrl   String?      @db.NVarChar(255)
+  BrandID    Int?
   OrderItems OrderItems[]
+  Brands     Brands?      @relation(fields: [BrandID], references: [BrandID], onDelete: NoAction, onUpdate: NoAction, map: "FK_Products_Brands")
 }
 
 model sysdiagrams {
@@ -54,4 +56,12 @@ model Users {
   PasswordHash String    @db.NVarChar(255)
   JoinDate     DateTime? @default(now(), map: "DF__Users__JoinDate__25869641") @db.DateTime
   Orders       Orders[]
+}
+
+model Brands {
+  BrandID  Int        @id(map: "PK__Brands__DAD4F3BE09F14FCB") @default(autoincrement())
+  Name     String     @db.NVarChar(100)
+  Slug     String     @unique(map: "UQ__Brands__BC7B5FB65AEB54A8") @db.NVarChar(100)
+  ImageUrl String?    @db.NVarChar(500)
+  Products Products[]
 }

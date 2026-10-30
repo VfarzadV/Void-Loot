@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
 import { getTranslations } from "next-intl/server";
+import { prisma } from "@/lib/prisma";
 import {
   ArrowLeft,
   Calendar,
@@ -53,53 +54,78 @@ interface Achievement {
   percent: string;
 }
 
-async function getGameDetails(id: string) {
+// ---- توابع دریافت اطلاعات از RAWG ----
+async function getGameDetails(rawgId: string) {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-  const res = await fetch(`https://api.rawg.io/api/games/${id}?key=${apiKey}`, {
-    next: { revalidate: 3600 },
-  });
+  if (!apiKey) return null;
+  const res = await fetch(
+    `https://api.rawg.io/api/games/${rawgId}?key=${apiKey}`,
+    {
+      next: { revalidate: 3600 },
+    },
+  );
   if (!res.ok) return null;
   return res.json();
 }
 
-async function getGameScreenshots(id: string) {
+async function getGameScreenshots(rawgId: string) {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  if (!apiKey) return null;
   const res = await fetch(
-    `https://api.rawg.io/api/games/${id}/screenshots?key=${apiKey}`,
+    `https://api.rawg.io/api/games/${rawgId}/screenshots?key=${apiKey}`,
     { next: { revalidate: 3600 } },
   );
   if (!res.ok) return null;
   return res.json();
 }
 
-async function getGameMovies(id: string) {
+async function getGameMovies(rawgId: string) {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  if (!apiKey) return null;
   const res = await fetch(
-    `https://api.rawg.io/api/games/${id}/movies?key=${apiKey}`,
+    `https://api.rawg.io/api/games/${rawgId}/movies?key=${apiKey}`,
     { next: { revalidate: 3600 } },
   );
   if (!res.ok) return null;
   return res.json();
 }
 
-async function getRelatedGames(id: string) {
+async function getRelatedGames(rawgId: string) {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  if (!apiKey) return null;
   const res = await fetch(
-    `https://api.rawg.io/api/games/${id}/game-series?key=${apiKey}`,
+    `https://api.rawg.io/api/games/${rawgId}/game-series?key=${apiKey}`,
     { next: { revalidate: 3600 } },
   );
   if (!res.ok) return null;
   return res.json();
 }
 
-async function getGameAchievements(id: string) {
+async function getGameAchievements(rawgId: string) {
   const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  if (!apiKey) return null;
   const res = await fetch(
-    `https://api.rawg.io/api/games/${id}/achievements?key=${apiKey}`,
+    `https://api.rawg.io/api/games/${rawgId}/achievements?key=${apiKey}`,
     { next: { revalidate: 3600 } },
   );
   if (!res.ok) return null;
   return res.json();
+}
+
+// 👈 تابع هوشمند برای تبدیل نام بازی در SQL به آیدی RAWG
+async function getRawgIdByTitle(title: string) {
+  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
+  if (!apiKey) return null;
+  try {
+    const res = await fetch(
+      `https://api.rawg.io/api/games?key=${apiKey}&search=${encodeURIComponent(title)}&page_size=1`,
+    );
+    if (!res.ok) return null;
+    const data = await res.json();
+    return data.results?.[0]?.id || null;
+  } catch {
+    return null;
+  }
 }
 
 export async function generateMetadata({
@@ -108,21 +134,34 @@ export async function generateMetadata({
   params: Promise<{ id: string }>;
 }): Promise<Metadata> {
   const { id } = await params;
-  const game = await getGameDetails(id);
+  const localId = parseInt(id);
 
-  if (!game) {
-    notFound();
-  }
+  if (isNaN(localId)) notFound();
+
+  // 1. خواندن از دیتابیس لوکال
+  const localGame = await prisma.products.findUnique({
+    where: { ProductID: localId },
+  });
+
+  if (!localGame) notFound();
+
+  // 2. تلاش برای دریافت اطلاعات RAWG جهت توضیحات سئو
+  const rawgId = await getRawgIdByTitle(localGame.Title);
+  const game = rawgId ? await getGameDetails(rawgId.toString()) : null;
 
   return {
-    title: `${game.name} | Void Loot Store`,
+    title: `${localGame.Title} | Void Loot Store`,
     description:
-      game.description_raw?.substring(0, 160) ||
-      `Buy ${game.name} on Void Loot.`,
+      game?.description_raw?.substring(0, 160) ||
+      `Buy ${localGame.Title} on Void Loot.`,
     openGraph: {
-      title: `${game.name} | Void Loot`,
-      description: game.description_raw?.substring(0, 160),
-      images: [game.background_image],
+      title: `${localGame.Title} | Void Loot`,
+      description: game?.description_raw?.substring(0, 160),
+      images: [
+        localGame.ImageUrl ||
+          game?.background_image ||
+          "/images/placeholder.jpg",
+      ],
       type: "website",
     },
   };
@@ -135,22 +174,21 @@ export default async function GameDetailsPage({
 }) {
   const { id } = await params;
   const t = await getTranslations("gameDetails");
+  const localId = parseInt(id);
 
-  const [game, screenshotsData, moviesData, relatedData, achievementsData] =
-    await Promise.all([
-      getGameDetails(id),
-      getGameScreenshots(id),
-      getGameMovies(id),
-      getRelatedGames(id),
-      getGameAchievements(id),
-    ]);
+  if (isNaN(localId)) notFound();
 
-  if (!game) {
+  // 1. دریافت قطعی محصول از دیتابیس SQL
+  const localGame = await prisma.products.findUnique({
+    where: { ProductID: localId },
+  });
+
+  if (!localGame || localGame.Category !== "games") {
     return (
       <div className="min-h-screen flex flex-col items-center justify-center bg-base-950">
         <h1 className="text-4xl font-black text-white mb-4">{t("notFound")}</h1>
         <Link
-          href="/"
+          href="/games"
           className="text-primary-400 hover:text-primary-300 flex items-center gap-2"
         >
           <ArrowLeft size={16} className="rtl:rotate-180" /> {t("returnBase")}
@@ -159,13 +197,38 @@ export default async function GameDetailsPage({
     );
   }
 
+  // 2. پل زدن به RAWG برای دریافت جزئیات غنی (تریلر، اسکرین‌شات و...)
+  const rawgId = await getRawgIdByTitle(localGame.Title);
+
+  let game = null,
+    screenshotsData = null,
+    moviesData = null,
+    relatedData = null,
+    achievementsData = null;
+
+  if (rawgId) {
+    [game, screenshotsData, moviesData, relatedData, achievementsData] =
+      await Promise.all([
+        getGameDetails(rawgId.toString()),
+        getGameScreenshots(rawgId.toString()),
+        getGameMovies(rawgId.toString()),
+        getRelatedGames(rawgId.toString()),
+        getGameAchievements(rawgId.toString()),
+      ]);
+  }
+
   const screenshots = screenshotsData?.results || [];
   const movies = moviesData?.results || [];
   const relatedGames = relatedData?.results || [];
   const achievements = achievementsData?.results || [];
 
-  const mockPrice = ((game.id % 40) + 19.99).toFixed(2);
-  const pcPlatform = game.platforms?.find(
+  // قیمت واقعی و قطعی از دیتابیس SQL
+  const realPrice = Number(localGame.Price?.toString() || 0).toFixed(2);
+  const mainImage =
+    localGame.ImageUrl || game?.background_image || "/images/placeholder.jpg";
+  const gameTitle = localGame.Title;
+
+  const pcPlatform = game?.platforms?.find(
     (p: Platform) => p.platform.slug === "pc",
   );
   const pcRequirements = pcPlatform?.requirements;
@@ -173,12 +236,12 @@ export default async function GameDetailsPage({
   const jsonLd = {
     "@context": "https://schema.org",
     "@type": "VideoGame",
-    name: game.name,
-    description: game.description_raw,
-    image: game.background_image,
-    datePublished: game.released,
-    genre: game.genres?.map((g: Genre) => g.name),
-    aggregateRating: game.metacritic
+    name: gameTitle,
+    description: game?.description_raw || `Buy ${gameTitle} digital key.`,
+    image: mainImage,
+    datePublished: game?.released,
+    genre: game?.genres?.map((g: Genre) => g.name),
+    aggregateRating: game?.metacritic
       ? {
           "@type": "AggregateRating",
           ratingValue: game.metacritic,
@@ -198,8 +261,8 @@ export default async function GameDetailsPage({
       <section className="relative w-full h-[65vh] min-h-137.5 flex items-end pb-16 px-6 lg:px-12 border-b border-white/10">
         <div className="absolute inset-0 z-0">
           <Image
-            src={game.background_image || "/images/placeholder.jpg"}
-            alt={game.name}
+            src={mainImage}
+            alt={gameTitle}
             fill
             sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
             priority
@@ -211,7 +274,7 @@ export default async function GameDetailsPage({
 
         <div className="relative z-10 w-full max-w-5xl flex flex-col gap-4">
           <Link
-            href="/"
+            href="/games"
             className="inline-flex items-center gap-2 text-base-400 hover:text-white transition-colors text-sm w-fit mb-4 border border-white/10 bg-black/40 backdrop-blur-md px-4 py-2 rounded-xl"
           >
             <ArrowLeft size={16} className="rtl:rotate-180" />{" "}
@@ -220,7 +283,7 @@ export default async function GameDetailsPage({
           <Breadcrumbs />
 
           <div className="flex flex-wrap items-center gap-3 mb-2">
-            {game.metacritic && (
+            {game?.metacritic && (
               <span
                 className={`px-3 py-1 rounded-md text-xs font-bold border backdrop-blur-md ${
                   game.metacritic >= 85
@@ -234,27 +297,28 @@ export default async function GameDetailsPage({
               </span>
             )}
             <span className="px-3 py-1 rounded-md text-xs font-bold bg-primary-900/40 text-primary-300 border border-primary-500/30 backdrop-blur-md flex items-center gap-1.5">
-              <Calendar size={14} /> {game.released || t("tba")}
+              <Calendar size={14} /> {game?.released || t("tba")}
             </span>
           </div>
 
           <h1 className="text-5xl md:text-7xl font-black text-white tracking-tight drop-shadow-xl leading-tight">
-            {game.name}
+            {gameTitle}
           </h1>
 
           <div className="flex flex-wrap items-center gap-4 text-sm font-semibold text-base-300 mt-2">
             <div className="flex items-center gap-2">
               <Gamepad2 size={16} className="text-primary-400" />
-              {game.genres?.map((g: Genre) => g.name).join(", ")}
+              {game?.genres?.map((g: Genre) => g.name).join(", ") ||
+                "Action, Adventure"}
             </div>
             <div className="w-1.5 h-1.5 rounded-full bg-white/20"></div>
             <div className="flex items-center gap-2">
               <Layers size={16} className="text-cyan-400" />
-              {game.developers?.[0]?.name || t("unknownDeveloper")}
+              {game?.developers?.[0]?.name || t("unknownDeveloper")}
             </div>
           </div>
 
-          {game.ratings && game.ratings.length > 0 && (
+          {game?.ratings && game.ratings.length > 0 && (
             <div className="w-full max-w-xl mt-4">
               <div className="w-full h-1.5 rounded-full overflow-hidden flex bg-base-900 border border-white/5">
                 {game.ratings.map((r: Rating) => {
@@ -307,7 +371,10 @@ export default async function GameDetailsPage({
             <div
               className="text-base-300 leading-relaxed text-sm prose prose-invert max-w-none"
               dangerouslySetInnerHTML={{
-                __html: game.description || game.description_raw,
+                __html:
+                  game?.description ||
+                  game?.description_raw ||
+                  `<p>Experience the epic journey of ${gameTitle}.</p>`,
               }}
             />
           </div>
@@ -435,16 +502,17 @@ export default async function GameDetailsPage({
                 {t("digitalDownload")}
               </span>
               <span className="text-5xl font-black text-white drop-shadow-md">
-                ${mockPrice}
+                ${realPrice}
               </span>
             </div>
 
+            {/* 👈 سبد خرید حالا دیتای دقیق دیتابیس رو داره می‌گیره */}
             <AddToCartFullButton
               product={{
-                id: game.id,
-                title: game.name,
-                price: Number(mockPrice),
-                image: game.background_image || "/images/placeholder.jpg",
+                id: localGame.ProductID,
+                title: localGame.Title,
+                price: Number(localGame.Price?.toString() || 0),
+                image: mainImage,
               }}
             />
 
@@ -453,7 +521,7 @@ export default async function GameDetailsPage({
                 {t("availablePlatforms")}
               </h4>
               <div className="flex flex-wrap gap-2">
-                {game.parent_platforms?.map((p: Platform) => (
+                {game?.parent_platforms?.map((p: Platform) => (
                   <span
                     key={p.platform.id}
                     className="px-3 py-1.5 rounded-lg bg-base-950 border border-white/5 text-xs text-base-300 flex items-center gap-1.5"
@@ -470,6 +538,7 @@ export default async function GameDetailsPage({
         </div>
       </section>
 
+      {/* بخش بازی‌های مرتبط */}
       {relatedGames.length > 0 && (
         <section className="w-full max-w-7xl mx-auto px-6 lg:px-12 py-12 border-t border-white/5">
           <h3 className="text-2xl font-black text-white flex items-center gap-2 mb-8">
@@ -478,24 +547,24 @@ export default async function GameDetailsPage({
           </h3>
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {relatedGames.slice(0, 5).map((rg: RelatedGame) => (
-              <Link
-                href={`/games/${rg.id}`}
+              <div
                 key={rg.id}
-                className="group flex flex-col gap-3"
+                className="group flex flex-col gap-3 opacity-60 hover:opacity-100 transition-opacity cursor-not-allowed"
+                title="Search this title in store"
               >
-                <div className="relative aspect-3/4 rounded-xl overflow-hidden border border-white/10 group-hover:border-primary-500/50 transition-colors">
+                <div className="relative aspect-3/4 rounded-xl overflow-hidden border border-white/10 transition-colors">
                   <Image
                     src={rg.background_image || "/images/placeholder.jpg"}
                     alt={rg.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    className="object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="object-cover"
                   />
                 </div>
-                <span className="text-sm font-bold text-base-50 group-hover:text-primary-400 transition-colors line-clamp-1">
+                <span className="text-sm font-bold text-base-50 line-clamp-1">
                   {rg.name}
                 </span>
-              </Link>
+              </div>
             ))}
           </div>
         </section>

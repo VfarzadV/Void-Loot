@@ -14,7 +14,7 @@ const withPWA = withPWAInit({
 });
 
 const nextConfig: NextConfig = {
-  allowedDevOrigins: ['172.19.0.1', 'localhost'],
+  allowedDevOrigins: ["172.19.0.1", "localhost"],
   images: {
     dangerouslyAllowLocalIP: true,
     remotePatterns: [
@@ -31,6 +31,9 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "compass-ssl.xbox.com" },
       { protocol: "https", hostname: "assets.nintendo.com" },
       { protocol: "https", hostname: "cdn.cloudflare.steamstatic.com" },
+      { protocol: "https", hostname: "image.api.playstation.com" },
+      { protocol: "https", hostname: "logo.clearbit.com" },
+      { protocol: "https", hostname: "icon.horse" },
     ],
   },
 };

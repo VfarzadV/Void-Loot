@@ -7,7 +7,9 @@ export async function GET(request: Request) {
 
   try {
     let keywords = [];
+
     if (platformId === "2") {
+      // PlayStation Hits
       keywords = [
         "God of War",
         "Spider-Man",
@@ -15,8 +17,14 @@ export async function GET(request: Request) {
         "Last of Us",
         "Bloodborne",
         "Horizon",
+        "Uncharted",
+        "Returnal",
+        "Ratchet",
+        "Days Gone",
+        "Detroit"
       ];
     } else {
+      // PC Master Race
       keywords = [
         "Cyberpunk",
         "Red Dead",
@@ -24,6 +32,16 @@ export async function GET(request: Request) {
         "Baldur",
         "Starfield",
         "Doom",
+        "Witcher",
+        "Resident Evil",
+        "Hogwarts",
+        "Sekiro",
+        "Helldivers",
+        "Palworld",
+        "Hades",
+        "Minecraft",
+        "Terraria",
+        "Stardew"
       ];
     }
 

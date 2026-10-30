@@ -96,7 +96,7 @@ export default function PlatformShowcase({
           }}
           grabCursor
           watchOverflow
-          className="!w-full min-w-0 max-w-full !overflow-hidden !pb-8 !pt-1"
+          className="w-full! min-w-0 max-w-full overflow-hidden! pb-8! pt-1!"
         >
           {games.map((game: SQLGameProduct, index: number) => {
             const gameId = game.ProductID || game.id || index;
@@ -134,7 +134,7 @@ export default function PlatformShowcase({
                     />
                     <div className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-black/10 opacity-70 transition-opacity duration-300 group-hover:opacity-100" />
                     <div className="absolute inset-x-0 top-0 h-0.5 bg-linear-to-r from-transparent via-primary-400 to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-                    <div className="absolute end-2 top-2 flex items-center gap-1 rounded-full border border-white/15 bg-black/65 px-2 py-1 shadow-sm backdrop-blur-md">
+                    <div className="absolute inset-e-2 top-2 flex items-center gap-1 rounded-full border border-white/15 bg-black/65 px-2 py-1 shadow-sm backdrop-blur-md">
                       <Star
                         size={10}
                         className="text-yellow-400 fill-yellow-400"
