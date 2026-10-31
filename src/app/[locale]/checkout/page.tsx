@@ -96,16 +96,27 @@ export default function CheckoutPage() {
   const tax = subtotal * 0.05;
   const total = subtotal + tax;
 
-  const onSubmit = () => {
+  const onSubmit = async (data: CheckoutFormValues) => {
     if (items.length === 0) return;
     setIsProcessing(true);
 
-    setTimeout(() => {
+    try {
+      const res = await fetch("/api/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          items: items,
+          userInfo: data,
+          total: total,
+        }),
+      });
+      const result = await res.json();
+      if (!res.ok) {
+        throw new Error(result.error || "پرداخت ناموفق بود");
+      }
       setIsProcessing(false);
       setIsSuccess(true);
-      const newOrderId = `VOID-${Math.floor(Math.random() * 1000000)}`;
-      setOrderId(newOrderId);
-
+      setOrderId(result.orderId);
       if (user && addOrder) {
         const today = new Date().toLocaleDateString("en-US", {
           month: "short",
@@ -117,7 +128,7 @@ export default function CheckoutPage() {
             ? `${items[0].quantity}x ${items[0].title}`
             : `${items.length} Items (inc. ${items[0].title})`;
         addOrder({
-          id: newOrderId,
+          id: result.orderId,
           date: today,
           status: "Processing",
           total: `$${total.toFixed(2)}`,
@@ -127,7 +138,14 @@ export default function CheckoutPage() {
 
       clearCart();
       toast.success(t("paymentSuccessToast"));
-    }, 2500);
+    } catch (error: unknown) {
+      setIsProcessing(false);
+      if (error instanceof Error) {
+        toast.error(error.message);
+      } else {
+        toast.error("خطا در ارتباط با سرور!");
+      }
+    }
   };
 
   if (!isMounted) return null;
