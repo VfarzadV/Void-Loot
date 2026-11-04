@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
+import { useQuery } from "@tanstack/react-query";
 import {
   User,
   Settings,
@@ -48,6 +49,17 @@ export default function ProfilePage() {
       router.push("/login");
     }
   }, [isAuthenticated, isMounted, router]);
+  const { data: dbOrders = [], isLoading: isLoadingOrders } = useQuery({
+    queryKey: ["userOrders", user?.email],
+    queryFn: async () => {
+      if (!user?.email) return [];
+      const res = await fetch(`/api/user/orders?email=${user.email}`);
+      if (!res.ok) throw new Error("Failed to fetch orders");
+      const data = await res.json();
+      return data.orders || [];
+    },
+    enabled: !!user?.email,
+  });
 
   if (!isMounted || !user) {
     return (
@@ -333,33 +345,76 @@ export default function ProfilePage() {
                 <Package size={20} className="text-primary-500" />{" "}
                 {t("allOrders")}
               </h2>
-              <div className="flex flex-col gap-4">
-                {ordersList.map((order) => (
-                  <div
-                    key={order.id}
-                    className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-base-900/30 border border-white/5 hover:border-white/10 transition-colors"
-                  >
-                    <div className="flex flex-col gap-1">
-                      <span className="text-sm font-bold text-white">
-                        {order.items}
-                      </span>
-                      <span className="text-xs text-base-500 font-mono">
-                        {order.id} • {order.date}
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-4 md:justify-end">
-                      <span
-                        className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${order.status === "Processing" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"}`}
-                      >
-                        {order.status}
-                      </span>
-                      <span className="text-base font-black text-white w-20 text-end">
-                        {order.total}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
+
+              {isLoadingOrders ? (
+                <div className="flex justify-center py-10">
+                  <div className="w-8 h-8 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin"></div>
+                </div>
+              ) : dbOrders.length === 0 ? (
+                <p className="text-center text-base-400 py-10">
+                  هنوز سفارشی ثبت نکرده‌اید.
+                </p>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  {dbOrders.map(
+                    (order: {
+                      OrderID: number;
+                      OrderDate: string | Date;
+                      Status: string;
+                      TotalAmount: number | string;
+                      OrderItems?: Array<{
+                        Products?: { Title: string };
+                        products?: { Title: string };
+                      }>;
+                    }) => {
+                      // استخراج اسم محصول برای نمایش (پشتیبانی از حروف بزرگ و کوچک پریزما)
+                      const firstProductTitle =
+                        order.OrderItems?.[0]?.Products?.Title ||
+                        order.OrderItems?.[0]?.products?.Title ||
+                        "محصول";
+                      const itemsCount = order.OrderItems?.length || 0;
+                      const itemsSummary =
+                        itemsCount > 1
+                          ? `${itemsCount} Items (inc. ${firstProductTitle})`
+                          : `1x ${firstProductTitle}`;
+
+                      const formattedDate = new Date(
+                        order.OrderDate,
+                      ).toLocaleDateString("en-US", {
+                        month: "short",
+                        day: "numeric",
+                        year: "numeric",
+                      });
+
+                      return (
+                        <div
+                          key={order.OrderID}
+                          className="flex flex-col md:flex-row md:items-center justify-between gap-4 p-4 rounded-2xl bg-base-900/30 border border-white/5 hover:border-white/10 transition-colors"
+                        >
+                          <div className="flex flex-col gap-1">
+                            <span className="text-sm font-bold text-white">
+                              {itemsSummary}
+                            </span>
+                            <span className="text-xs text-base-500 font-mono">
+                              VOID-{order.OrderID} • {formattedDate}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4 md:justify-end">
+                            <span
+                              className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${order.Status === "Processing" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"}`}
+                            >
+                              {order.Status}
+                            </span>
+                            <span className="text-base font-black text-white w-20 text-end">
+                              ${Number(order.TotalAmount).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+                      );
+                    },
+                  )}
+                </div>
+              )}
             </div>
           )}
 

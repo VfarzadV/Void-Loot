@@ -17,6 +17,7 @@ const nextConfig: NextConfig = {
   allowedDevOrigins: ["172.19.0.1", "localhost"],
   images: {
     dangerouslyAllowLocalIP: true,
+    dangerouslyAllowSVG: true,
     remotePatterns: [
       { protocol: "https", hostname: "images.unsplash.com" },
       { protocol: "https", hostname: "media.rawg.io" },
@@ -34,6 +35,7 @@ const nextConfig: NextConfig = {
       { protocol: "https", hostname: "image.api.playstation.com" },
       { protocol: "https", hostname: "logo.clearbit.com" },
       { protocol: "https", hostname: "icon.horse" },
+      { protocol: "https", hostname: "shared.akamai.steamstatic.com" },
     ],
   },
 };

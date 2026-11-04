@@ -32,35 +32,10 @@ export interface HeroGame {
   players: string;
 }
 
-const fetchHeroGames = async (slugs: string[]): Promise<HeroGame[]> => {
-  const apiKey = process.env.NEXT_PUBLIC_RAWG_API_KEY;
-  const fetched = await Promise.all(
-    slugs.map(async (slug) => {
-      const res = await fetch(
-        `https://api.rawg.io/api/games/${slug}?key=${apiKey}`,
-      );
-      if (res.ok) return res.json();
-      return null;
-    }),
-  );
-
-  return fetched
-    .filter((g): g is RawgGameDetailResponse => g !== null)
-    .map((data) => ({
-      id: data.id,
-      name: data.name,
-      background_image: data.background_image || "",
-      description: data.description_raw
-        ? data.description_raw.length > 150
-          ? data.description_raw.substring(0, 150) + "..."
-          : data.description_raw
-        : "Experience this masterpiece.",
-      meta: data.metacritic ?? 90,
-      year: data.released ? data.released.substring(0, 4) : "TBA",
-      genre:
-        data.genres && data.genres.length > 0 ? data.genres[0].name : "Action",
-      players: data.added ? (data.added / 1000).toFixed(1) + "k" : "1M+",
-    }));
+const fetchHeroGamesFromDB = async (): Promise<HeroGame[]> => {
+  const res = await fetch("/api/games/hero");
+  if (!res.ok) throw new Error("Failed to fetch hero games from DB");
+  return res.json();
 };
 
 export default function Hero({ slugs }: { slugs: string[] }) {
@@ -70,8 +45,8 @@ export default function Hero({ slugs }: { slugs: string[] }) {
   const [isLayoutHovered, setIsLayoutHovered] = useState(false);
   const t = useTranslations("home.hero");
   const { data: games = [], isLoading } = useQuery({
-    queryKey: ["heroGames", slugs],
-    queryFn: () => fetchHeroGames(slugs),
+    queryKey: ["heroGamesFromDB"],
+    queryFn: fetchHeroGamesFromDB,
   });
 
   useEffect(() => {
