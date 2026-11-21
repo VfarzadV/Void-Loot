@@ -69,8 +69,6 @@ export default function ProfilePage() {
     );
   }
 
-  const ordersList = user.orders || [];
-
   const TABS = [
     { id: "overview", label: t("tabs.overview"), icon: User },
     { id: "orders", label: t("tabs.orders"), icon: ShoppingBag },
@@ -339,7 +337,7 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {activeTab === "orders" && ordersList.length > 0 && (
+          {activeTab === "orders" && (
             <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6 md:p-8 flex flex-col gap-6">
               <h2 className="text-xl font-black text-white flex items-center gap-2 border-b border-white/5 pb-4">
                 <Package size={20} className="text-primary-500" />{" "}

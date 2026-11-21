@@ -19,12 +19,22 @@ import {
   User,
   Clock,
   Trash2,
+  Loader2,
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useAuthStore } from "@/store/useAuthStore";
 import { useSearchStore } from "@/store/useSearchStore";
 import { useNotificationStore } from "@/store/useNotificationStore";
 import { toast } from "sonner";
+
+interface SearchResultProduct {
+  ProductID: number;
+  Title: string;
+  Price: string | number;
+  Category: string;
+  ImageUrl: string | null;
+  ReleaseYear?: string | null;
+}
 
 const ICON_MAP = {
   Package,
@@ -47,8 +57,13 @@ export default function Navbar() {
     useNotificationStore();
 
   const [isMounted, setIsMounted] = useState(false);
+
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [searchResults, setSearchResults] = useState<SearchResultProduct[]>([]);
+  const [isSearching, setIsSearching] = useState(false);
+  const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+
   const searchInputRef = useRef<HTMLInputElement>(null);
   const searchContainerRef = useRef<HTMLDivElement>(null);
 
@@ -59,6 +74,7 @@ export default function Navbar() {
   const profileRef = useRef<HTMLDivElement>(null);
 
   const unreadCount = notifications.filter((n) => n.unread).length;
+  const currentLocale = pathname.startsWith("/fa") ? "fa" : "en";
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
@@ -89,18 +105,63 @@ export default function Navbar() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const val = e.target.value;
+    setSearchQuery(val);
+
+    const trimmed = val.trim();
+    if (!trimmed) {
+      setSearchResults([]);
+      setIsSearching(false);
+      if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+      return;
+    }
+
+    setIsSearching(true);
+    if (debounceTimerRef.current) clearTimeout(debounceTimerRef.current);
+
+    debounceTimerRef.current = setTimeout(async () => {
+      try {
+        const res = await fetch(
+          `/api/search?q=${encodeURIComponent(trimmed)}&limit=6`,
+        );
+        if (!res.ok) throw new Error("Search failed");
+        const data = await res.json();
+        setSearchResults(Array.isArray(data.results) ? data.results : []);
+      } catch (err) {
+        setSearchResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 250);
+  };
+
+  const getProductRoute = (item: SearchResultProduct) => {
+    return item.Category?.toLowerCase() === "games"
+      ? `/${currentLocale}/games/${item.ProductID}`
+      : `/${currentLocale}/shop/${item.ProductID}`;
+  };
+
+  const handleSelectProduct = (item: SearchResultProduct) => {
+    addSearch(item.Title);
+    setIsSearchOpen(false);
+    setSearchQuery("");
+    setSearchResults([]);
+    router.push(getProductRoute(item));
+  };
+
   const handleSearchSubmit = (e?: React.FormEvent, queryOverride?: string) => {
     if (e) e.preventDefault();
     const finalQuery = queryOverride || searchQuery;
 
     if (finalQuery.trim()) {
       addSearch(finalQuery.trim());
-      const currentLocale = pathname.startsWith("/fa") ? "fa" : "en";
       router.push(
         `/${currentLocale}/games?search=${encodeURIComponent(finalQuery.trim())}`,
       );
       setIsSearchOpen(false);
       setSearchQuery("");
+      setSearchResults([]);
     }
   };
 
@@ -112,6 +173,7 @@ export default function Navbar() {
   };
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
+  const hasTypedQuery = searchQuery.trim().length > 0;
 
   return (
     <header className="w-full h-20 px-6 lg:px-12 flex items-center justify-between z-40 sticky top-0 bg-base-950/80 backdrop-blur-xl border-b border-white/5">
@@ -145,13 +207,13 @@ export default function Navbar() {
 
       <div className="flex items-center gap-4 sm:gap-6">
         <div
-          className="relative  items-center hidden sm:flex"
+          className="relative items-center hidden sm:flex"
           ref={searchContainerRef}
         >
           <form
             onSubmit={handleSearchSubmit}
             className={`relative flex items-center transition-all duration-500 ease-[cubic-bezier(0.25,1,0.5,1)] ${
-              isSearchOpen ? "w-64" : "w-10"
+              isSearchOpen ? "w-72 lg:w-96" : "w-10"
             }`}
           >
             <button
@@ -178,7 +240,7 @@ export default function Navbar() {
               ref={searchInputRef}
               type="text"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={handleSearchChange}
               placeholder={tCommon("searchPlaceholder")}
               className={`w-full h-10 bg-base-900/50 border border-primary-500/50 rounded-full pe-10 text-sm text-white focus:outline-none focus:bg-base-900 focus:border-primary-400 shadow-[inset_0_2px_10px_rgba(0,0,0,0.1),0_0_15px_rgba(170,79,255,0.15)] transition-all duration-500 z-20 ${
                 isSearchOpen
@@ -193,54 +255,126 @@ export default function Navbar() {
                 onClick={() => {
                   if (searchQuery) {
                     setSearchQuery("");
+                    setSearchResults([]);
                     searchInputRef.current?.focus();
                   } else {
                     setIsSearchOpen(false);
                   }
                 }}
-                className="absolute inset-e-3 z-30 flex items-center justify-center text-base-500 hover:text-rose-400 transition-colors"
+                className="absolute inset-e-9 z-30 flex items-center justify-center text-base-500 hover:text-rose-400 transition-colors h-full px-2"
               >
                 <X size={16} />
               </button>
             )}
 
-            {isSearchOpen && recentSearches.length > 0 && isMounted && (
+            {isSearchOpen && isMounted && (
               <div className="absolute top-full mt-3 inset-x-0 bg-base-950/95 border border-white/10 rounded-2xl shadow-2xl backdrop-blur-xl p-3 z-50 animate-in fade-in slide-in-from-top-2">
-                <div className="flex items-center justify-between px-2 mb-2">
-                  <span className="text-[10px] font-bold text-base-500 uppercase tracking-widest">
-                    Recent Searches
-                  </span>
-                  <button
-                    type="button"
-                    onClick={clearSearches}
-                    className="text-[10px] text-rose-400 hover:text-rose-300 font-bold transition-colors"
-                  >
-                    Clear
-                  </button>
-                </div>
-                <div className="flex flex-col gap-1">
-                  {recentSearches.map((term) => (
-                    <div
-                      key={term}
-                      className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-base-900/50 transition-colors group"
-                    >
-                      <button
-                        type="button"
-                        onClick={() => handleSearchSubmit(undefined, term)}
-                        className="flex items-center gap-2 text-sm text-base-300 group-hover:text-white transition-colors grow text-start"
-                      >
-                        <Clock size={14} className="text-base-500" /> {term}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => removeSearch(term)}
-                        className="text-base-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all"
-                      >
-                        <Trash2 size={14} />
-                      </button>
+                {hasTypedQuery ? (
+                  <div>
+                    <div className="flex items-center justify-between px-2 mb-2">
+                      <span className="text-[10px] font-bold text-base-500 uppercase tracking-widest">
+                        Search Results
+                      </span>
+                      {isSearching && (
+                        <Loader2
+                          size={12}
+                          className="animate-spin text-primary-400"
+                        />
+                      )}
                     </div>
-                  ))}
-                </div>
+
+                    {isSearching && searchResults.length === 0 ? (
+                      <div className="py-5 text-center text-xs text-base-400">
+                        Searching...
+                      </div>
+                    ) : searchResults.length > 0 ? (
+                      <div className="flex flex-col gap-1 max-h-80 overflow-y-auto hide-scrollbar">
+                        {searchResults.map((item) => (
+                          <button
+                            key={item.ProductID}
+                            type="button"
+                            onClick={() => handleSelectProduct(item)}
+                            className="flex items-center gap-3 px-2.5 py-2 rounded-xl hover:bg-base-900/70 transition-colors text-start w-full group"
+                          >
+                            <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-base-900 border border-white/10 shrink-0">
+                              {item.ImageUrl ? (
+                                <Image
+                                  src={item.ImageUrl}
+                                  alt={item.Title}
+                                  fill
+                                  sizes="40px"
+                                  className="object-cover"
+                                />
+                              ) : (
+                                <div className="w-full h-full flex items-center justify-center text-[9px] text-base-500">
+                                  N/A
+                                </div>
+                              )}
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <p className="text-xs font-bold text-base-200 group-hover:text-white truncate transition-colors">
+                                {item.Title}
+                              </p>
+                              <span className="text-[10px] text-base-500 uppercase">
+                                {item.Category}
+                              </span>
+                            </div>
+                            <span className="text-xs font-bold text-primary-400 shrink-0">
+                              ${Number(item.Price).toFixed(2)}
+                            </span>
+                          </button>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="py-5 text-center text-xs text-base-400">
+                        No products found
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  recentSearches.length > 0 && (
+                    <div>
+                      <div className="flex items-center justify-between px-2 mb-2">
+                        <span className="text-[10px] font-bold text-base-500 uppercase tracking-widest">
+                          Recent Searches
+                        </span>
+                        <button
+                          type="button"
+                          onClick={clearSearches}
+                          className="text-[10px] text-rose-400 hover:text-rose-300 font-bold transition-colors"
+                        >
+                          Clear
+                        </button>
+                      </div>
+                      <div className="flex flex-col gap-1">
+                        {recentSearches.map((term: string) => (
+                          <div
+                            key={term}
+                            className="flex items-center justify-between px-3 py-2 rounded-xl hover:bg-base-900/50 transition-colors group"
+                          >
+                            <button
+                              type="button"
+                              onClick={() =>
+                                handleSearchSubmit(undefined, term)
+                              }
+                              className="flex items-center gap-2 text-sm text-base-300 group-hover:text-white transition-colors grow text-start"
+                            >
+                              <Clock size={14} className="text-base-500" />{" "}
+                              {term}
+                            </button>
+                            <button
+                              type="button"
+                              onClick={() => removeSearch(term)}
+                              className="text-base-500 hover:text-rose-400 opacity-0 group-hover:opacity-100 transition-all"
+                            >
+                              <Trash2 size={14} />
+                            </button>
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                )}
               </div>
             )}
           </form>

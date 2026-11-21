@@ -7,20 +7,6 @@ import { useQuery } from "@tanstack/react-query";
 import { useTranslations } from "next-intl";
 import { ChevronRight, Play, Star, Calendar, Gamepad2 } from "lucide-react";
 
-interface RawgGenre {
-  name: string;
-}
-interface RawgGameDetailResponse {
-  id: number;
-  name: string;
-  background_image: string;
-  description_raw?: string;
-  metacritic?: number | null;
-  released?: string;
-  genres?: RawgGenre[];
-  added?: number;
-}
-
 export interface HeroGame {
   id: number;
   name: string;
@@ -38,12 +24,13 @@ const fetchHeroGamesFromDB = async (): Promise<HeroGame[]> => {
   return res.json();
 };
 
-export default function Hero({ slugs }: { slugs: string[] }) {
+export default function Hero() {
   const router = useRouter();
   const [currentIndex, setCurrentIndex] = useState(0);
   const [hoveredCard, setHoveredCard] = useState<number | null>(null);
   const [isLayoutHovered, setIsLayoutHovered] = useState(false);
   const t = useTranslations("home.hero");
+
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["heroGamesFromDB"],
     queryFn: fetchHeroGamesFromDB,
@@ -192,6 +179,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                   : "w-48 lg:w-56 h-72 lg:h-96";
               let stateStyle = "";
               let overlayOpacity = "opacity-60";
+
               if (!isLayoutHovered) {
                 if (positionIndex === 2)
                   stateStyle =
@@ -215,6 +203,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                   stateStyle =
                     "translate-x-28 lg:translate-x-48 -translate-y-2 rotate-12 scale-100 blur-0 brightness-90 z-20";
               }
+
               if (isHovered) {
                 if (positionIndex === 2)
                   stateStyle =
@@ -227,6 +216,7 @@ export default function Hero({ slugs }: { slugs: string[] }) {
                     "!translate-x-32 lg:!translate-x-52 !-translate-y-6 !rotate-0 !scale-110 !z-50 !blur-0 !brightness-110 !border-primary-400/80 shadow-[0_20px_50px_rgba(170,79,255,0.6)]";
                 overlayOpacity = "!opacity-0";
               }
+
               return (
                 <div
                   key={game.id}

@@ -26,18 +26,12 @@ const ParallaxBanner = dynamic(
   () => import("@/components/home/ParallaxBanner"),
 );
 
-export default  function Home() {
+export default function Home() {
   const t = useTranslations("home.platformShowcase");
 
   return (
     <div className="flex flex-col w-full pb-12 gap-y-20 pt-4 overflow-x-hidden">
-      <Hero
-        slugs={[
-          "red-dead-redemption-2",
-          "the-last-of-us-part-2",
-          "god-of-war-ragnarok",
-        ]}
-      />
+      <Hero />
       <ScrollReveal animation="fade-up">
         <Genres />
       </ScrollReveal>

@@ -3,8 +3,8 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "cross-env NODE_OPTIONS=\"--dns-result-order=ipv4first --use-env-proxy\" next dev",
+    "build": "cross-env NODE_OPTIONS=\"--dns-result-order=ipv4first --use-env-proxy\" next build",
     "start": "next start",
     "lint": "eslint",
     "test": "jest",
