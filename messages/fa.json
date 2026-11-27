@@ -7,7 +7,9 @@
     "next": "بعدی",
     "previous": "قبلی",
     "addToCart": "افزودن به سبد",
-    "addedToLoot": "«{item}» به لوت شما افزوده شد!"
+    "addedToLoot": "«{item}» به لوت شما افزوده شد!",
+    "addedToWishlist": "«{item}» به علاقه‌مندی‌های شما اضافه شد!",
+    "removedFromWishlist": "«{item}» از علاقه‌مندی‌های شما حذف شد."
   },
   "nav": {
     "notifications": "اعلان‌های سیستم",
@@ -137,6 +139,7 @@
       "limitedTime": "پیشنهاد زمان‌دار",
       "flashSale": "تخفیف‌های شگفت‌انگیز",
       "endsIn": "پایان در:",
+      "endsAt": "پایان تخفیف: {date}",
       "stockLeft": "موجودی:",
       "limitedStock": "موجودی محدود",
       "addToCart": "افزودن به سبد"
@@ -231,41 +234,56 @@
     "cookieSettings": "تنظیمات کوکی"
   },
   "checkout": {
-    "title": "تکمیل سفارش امن",
-    "subtitle": "اطلاعات صورتحساب، روش پرداخت و نهایی کردن خرید خود را وارد کنید.",
-    "billingInfo": "اطلاعات صورتحساب",
-    "firstName": "نام",
-    "lastName": "نام خانوادگی",
-    "email": "آدرس ایمیل (برای تحویل دیجیتال)",
-    "paymentMethod": "روش پرداخت",
-    "creditCard": "کارت اعتباری",
-    "crypto": "ارز دیجیتال",
-    "voidWallet": "کیف پول ووید",
-    "cardNumber": "شماره کارت",
-    "expiryDate": "تاریخ انقضا",
-    "cvc": "کد امنیتی CVC",
+    "title": "ثبت سفارش",
+    "subtitle": "سفارش را بررسی کنید؛ قیمت و موجودی پیش از ثبت از کاتالوگ بررسی می‌شوند.",
+    "accountOrder": "حساب ثبت‌کنندهٔ سفارش",
+    "noChargeNotice": "در این مرحله فقط سفارشِ در انتظار ثبت می‌شود و مبلغی دریافت نخواهد شد.",
+    "pendingOrderNotice": "سفارش به حساب واردشدهٔ شما متصل و با وضعیت «در انتظار» ذخیره می‌شود.",
+    "pendingStatus": "وضعیت سفارش: در انتظار",
     "orderSummary": "خلاصه سفارش",
     "subtotal": "جمع جزء",
     "tax": "مالیات بر ارزش افزوده (۵٪)",
     "shipping": "هزینه ارسال",
     "free": "رایگان",
     "total": "مجموع نهایی",
-    "payButton": "پرداخت مبلغ",
-    "processing": "در حال پردازش پرداخت...",
-    "terms": "با ثبت سفارش، شما با شرایط خدمات و سیاست حفظ حریم خصوصی Void Loot موافقت می‌کنید.",
+    "placeOrder": "ثبت سفارش",
+    "recordingOrder": "در حال ثبت سفارش...",
     "emptyCart": "سبد لوت شما خالی است",
     "emptyCartDesc": "قبل از پرداخت باید مقداری لوت جمع‌آوری کنید.",
     "returnStore": "بازگشت به فروشگاه",
-    "orderConfirmed": "سفارش تایید شد!",
-    "orderSuccessDesc": "تراکنش شما موفقیت‌آمیز بود. کلیدهای دیجیتال به ایمیل شما ارسال شدند و سخت‌افزار در حال آماده‌سازی برای ارسال است.",
+    "orderConfirmed": "سفارش ثبت شد",
+    "orderSuccessDesc": "سفارش شما با وضعیت «در انتظار» ذخیره شد؛ هیچ پرداختی انجام نشده است.",
     "orderIdStr": "کد پیگیری",
-    "totalPaid": "مبلغ پرداختی",
+    "totalDue": "مبلغ سفارش",
     "viewDashboard": "مشاهده در داشبورد",
-    "paymentSuccessToast": "پرداخت موفق! به ووید خوش آمدید."
+    "orderRecordedToast": "سفارش در انتظار ثبت شد.",
+    "errors": {
+      "authRequired": "برای ثبت سفارش ابتدا وارد حساب شوید.",
+      "invalidCart": "سبد خرید معتبر نیست؛ اقلام آن را بررسی و دوباره تلاش کنید.",
+      "productUnavailable": "یک یا چند محصول دیگر در دسترس نیستند.",
+      "priceChanged": "قیمت‌ها تغییر کرده‌اند؛ مبلغ جدید را بررسی و دوباره سفارش را ثبت کنید.",
+      "stockUnavailable": "موجودی یک یا چند کالا کافی نیست.",
+      "quoteFailed": "دریافت قیمت‌های فعلی ناموفق بود؛ دوباره تلاش کنید.",
+      "orderFailed": "ثبت سفارش ناموفق بود؛ دوباره تلاش کنید."
+    }
+  },
+  "collectionsSync": {
+    "syncFailed": "همگام‌سازی سبد خرید و علاقه‌مندی‌ها ناموفق بود؛ اطلاعات محلی باقی می‌ماند. دوباره تلاش کنید.",
+    "unavailableItems": "برخی کالاهای ذخیره‌شده دیگر موجود نیستند و حذف شدند."
+  },
+  "notificationMessages": {
+    "orderCreatedTitle": "سفارش ثبت شد",
+    "orderCreatedDescription": "سفارش شمارهٔ {orderId} با وضعیت در انتظار ذخیره شد.",
+    "orderStatusTitle": "وضعیت سفارش به‌روز شد",
+    "orderStatusDescription": "وضعیت سفارش شمارهٔ {orderId}: {status}.",
+    "promotionTitle": "تخفیف فعال",
+    "promotionDescription": "برای «{product}» یک تخفیف فعال وجود دارد.",
+    "loadFailed": "دریافت اعلان‌ها ناموفق بود.",
+    "actionFailed": "به‌روزرسانی اعلان‌ها ناموفق بود."
   },
   "cloud": {
-    "title": "کلید ابری",
-    "subtitle": "سرورهای بازی در سطح سازمانی",
+    "title": "ووید کلاد",
+    "subtitle": "بازی‌های ثبت‌شده در کاتالوگ SQL",
     "ping": "پینگ",
     "activeRig": "ریگ ابری فعال",
     "rigDesc": "سیستم اختصاصی شما به بهترین نحو در حال اجراست. بازی‌های AAA را بدون تأخیر استریم کنید.",
@@ -280,7 +298,10 @@
     "allGames": "همه بازی‌ها",
     "readyToPlay": "آماده اجرا",
     "cloudReady": "آماده کلاد",
-    "streamNow": "استریم آنلاین"
+    "streamNow": "استریم آنلاین",
+    "catalogOnly": "فقط کاتالوگ بازی‌ها؛ سرویس استریم ابری متصل نیست.",
+    "catalogEmpty": "هنوز بازی‌ای در کاتالوگ SQL موجود نیست.",
+    "viewGame": "مشاهده بازی"
   },
   "community": {
     "title": "انجمن ووید",
@@ -300,7 +321,35 @@
     "comments": "نظرات",
     "share": "اشتراک‌گذاری",
     "topContributors": "برترین مشارکت‌کنندگان",
-    "noPostsFound": "هیچ پستی برای این دسته‌بندی یا کلمه کلیدی یافت نشد."
+    "noPostsFound": "هیچ پستی برای این دسته‌بندی یا کلمه کلیدی یافت نشد.",
+    "memberRole": "عضو",
+    "createPostTitle": "ایجاد پست در انجمن",
+    "postTitle": "عنوان",
+    "postTitlePlaceholder": "دربارهٔ چه موضوعی می‌خواهید صحبت کنید؟",
+    "postCategory": "دسته‌بندی",
+    "postContent": "متن",
+    "postContentPlaceholder": "متن پست را بنویسید...",
+    "postTags": "برچسب‌ها (با ویرگول جدا کنید)",
+    "postTagsPlaceholder": "بازی، سخت‌افزار",
+    "publishPost": "انتشار پست",
+    "cancel": "لغو",
+    "signInToPost": "برای انتشار یا پسندیدن پست ابتدا وارد حساب شوید.",
+    "postCreated": "پست شما منتشر شد.",
+    "postCreateFailed": "انتشار پست انجام نشد.",
+    "likeFailed": "به‌روزرسانی پسندیدن ناموفق بود.",
+    "commentsFailed": "دریافت یا ثبت نظر ناموفق بود.",
+    "noComments": "هنوز نظری ثبت نشده است.",
+    "commentPlaceholder": "نظر خود را بنویسید...",
+    "sendComment": "ارسال",
+    "commentCreated": "نظر ثبت شد.",
+    "postDetailsFailed": "دریافت این پست ناموفق بود.",
+    "loadFailed": "دریافت پست‌های انجمن ناموفق بود.",
+    "likes": "پسند",
+    "linkCopied": "پیوند پست کپی شد.",
+    "shareFailed": "کپی پیوند پست انجام نشد.",
+    "backToCommunity": "بازگشت به انجمن",
+    "communityPosts": "پست‌های انجمن",
+    "communityPostsDescription": "پست‌های ذخیره‌شده در پایگاه داده انجمن را ببینید. انتشار و پسندیدن به حساب کاربری نیاز دارد."
   },
   "deals": {
     "limitedTime": "پیشنهادهای زمان‌دار",
@@ -310,7 +359,10 @@
     "hours": "ساعت",
     "minutes": "دقیقه",
     "seconds": "ثانیه",
-    "activePromotions": "کمپین‌های فعال"
+    "activePromotions": "تخفیف‌های فعال",
+    "databasePromotions": "تخفیف‌های فعال از کاتالوگ",
+    "noActivePromotions": "در حال حاضر تخفیف فعالی وجود ندارد.",
+    "promotionEnds": "پایان: {date}"
   },
   "faq": {
     "title": "چگونه می‌توانیم",
@@ -428,9 +480,9 @@
   },
   "login": {
     "title": "خوش آمدید",
-    "subtitle": "اطلاعات ورود خود را وارد کنید یا از حساب دمو استفاده نمایید:",
-    "emailLabel": "آدرس ایمیل",
-    "emailPlaceholder": "player@nexus.com",
+    "subtitle": "برای ادامه، اطلاعات ورود خود را وارد کنید.",
+    "usernameLabel": "نام کاربری",
+    "usernamePlaceholder": "نام کاربری خود را وارد کنید",
     "passwordLabel": "رمز عبور",
     "forgotPassword": "فراموشی رمز عبور؟",
     "passwordPlaceholder": "رمز عبور خود را وارد کنید",
@@ -520,7 +572,8 @@
     "avatarUrl": "آدرس تصویر آواتار",
     "bannerUrl": "آدرس تصویر بنر پروفایل",
     "saveChanges": "ذخیره تغییرات",
-    "updateSuccess": "پروفایل با موفقیت به‌روزرسانی شد!"
+    "updateSuccess": "پروفایل با موفقیت به‌روزرسانی شد!",
+    "updateFailed": "ذخیره پروفایل انجام نشد. لطفاً دوباره تلاش کنید."
   },
   "register": {
     "title": "ایجاد حساب کاربری",
@@ -536,8 +589,11 @@
     "alreadyMember": "قبلاً ثبت‌نام کرده‌اید؟",
     "signInHere": "از اینجا وارد شوید",
     "toastInvalidEmail": "فرمت ایمیل نامعتبر است! لطفاً یک ایمیل معتبر وارد کنید.",
-    "toastShortPassword": "رمز عبور باید حداقل ۶ کاراکتر باشد.",
-    "toastSuccess": "حساب کاربری با موفقیت ایجاد شد! در حال انتقال به صفحه ورود..."
+    "toastShortPassword": "رمز عبور باید حداقل ۸ کاراکتر باشد.",
+    "toastSuccess": "حساب کاربری با موفقیت ایجاد شد! در حال انتقال به صفحه ورود...",
+    "emailInUse": "با این ایمیل قبلاً حساب کاربری ساخته شده است.",
+    "usernameInUse": "این نام کاربری قبلاً انتخاب شده است.",
+    "registrationFailed": "ساخت حساب انجام نشد. لطفاً دوباره تلاش کنید."
   },
   "shop": {
     "titlePrefix": "سخت‌افزار",
@@ -589,15 +645,36 @@
     "messagePlaceholder": "مشکل خود را به صورت کامل توضیح دهید...",
     "sendTicket": "ارسال تیکت",
     "sending": "در حال ارسال...",
-    "ticketSuccess": "تیکت شما با موفقیت ثبت شد! شماره پیگیری به ایمیل شما ارسال می‌گردد."
+    "ticketSuccess": "تیکت شما با موفقیت ذخیره شد.",
+    "ticketFailed": "ثبت تیکت انجام نشد. دوباره تلاش کنید.",
+    "ticketLoadFailed": "دریافت تیکت‌ها ناموفق بود.",
+    "authRequired": "برای ثبت تیکت پشتیبانی ابتدا وارد حساب شوید.",
+    "myTickets": "تیکت‌های پشتیبانی من",
+    "noTickets": "هنوز تیکتی ثبت نکرده‌اید.",
+    "ticketStatusOpen": "باز",
+    "ticketStatus": "وضعیت",
+    "categories": {
+      "account": "حساب کاربری و امنیت",
+      "payment": "صورتحساب و پرداخت",
+      "tech": "پشتیبانی فنی و کلاد",
+      "order": "پیگیری سفارش",
+      "other": "سایر"
+    },
+    "ticketStatuses": {
+      "open": "باز",
+      "inProgress": "در حال بررسی",
+      "closed": "بسته",
+      "unknown": "نامشخص"
+    }
   },
   "tracking": {
     "titlePrefix": "رهگیری",
     "titleHighlight": "سفارش",
-    "subtitle": "کد پیگیری یا شماره سفارش خود را وارد کنید تا وضعیت لحظه‌ای ارسال سخت‌افزار یا تحویل کلید دیجیتال را بررسی کنید.",
-    "inputPlaceholder": "شماره سفارش (مثلاً VL-98421)...",
-    "trackBtn": "رهگیری مرسوله",
+    "subtitle": "شناسهٔ سفارشی را که با این حساب ثبت کرده‌اید وارد کنید تا وضعیت و اقلام ذخیره‌شدهٔ آن را ببینید.",
+    "inputPlaceholder": "شماره سفارش (مثلاً VOID-123)...",
+    "trackBtn": "رهگیری سفارش",
     "trackingDetails": "جزئیات رهگیری",
+    "orderId": "شماره سفارش",
     "status": "وضعیت سفارش",
     "courier": "شرکت حمل‌ونقل",
     "estimatedDelivery": "تحویل تخمینی",
@@ -609,7 +686,18 @@
       "delivered": "تحویل داده شده"
     },
     "notFound": "سفارشی با این مشخصات یافت نشد. لطفاً شماره پیگیری را بررسی کنید.",
-    "trackingError": "لطفاً یک شماره سفارش معتبر وارد کنید."
+    "trackingError": "لطفاً یک شماره سفارش معتبر وارد کنید.",
+    "loadFailed": "دریافت سفارش‌ها ناموفق بود.",
+    "orderTotal": "مبلغ سفارش",
+    "orderDate": "تاریخ سفارش",
+    "statusPending": "در انتظار",
+    "statusProcessing": "در حال پردازش",
+    "statusConfirmed": "تأییدشده",
+    "statusShipped": "ارسال‌شده",
+    "statusDelivered": "تحویل‌شده",
+    "statusCancelled": "لغوشده",
+    "statusUnknown": "وضعیت نامشخص",
+    "accountRequired": "برای رهگیری سفارش ابتدا وارد حساب شوید."
   },
   "error": {
     "title": "سیستم دچار اختلال شد",

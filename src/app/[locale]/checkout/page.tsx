@@ -1,154 +1,187 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
-import {
-  CreditCard,
-  Bitcoin,
-  Wallet,
-  CheckCircle2,
-  ShieldCheck,
-  ArrowLeft,
-  Loader2,
-} from "lucide-react";
-import { useCartStore } from "@/store/useCartStore";
-import { useAuthStore } from "@/store/useAuthStore";
+import { ArrowLeft, CheckCircle2, Loader2, ShieldCheck } from "lucide-react";
 import { toast } from "sonner";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
+import { useAuthStore } from "@/store/useAuthStore";
+import { useCartStore } from "@/store/useCartStore";
+
+interface CheckoutQuoteItem {
+  id: number;
+  title: string;
+  image: string | null;
+  price: string;
+  quantity: number;
+  lineTotal: string;
+}
+
+interface CheckoutQuote {
+  items: CheckoutQuoteItem[];
+  subtotal: string;
+  tax: string;
+  total: string;
+}
+
+interface CheckoutResponse {
+  error?: string;
+  quote?: CheckoutQuote;
+  orderId?: string;
+  total?: string;
+}
 
 export default function CheckoutPage() {
   const router = useRouter();
   const t = useTranslations("checkout");
   const { items, clearCart } = useCartStore();
-  const { user, addOrder } = useAuthStore();
+  const { user, isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const [isMounted, setIsMounted] = useState(false);
-  const [paymentMethod, setPaymentMethod] = useState<
-    "card" | "crypto" | "wallet"
-  >("card");
+  const [isLoadingQuote, setIsLoadingQuote] = useState(false);
+  const [quote, setQuote] = useState<CheckoutQuote | null>(null);
+  const [quoteError, setQuoteError] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
-  const [isSuccess, setIsSuccess] = useState(false);
   const [orderId, setOrderId] = useState("");
+  const [orderTotal, setOrderTotal] = useState("");
+  const [isSuccess, setIsSuccess] = useState(false);
+
+  const checkoutItemsKey = JSON.stringify(
+    items.map(({ id, quantity }) => ({ id, quantity })),
+  );
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
     return () => clearTimeout(timer);
   }, []);
 
-  const checkoutSchema = z
-    .object({
-      firstName: z.string().min(2, "First name is required"),
-      lastName: z.string().min(2, "Last name is required"),
-      email: z.string().email("Invalid email format"),
-      cardNumber: z.string().optional(),
-      expiryDate: z.string().optional(),
-      cvc: z.string().optional(),
-    })
-    .superRefine((data, ctx) => {
-      if (paymentMethod === "card") {
-        if (!/^\d{16}$/.test(data.cardNumber?.replace(/\s/g, "") || "")) {
-          ctx.addIssue({
-            path: ["cardNumber"],
-            code: z.ZodIssueCode.custom,
-            message: "Must be 16 digits",
-          });
+  useEffect(() => {
+    if (isMounted && !isAuthLoading && !isAuthenticated) {
+      const returnPath = window.location.pathname;
+      router.replace(`/login?redirect=${encodeURIComponent(returnPath)}`);
+    }
+  }, [isAuthenticated, isAuthLoading, isMounted, router]);
+
+  const getErrorMessage = useCallback((code: string) => {
+    switch (code) {
+      case "AUTH_REQUIRED":
+        return t("errors.authRequired");
+      case "INVALID_CART":
+      case "INVALID_REQUEST":
+        return t("errors.invalidCart");
+      case "PRODUCT_UNAVAILABLE":
+        return t("errors.productUnavailable");
+      case "PRICE_CHANGED":
+        return t("errors.priceChanged");
+      case "STOCK_UNAVAILABLE":
+        return t("errors.stockUnavailable");
+      case "QUOTE_FAILED":
+        return t("errors.quoteFailed");
+      default:
+        return t("errors.orderFailed");
+    }
+  }, [t]);
+
+  useEffect(() => {
+    if (
+      !isMounted ||
+      isAuthLoading ||
+      !isAuthenticated ||
+      items.length === 0
+    ) {
+      return;
+    }
+
+    const controller = new AbortController();
+    const loadQuote = async () => {
+      setQuote(null);
+      setQuoteError("");
+      setIsLoadingQuote(true);
+
+      try {
+        const response = await fetch(
+          `/api/checkout?items=${encodeURIComponent(checkoutItemsKey)}`,
+          { signal: controller.signal },
+        );
+        const result = (await response.json()) as CheckoutResponse;
+        if (!response.ok || !result.quote) {
+          throw new Error(result.error || "QUOTE_FAILED");
         }
-        if (!/^(0[1-9]|1[0-2])\/?([0-9]{2})$/.test(data.expiryDate || "")) {
-          ctx.addIssue({
-            path: ["expiryDate"],
-            code: z.ZodIssueCode.custom,
-            message: "Invalid (MM/YY)",
-          });
-        }
-        if (!/^\d{3,4}$/.test(data.cvc || "")) {
-          ctx.addIssue({
-            path: ["cvc"],
-            code: z.ZodIssueCode.custom,
-            message: "Invalid CVC",
-          });
-        }
+        setQuote(result.quote);
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        const code = error instanceof Error ? error.message : "QUOTE_FAILED";
+        setQuoteError(getErrorMessage(code));
+      } finally {
+        if (!controller.signal.aborted) setIsLoadingQuote(false);
       }
-    });
+    };
 
-  type CheckoutFormValues = z.infer<typeof checkoutSchema>;
+    void loadQuote();
+    return () => controller.abort();
+  }, [
+    checkoutItemsKey,
+    isAuthenticated,
+    isAuthLoading,
+    isMounted,
+    items.length,
+    getErrorMessage,
+  ]);
 
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<CheckoutFormValues>({
-    resolver: zodResolver(checkoutSchema),
-    defaultValues: {
-      firstName: user?.name?.split(" ")[0] || "",
-      lastName: user?.name?.split(" ")[1] || "",
-      email: user?.email || "",
-    },
-  });
-
-  const subtotal = items.reduce(
-    (total, item) => total + item.price * item.quantity,
-    0,
-  );
-  const tax = subtotal * 0.05;
-  const total = subtotal + tax;
-
-  const onSubmit = async (data: CheckoutFormValues) => {
-    if (items.length === 0) return;
+  const handlePlaceOrder = async () => {
+    if (!quote || isProcessing) return;
     setIsProcessing(true);
+    setQuoteError("");
 
     try {
-      const res = await fetch("/api/checkout", {
+      const response = await fetch("/api/checkout", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          items: items,
-          userInfo: data,
-          total: total,
+          items: JSON.parse(checkoutItemsKey) as Array<{
+            id: number;
+            quantity: number;
+          }>,
+          expectedTotal: quote.total,
         }),
       });
-      const result = await res.json();
-      if (!res.ok) {
-        throw new Error(result.error || "پرداخت ناموفق بود");
-      }
-      setIsProcessing(false);
-      setIsSuccess(true);
-      setOrderId(result.orderId);
-      if (user && addOrder) {
-        const today = new Date().toLocaleDateString("en-US", {
-          month: "short",
-          day: "numeric",
-          year: "numeric",
-        });
-        const itemsSummary =
-          items.length === 1
-            ? `${items[0].quantity}x ${items[0].title}`
-            : `${items.length} Items (inc. ${items[0].title})`;
-        addOrder({
-          id: result.orderId,
-          date: today,
-          status: "Processing",
-          total: `$${total.toFixed(2)}`,
-          items: itemsSummary,
-        });
+      const result = (await response.json()) as CheckoutResponse;
+
+      if (!response.ok) {
+        if (result.quote) setQuote(result.quote);
+        const message = getErrorMessage(result.error || "ORDER_FAILED");
+        setQuoteError(message);
+        toast.error(message);
+        return;
       }
 
-      clearCart();
-      toast.success(t("paymentSuccessToast"));
-    } catch (error: unknown) {
-      setIsProcessing(false);
-      if (error instanceof Error) {
-        toast.error(error.message);
-      } else {
-        toast.error("خطا در ارتباط با سرور!");
+      if (!result.orderId || !result.total) {
+        throw new Error("ORDER_FAILED");
       }
+
+      setOrderId(result.orderId);
+      setOrderTotal(result.total);
+      setIsSuccess(true);
+      clearCart();
+      toast.success(t("orderRecordedToast"));
+    } catch (error) {
+      const code = error instanceof Error ? error.message : "ORDER_FAILED";
+      const message = getErrorMessage(code);
+      setQuoteError(message);
+      toast.error(message);
+    } finally {
+      setIsProcessing(false);
     }
   };
 
-  if (!isMounted) return null;
+  if (!isMounted || isAuthLoading || (!isAuthenticated && !isSuccess)) {
+    return (
+      <div className="w-full min-h-[60vh] flex items-center justify-center">
+        <Loader2 className="animate-spin text-primary-400" size={32} />
+      </div>
+    );
+  }
 
   if (isSuccess) {
     return (
@@ -169,13 +202,13 @@ export default function CheckoutPage() {
             </span>
             <span className="text-lg text-white font-mono">{orderId}</span>
           </div>
-          <div className="w-px h-10 bg-white/10"></div>
+          <div className="w-px h-10 bg-white/10" />
           <div className="flex flex-col">
             <span className="text-xs text-base-500 uppercase tracking-widest font-bold">
-              {t("totalPaid")}
+              {t("totalDue")}
             </span>
             <span className="text-lg text-primary-400 font-black">
-              ${total.toFixed(2)}
+              ${orderTotal}
             </span>
           </div>
         </div>
@@ -217,218 +250,39 @@ export default function CheckoutPage() {
         >
           <ArrowLeft size={18} className="rtl:rotate-180" />
         </button>
-        <h1 className="text-3xl font-black text-white tracking-tight">
-          {t("title").split(" ")[0]}{" "}
-          <span className="text-primary-400">
-            {t("title").split(" ").slice(1).join(" ")}
-          </span>
-        </h1>
+        <div className="flex flex-col gap-2">
+          <h1 className="text-3xl font-black text-white tracking-tight">
+            {t("title").split(" ")[0]}{" "}
+            <span className="text-primary-400">
+              {t("title").split(" ").slice(1).join(" ")}
+            </span>
+          </h1>
+          <p className="text-sm text-base-400">{t("subtitle")}</p>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-10">
         <div className="lg:col-span-7 flex flex-col gap-8">
-          <form
-            id="checkout-form"
-            onSubmit={handleSubmit(onSubmit)}
-            className="flex flex-col gap-8"
-          >
-            <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
-              <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
-                {t("billingInfo")}
-              </h2>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
-                    {t("firstName")}
-                  </label>
-                  <input
-                    {...register("firstName")}
-                    type="text"
-                    className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white focus:outline-none transition-colors ${errors.firstName ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
-                  />
-                  {errors.firstName && (
-                    <span className="text-[10px] text-rose-500 ms-1">
-                      {errors.firstName.message}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1.5">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
-                    {t("lastName")}
-                  </label>
-                  <input
-                    {...register("lastName")}
-                    type="text"
-                    className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white focus:outline-none transition-colors ${errors.lastName ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
-                  />
-                  {errors.lastName && (
-                    <span className="text-[10px] text-rose-500 ms-1">
-                      {errors.lastName.message}
-                    </span>
-                  )}
-                </div>
-                <div className="flex flex-col gap-1.5 md:col-span-2">
-                  <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
-                    {t("email")}
-                  </label>
-                  <input
-                    {...register("email")}
-                    type="email"
-                    className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white focus:outline-none transition-colors ${errors.email ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
-                  />
-                  {errors.email && (
-                    <span className="text-[10px] text-rose-500 ms-1">
-                      {errors.email.message}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
+          <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-4">
+            <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
+              {t("accountOrder")}
+            </h2>
+            <p className="text-sm text-base-300">
+              <span className="font-bold text-white">{user?.username}</span>
+              {user?.email ? ` · ${user.email}` : ""}
+            </p>
+            <p className="text-sm text-amber-300">{t("noChargeNotice")}</p>
+          </div>
 
-            <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-6">
-              <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
-                {t("paymentMethod")}
+          <div className="glass-panel p-6 md:p-8 rounded-3xl bg-base-950/60 border border-white/5 flex flex-col gap-4">
+            <div className="flex items-center gap-3">
+              <ShieldCheck className="text-emerald-400" size={22} />
+              <h2 className="text-xl font-black text-white">
+                {t("pendingStatus")}
               </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("card")}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                    paymentMethod === "card"
-                      ? "border-primary-500 bg-primary-500/10 shadow-[0_0_15px_rgba(170,79,255,0.2)]"
-                      : "border-base-800 bg-base-900/30 hover:border-white/10"
-                  }`}
-                >
-                  <CreditCard
-                    size={24}
-                    className={
-                      paymentMethod === "card"
-                        ? "text-primary-400"
-                        : "text-base-400"
-                    }
-                  />
-                  <span
-                    className={`text-xs font-bold ${
-                      paymentMethod === "card"
-                        ? "text-primary-400"
-                        : "text-base-400"
-                    }`}
-                  >
-                    {t("creditCard")}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("crypto")}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                    paymentMethod === "crypto"
-                      ? "border-orange-500 bg-orange-500/10 shadow-[0_0_15px_rgba(249,115,22,0.2)]"
-                      : "border-base-800 bg-base-900/30 hover:border-white/10"
-                  }`}
-                >
-                  <Bitcoin
-                    size={24}
-                    className={
-                      paymentMethod === "crypto"
-                        ? "text-orange-400"
-                        : "text-base-400"
-                    }
-                  />
-                  <span
-                    className={`text-xs font-bold ${
-                      paymentMethod === "crypto"
-                        ? "text-orange-400"
-                        : "text-base-400"
-                    }`}
-                  >
-                    {t("crypto")}
-                  </span>
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setPaymentMethod("wallet")}
-                  className={`flex flex-col items-center gap-3 p-4 rounded-xl border-2 transition-all ${
-                    paymentMethod === "wallet"
-                      ? "border-emerald-500 bg-emerald-500/10 shadow-[0_0_15px_rgba(16,185,129,0.2)]"
-                      : "border-base-800 bg-base-900/30 hover:border-white/10"
-                  }`}
-                >
-                  <Wallet
-                    size={24}
-                    className={
-                      paymentMethod === "wallet"
-                        ? "text-emerald-400"
-                        : "text-base-400"
-                    }
-                  />
-                  <span
-                    className={`text-xs font-bold ${
-                      paymentMethod === "wallet"
-                        ? "text-emerald-400"
-                        : "text-base-400"
-                    }`}
-                  >
-                    {t("voidWallet")}
-                  </span>
-                </button>
-              </div>
-
-              {paymentMethod === "card" && (
-                <div className="flex flex-col gap-5 mt-4 animate-in fade-in duration-300">
-                  <div className="flex flex-col gap-1.5">
-                    <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
-                      {t("cardNumber")}
-                    </label>
-                    <input
-                      {...register("cardNumber")}
-                      type="text"
-                      placeholder="0000 0000 0000 0000"
-                      className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none transition-colors ${errors.cardNumber ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
-                    />
-                    {errors.cardNumber && (
-                      <span className="text-[10px] text-rose-500 ms-1">
-                        {errors.cardNumber.message}
-                      </span>
-                    )}
-                  </div>
-                  <div className="grid grid-cols-2 gap-5">
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
-                        {t("expiryDate")}
-                      </label>
-                      <input
-                        {...register("expiryDate")}
-                        type="text"
-                        placeholder="MM/YY"
-                        className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none transition-colors ${errors.expiryDate ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
-                      />
-                      {errors.expiryDate && (
-                        <span className="text-[10px] text-rose-500 ms-1">
-                          {errors.expiryDate.message}
-                        </span>
-                      )}
-                    </div>
-                    <div className="flex flex-col gap-1.5">
-                      <label className="text-[10px] font-bold text-base-400 uppercase tracking-wider ms-1">
-                        {t("cvc")}
-                      </label>
-                      <input
-                        {...register("cvc")}
-                        type="text"
-                        placeholder="123"
-                        className={`w-full bg-base-900/50 border rounded-xl py-3 px-4 text-sm text-white font-mono focus:outline-none transition-colors ${errors.cvc ? "border-rose-500" : "border-base-800 focus:border-primary-500"}`}
-                      />
-                      {errors.cvc && (
-                        <span className="text-[10px] text-rose-500 ms-1">
-                          {errors.cvc.message}
-                        </span>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
-          </form>
+            <p className="text-sm text-base-400">{t("pendingOrderNotice")}</p>
+          </div>
         </div>
 
         <div className="lg:col-span-5 flex flex-col gap-6">
@@ -436,78 +290,99 @@ export default function CheckoutPage() {
             <h2 className="text-xl font-black text-white border-b border-white/5 pb-4">
               {t("orderSummary")}
             </h2>
-            <div className="flex flex-col gap-4 max-h-75 overflow-y-auto hide-scrollbar">
-              {items.map((item) => (
-                <div key={item.id} className="flex gap-4 items-center">
-                  <div className="relative w-16 h-16 rounded-xl bg-base-950 border border-white/5 overflow-hidden shrink-0 flex items-center justify-center">
-                    <Image
-                      src={item.image}
-                      alt={item.title}
-                      fill
-                      className="object-cover opacity-80"
-                      sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    />
-                    <span className="absolute top-1 inset-e-1 bg-primary-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center text-white z-10">
-                      {item.quantity}
+
+            {isLoadingQuote || (!quote && !quoteError) ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="animate-spin text-primary-400" size={24} />
+              </div>
+            ) : quote ? (
+              <>
+                <div className="flex flex-col gap-4 max-h-75 overflow-y-auto hide-scrollbar">
+                  {quote.items.map((item) => (
+                    <div key={item.id} className="flex gap-4 items-center">
+                      <div className="relative w-16 h-16 rounded-xl bg-base-950 border border-white/5 overflow-hidden shrink-0 flex items-center justify-center">
+                        <Image
+                          src={item.image || "/images/placeholder.jpg"}
+                          alt={item.title}
+                          fill
+                          className="object-cover opacity-80"
+                          sizes="64px"
+                        />
+                        <span className="absolute top-1 inset-e-1 bg-primary-600 text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center text-white z-10">
+                          {item.quantity}
+                        </span>
+                      </div>
+                      <div className="flex flex-col grow">
+                        <span className="text-sm font-bold text-white line-clamp-1">
+                          {item.title}
+                        </span>
+                        <span className="text-xs text-primary-400 font-black">
+                          ${item.lineTotal}
+                        </span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="flex flex-col gap-3 pt-4 border-t border-white/5 text-sm">
+                  <div className="flex justify-between items-center text-base-300">
+                    <span>{t("subtotal")}</span>
+                    <span className="font-bold text-white">
+                      ${quote.subtotal}
                     </span>
                   </div>
-                  <div className="flex flex-col grow">
-                    <span className="text-sm font-bold text-white line-clamp-1">
-                      {item.title}
-                    </span>
-                    <span className="text-xs text-primary-400 font-black">
-                      ${(item.price * item.quantity).toFixed(2)}
+                  <div className="flex justify-between items-center text-base-300">
+                    <span>{t("tax")}</span>
+                    <span className="font-bold text-white">${quote.tax}</span>
+                  </div>
+                  <div className="flex justify-between items-center text-base-300">
+                    <span>{t("shipping")}</span>
+                    <span className="font-bold text-emerald-400">
+                      {t("free")}
                     </span>
                   </div>
                 </div>
-              ))}
-            </div>
 
-            <div className="flex flex-col gap-3 pt-4 border-t border-white/5 text-sm">
-              <div className="flex justify-between items-center text-base-300">
-                <span>{t("subtotal")}</span>
-                <span className="font-bold text-white">
-                  ${subtotal.toFixed(2)}
-                </span>
-              </div>
-              <div className="flex justify-between items-center text-base-300">
-                <span>{t("tax")}</span>
-                <span className="font-bold text-white">${tax.toFixed(2)}</span>
-              </div>
-              <div className="flex justify-between items-center text-base-300">
-                <span>{t("shipping")}</span>
-                <span className="font-bold text-emerald-400">{t("free")}</span>
-              </div>
-            </div>
+                <div className="flex justify-between items-center pt-4 border-t border-white/10">
+                  <span className="text-base font-bold text-white">
+                    {t("total")}
+                  </span>
+                  <span className="text-2xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
+                    ${quote.total}
+                  </span>
+                </div>
+              </>
+            ) : (
+              <p className="text-sm text-rose-400">
+                {quoteError || t("errors.quoteFailed")}
+              </p>
+            )}
 
-            <div className="flex justify-between items-center pt-4 border-t border-white/10">
-              <span className="text-base font-bold text-white">
-                {t("total")}
-              </span>
-              <span className="text-2xl font-black text-white drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">
-                ${total.toFixed(2)}
-              </span>
-            </div>
+            {quoteError && quote && (
+              <p role="alert" className="text-sm text-rose-400">
+                {quoteError}
+              </p>
+            )}
 
             <button
-              form="checkout-form"
-              type="submit"
-              disabled={isProcessing}
+              type="button"
+              onClick={handlePlaceOrder}
+              disabled={isProcessing || isLoadingQuote || !quote}
               className="w-full mt-2 flex items-center justify-center gap-2 py-4 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all disabled:opacity-50"
             >
               {isProcessing ? (
                 <>
                   <Loader2 size={18} className="animate-spin" />{" "}
-                  {t("processing")}
+                  {t("recordingOrder")}
                 </>
               ) : (
                 <>
-                  <ShieldCheck size={18} /> {t("payButton")} ${total.toFixed(2)}
+                  <ShieldCheck size={18} /> {t("placeOrder")}
                 </>
               )}
             </button>
             <p className="text-[10px] text-center text-base-500 mt-2">
-              {t("terms")}
+              {t("noChargeNotice")}
             </p>
           </div>
         </div>

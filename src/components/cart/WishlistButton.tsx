@@ -2,6 +2,8 @@
 
 import { Heart } from "lucide-react";
 import { useWishlistStore } from "@/store/useWishlistStore";
+import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 interface WishlistButtonProps {
   product: {
@@ -15,6 +17,7 @@ interface WishlistButtonProps {
 export default function WishlistButton({ product }: WishlistButtonProps) {
   const { toggleItem, isInWishlist } = useWishlistStore();
   const isWished = isInWishlist(product.id);
+  const t = useTranslations("common");
 
   return (
     <button
@@ -22,6 +25,11 @@ export default function WishlistButton({ product }: WishlistButtonProps) {
       onClick={(e) => {
         e.preventDefault();
         toggleItem(product);
+        toast.success(
+          t(isWished ? "removedFromWishlist" : "addedToWishlist", {
+            item: product.title,
+          }),
+        );
       }}
       className={`absolute top-3 inset-e-3 w-8 h-8 rounded-lg bg-base-950/60 border flex items-center justify-center backdrop-blur-md z-20 transition-all ${
         isWished

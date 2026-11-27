@@ -163,7 +163,7 @@ export default function CartDrawer() {
                   </div>
                   <div className="flex items-center justify-between mt-2">
                     <span className="text-sm font-black text-primary-400">
-                      ${item.price.toFixed(2)}
+                      ${Number(item.price).toFixed(2)}
                     </span>
                     <div className="flex items-center gap-3 bg-base-950 px-2 py-1 rounded-lg border border-white/5">
                       <button

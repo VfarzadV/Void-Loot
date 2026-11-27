@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { Metadata } from "next";
 import { prisma } from "@/lib/prisma";
 import {
   ArrowLeft,
@@ -23,7 +23,6 @@ import {
 import AddToCartFullButton from "@/components/cart/AddToCartFullButton";
 import Breadcrumbs from "@/components/shared/Breadcrumbs";
 
-
 async function getProduct(id: number) {
   const product = await prisma.products.findUnique({
     where: { ProductID: id },
@@ -40,9 +39,12 @@ async function getProduct(id: number) {
     image: product.ImageUrl || "/images/placeholder.jpg",
     stock: product.Stock || 0,
     category: product.Category || "uncategorized",
+    description:
+      "Description" in product && typeof product.Description === "string"
+        ? product.Description
+        : null,
   };
 }
-
 
 async function getRelatedProducts(category: string, excludeId: number) {
   const products = await prisma.products.findMany({
@@ -76,6 +78,39 @@ const getCategoryIcon = (category: string) => {
   }
 };
 
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ id: string; locale: string }>;
+}): Promise<Metadata> {
+  const { id } = await params;
+  const productId = parseInt(id);
+
+  if (isNaN(productId)) {
+    notFound();
+  }
+
+  const product = await getProduct(productId);
+  if (!product) {
+    notFound();
+  }
+
+  return {
+    title: `${product.title} | Void Loot Store`,
+    description:
+      product.description?.substring(0, 160) ||
+      `Buy ${product.title} in ${product.category} on Void Loot.`,
+    openGraph: {
+      title: `${product.title} | Void Loot`,
+      description:
+        product.description?.substring(0, 160) ||
+        `Buy ${product.title} on Void Loot.`,
+      images: [product.image],
+      type: "website",
+    },
+  };
+}
+
 export default async function ShopDetailsPage({
   params,
 }: {
@@ -99,7 +134,6 @@ export default async function ShopDetailsPage({
     product.id,
   );
 
-  
   const rating = (4.5 + (product.id % 5) * 0.1).toFixed(1);
   const reviewsCount = 120 + (product.id % 50) * 3;
 
@@ -167,6 +201,7 @@ export default async function ShopDetailsPage({
             </div>
           </div>
         </div>
+
         <div className="lg:col-span-5 flex flex-col pt-2 lg:pt-8">
           <div className="flex items-center gap-2 mb-4">
             <span className="flex items-center gap-1.5 text-xs font-black uppercase tracking-widest text-primary-400 bg-primary-500/10 px-3 py-1 rounded-md border border-primary-500/20">
@@ -231,7 +266,7 @@ export default async function ShopDetailsPage({
                 </li>
                 <li className="flex items-center justify-between border-b border-white/5 pb-2">
                   <span className="text-base-500">Authenticity</span>
-                  <span className="font-bold  text-primary-300">
+                  <span className="font-bold text-primary-300">
                     100% Original
                   </span>
                 </li>
@@ -246,26 +281,34 @@ export default async function ShopDetailsPage({
           </div>
         </div>
       </div>
+
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-10 mt-20 pt-16 border-t border-white/5">
         <div className="lg:col-span-2 flex flex-col gap-6">
           <h3 className="text-2xl font-black text-white flex items-center gap-2 mb-2">
             <FileText className="text-primary-400" size={24} /> Product Overview
           </h3>
           <div className="glass-panel p-8 rounded-3xl bg-base-900/30 border border-white/5 text-base-300 leading-relaxed space-y-4">
-            <p>
-              Elevate your experience with the{" "}
-              <strong className="text-white">{product.title}</strong>. Designed
-              for peak performance and ultimate reliability, this premium
-              product ensures you stay ahead of the curve. Whether you are
-              upgrading your setup, looking for top-tier accessories, or
-              expanding your digital library, this item delivers uncompromising
-              quality.
-            </p>
-            <p>
-              Crafted with precision and backed by our trusted Void Loot
-              guarantee, every purchase is secure, fast, and designed to
-              seamlessly integrate into your gaming or professional ecosystem.
-            </p>
+            {product.description ? (
+              <p>{product.description}</p>
+            ) : (
+              <>
+                <p>
+                  Elevate your experience with the{" "}
+                  <strong className="text-white">{product.title}</strong>.
+                  Designed for peak performance and ultimate reliability, this
+                  premium product ensures you stay ahead of the curve. Whether
+                  you are upgrading your setup, looking for top-tier
+                  accessories, or expanding your digital library, this item
+                  delivers uncompromising quality.
+                </p>
+                <p>
+                  Crafted with precision and backed by our trusted Void Loot
+                  guarantee, every purchase is secure, fast, and designed to
+                  seamlessly integrate into your gaming or professional
+                  ecosystem.
+                </p>
+              </>
+            )}
           </div>
         </div>
 
@@ -297,6 +340,7 @@ export default async function ShopDetailsPage({
           </div>
         </div>
       </div>
+
       {relatedProducts.length > 0 && (
         <section className="mt-20 pt-16 border-t border-white/5 flex flex-col gap-8">
           <h3 className="text-2xl font-black text-white flex items-center gap-2">

@@ -7,7 +7,9 @@
     "next": "Next",
     "previous": "Previous",
     "addToCart": "Add to Cart",
-    "addedToLoot": "{item} added to loot!"
+    "addedToLoot": "{item} added to loot!",
+    "addedToWishlist": "{item} added to your wishlist!",
+    "removedFromWishlist": "{item} removed from your wishlist."
   },
   "nav": {
     "notifications": "Notifications",
@@ -137,6 +139,7 @@
       "limitedTime": "Limited Time Offer",
       "flashSale": "Flash Sale Deals",
       "endsIn": "Ends in:",
+      "endsAt": "Promotion ends {date}",
       "stockLeft": "Stock Left:",
       "limitedStock": "Limited Stock",
       "addToCart": "Add to Cart"
@@ -231,41 +234,56 @@
     "cookieSettings": "Cookie Settings"
   },
   "checkout": {
-    "title": "Secure Checkout",
-    "subtitle": "Enter your billing details, select a payment method, and complete your purchase.",
-    "billingInfo": "Billing Information",
-    "firstName": "First Name",
-    "lastName": "Last Name",
-    "email": "Email Address (For digital delivery)",
-    "paymentMethod": "Payment Method",
-    "creditCard": "Credit Card",
-    "crypto": "Crypto",
-    "voidWallet": "Void Wallet",
-    "cardNumber": "Card Number",
-    "expiryDate": "Expiry Date",
-    "cvc": "CVC",
+    "title": "Place Your Order",
+    "subtitle": "Review your order. Prices and stock are checked against the catalog before it is saved.",
+    "accountOrder": "Order account",
+    "noChargeNotice": "This records a pending order only. No payment will be collected.",
+    "pendingOrderNotice": "Your order will be linked to your signed-in account and saved with pending status.",
+    "pendingStatus": "Order status: Pending",
     "orderSummary": "Order Summary",
     "subtotal": "Subtotal",
     "tax": "Estimated Tax (5%)",
     "shipping": "Shipping",
     "free": "Free",
     "total": "Total",
-    "payButton": "Pay",
-    "processing": "Processing Payment...",
-    "terms": "By placing your order, you agree to Void Loot's Terms of Service and Privacy Policy.",
+    "placeOrder": "Record Order",
+    "recordingOrder": "Recording order...",
     "emptyCart": "Your cart is empty",
     "emptyCartDesc": "You need some loot before you can checkout.",
     "returnStore": "Return to Store",
-    "orderConfirmed": "Order Confirmed!",
-    "orderSuccessDesc": "Your transaction was successful. The digital keys have been sent to your email and hardware is being prepped for shipment.",
+    "orderConfirmed": "Order Recorded",
+    "orderSuccessDesc": "Your order was saved as pending. No payment was processed.",
     "orderIdStr": "Order ID",
-    "totalPaid": "Total Paid",
+    "totalDue": "Order Total",
     "viewDashboard": "View in Dashboard",
-    "paymentSuccessToast": "Payment successful! Welcome to the Void."
+    "orderRecordedToast": "Pending order saved.",
+    "errors": {
+      "authRequired": "Sign in to place an order.",
+      "invalidCart": "Your cart is invalid. Review its items and try again.",
+      "productUnavailable": "One or more products are no longer available.",
+      "priceChanged": "Prices changed. Review the updated total and place the order again.",
+      "stockUnavailable": "There is not enough stock for one or more items.",
+      "quoteFailed": "Could not load current prices. Please try again.",
+      "orderFailed": "Could not record your order. Please try again."
+    }
+  },
+  "collectionsSync": {
+    "syncFailed": "Could not sync your cart and wishlist. They will remain available locally; please try again.",
+    "unavailableItems": "Some saved items are no longer available and were removed."
+  },
+  "notificationMessages": {
+    "orderCreatedTitle": "Order recorded",
+    "orderCreatedDescription": "Order #{orderId} was saved as pending.",
+    "orderStatusTitle": "Order status updated",
+    "orderStatusDescription": "Order #{orderId} is now {status}.",
+    "promotionTitle": "Promotion available",
+    "promotionDescription": "{product} has an active promotion.",
+    "loadFailed": "Could not load notifications.",
+    "actionFailed": "Could not update notifications."
   },
   "cloud": {
     "title": "Void Cloud",
-    "subtitle": "Enterprise-Grade Gaming Servers",
+    "subtitle": "Games listed in the SQL catalog",
     "ping": "PING",
     "activeRig": "Active Cloud Rig",
     "rigDesc": "Your dedicated instance is running optimally. Seamlessly stream AAA titles with ultra-low latency.",
@@ -280,7 +298,10 @@
     "allGames": "All Games",
     "readyToPlay": "Ready to Play",
     "cloudReady": "Cloud Ready",
-    "streamNow": "Stream Now"
+    "streamNow": "Stream Now",
+    "catalogOnly": "Catalog only. Cloud streaming is not connected.",
+    "catalogEmpty": "No games are available in the SQL catalog yet.",
+    "viewGame": "View game"
   },
   "community": {
     "title": "Void Community",
@@ -300,7 +321,35 @@
     "comments": "Comments",
     "share": "Share",
     "topContributors": "Top Contributors",
-    "noPostsFound": "No posts found for this category or search."
+    "noPostsFound": "No posts found for this category or search.",
+    "memberRole": "Member",
+    "createPostTitle": "Create a community post",
+    "postTitle": "Title",
+    "postTitlePlaceholder": "What would you like to discuss?",
+    "postCategory": "Category",
+    "postContent": "Message",
+    "postContentPlaceholder": "Write your post...",
+    "postTags": "Tags (comma-separated)",
+    "postTagsPlaceholder": "gaming, hardware",
+    "publishPost": "Publish post",
+    "cancel": "Cancel",
+    "signInToPost": "Sign in to create a post or like a post.",
+    "postCreated": "Your post was published.",
+    "postCreateFailed": "Could not publish your post.",
+    "likeFailed": "Could not update the like.",
+    "commentsFailed": "Could not load or submit comments.",
+    "noComments": "No comments yet.",
+    "commentPlaceholder": "Write a comment...",
+    "sendComment": "Send",
+    "commentCreated": "Comment added.",
+    "postDetailsFailed": "Could not load this post.",
+    "loadFailed": "Could not load community posts.",
+    "likes": "likes",
+    "linkCopied": "Post link copied.",
+    "shareFailed": "Could not copy the post link.",
+    "backToCommunity": "Back to community",
+    "communityPosts": "Community posts",
+    "communityPostsDescription": "Browse posts stored in the community database. Posting and liking require an account."
   },
   "deals": {
     "limitedTime": "Limited Time Offers",
@@ -310,7 +359,10 @@
     "hours": "h",
     "minutes": "m",
     "seconds": "s",
-    "activePromotions": "Active Promotions"
+    "activePromotions": "Active Promotions",
+    "databasePromotions": "Live promotions from the catalog",
+    "noActivePromotions": "There are no active promotions right now.",
+    "promotionEnds": "Ends {date}"
   },
   "faq": {
     "title": "How Can We",
@@ -428,9 +480,9 @@
   },
   "login": {
     "title": "Welcome Back",
-    "subtitle": "Enter your credentials or use",
-    "emailLabel": "Email Address",
-    "emailPlaceholder": "player@nexus.com",
+    "subtitle": "Enter your credentials to continue.",
+    "usernameLabel": "Username",
+    "usernamePlaceholder": "Enter your username",
     "passwordLabel": "Password",
     "forgotPassword": "Forgot Password?",
     "passwordPlaceholder": "Enter your password",
@@ -520,7 +572,8 @@
     "avatarUrl": "Avatar Image URL",
     "bannerUrl": "Profile Banner URL",
     "saveChanges": "Save Changes",
-    "updateSuccess": "Profile updated successfully!"
+    "updateSuccess": "Profile updated successfully!",
+    "updateFailed": "Could not save your profile. Please try again."
   },
   "register": {
     "title": "Create Account",
@@ -536,8 +589,11 @@
     "alreadyMember": "Already a member?",
     "signInHere": "Sign In Here",
     "toastInvalidEmail": "Invalid email format! Please enter a valid email address.",
-    "toastShortPassword": "Password must be at least 6 characters long.",
-    "toastSuccess": "Account created successfully! Redirecting to login..."
+    "toastShortPassword": "Password must be at least 8 characters long.",
+    "toastSuccess": "Account created successfully! Redirecting to login...",
+    "emailInUse": "An account with this email already exists.",
+    "usernameInUse": "That username is already taken.",
+    "registrationFailed": "Could not create your account. Please try again."
   },
   "shop": {
     "titlePrefix": "Nexus",
@@ -589,15 +645,36 @@
     "messagePlaceholder": "Describe your issue in detail...",
     "sendTicket": "Submit Ticket",
     "sending": "Submitting...",
-    "ticketSuccess": "Your ticket has been submitted successfully! A tracking number will be emailed to you."
+    "ticketSuccess": "Your ticket was saved successfully.",
+    "ticketFailed": "Could not submit your ticket. Please try again.",
+    "ticketLoadFailed": "Could not load your tickets.",
+    "authRequired": "Sign in before submitting a support ticket.",
+    "myTickets": "My Support Tickets",
+    "noTickets": "You have not submitted any tickets yet.",
+    "ticketStatusOpen": "Open",
+    "ticketStatus": "Status",
+    "categories": {
+      "account": "Account & Security",
+      "payment": "Billing & Payments",
+      "tech": "Technical & Cloud Support",
+      "order": "Order Tracking",
+      "other": "Other"
+    },
+    "ticketStatuses": {
+      "open": "Open",
+      "inProgress": "In progress",
+      "closed": "Closed",
+      "unknown": "Unknown"
+    }
   },
   "tracking": {
     "titlePrefix": "Order",
     "titleHighlight": "Tracking",
-    "subtitle": "Enter your tracking ID or order number to check the real-time status of your physical hardware or digital key delivery.",
-    "inputPlaceholder": "Enter Order ID (e.g. VL-98421)...",
-    "trackBtn": "Track Shipment",
+    "subtitle": "Enter the ID of an order on your account to view its saved status and items.",
+    "inputPlaceholder": "Enter Order ID (e.g. VOID-123)...",
+    "trackBtn": "Track order",
     "trackingDetails": "Tracking Details",
+    "orderId": "Order ID",
     "status": "Order Status",
     "courier": "Courier Service",
     "estimatedDelivery": "Estimated Delivery",
@@ -609,7 +686,18 @@
       "delivered": "Delivered"
     },
     "notFound": "No order found with this ID. Please double-check your tracking number.",
-    "trackingError": "Please enter a valid order ID."
+    "trackingError": "Please enter a valid order ID.",
+    "loadFailed": "Could not load your orders.",
+    "orderTotal": "Order total",
+    "orderDate": "Order date",
+    "statusPending": "Pending",
+    "statusProcessing": "Processing",
+    "statusConfirmed": "Confirmed",
+    "statusShipped": "Shipped",
+    "statusDelivered": "Delivered",
+    "statusCancelled": "Cancelled",
+    "statusUnknown": "Status unavailable",
+    "accountRequired": "Sign in to track your orders."
   },
   "error": {
     "title": "System Anomaly Detected",

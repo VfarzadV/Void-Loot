@@ -31,11 +31,18 @@ import { toast } from "sonner";
 
 export default function ProfilePage() {
   const t = useTranslations("profile");
+  const tCommon = useTranslations("common");
   const [activeTab, setActiveTab] = useState("overview");
   const [isMounted, setIsMounted] = useState(false);
   const { items: wishlistItems, removeItem: removeWishlistItem } =
     useWishlistStore();
-  const { user, isAuthenticated, logout, updateProfile } = useAuthStore();
+  const {
+    user,
+    isAuthenticated,
+    isLoading: isAuthLoading,
+    logout,
+    updateProfile,
+  } = useAuthStore();
   const { addItem, activityLog } = useCartStore();
   const router = useRouter();
 
@@ -45,23 +52,23 @@ export default function ProfilePage() {
   }, []);
 
   useEffect(() => {
-    if (isMounted && !isAuthenticated) {
+    if (isMounted && !isAuthLoading && !isAuthenticated) {
       router.push("/login");
     }
-  }, [isAuthenticated, isMounted, router]);
+  }, [isAuthenticated, isAuthLoading, isMounted, router]);
   const { data: dbOrders = [], isLoading: isLoadingOrders } = useQuery({
-    queryKey: ["userOrders", user?.email],
+    queryKey: ["userOrders", user?.id],
     queryFn: async () => {
-      if (!user?.email) return [];
-      const res = await fetch(`/api/user/orders?email=${user.email}`);
+      if (!user?.id) return [];
+      const res = await fetch("/api/user/orders");
       if (!res.ok) throw new Error("Failed to fetch orders");
       const data = await res.json();
       return data.orders || [];
     },
-    enabled: !!user?.email,
+    enabled: !!user?.id,
   });
 
-  if (!isMounted || !user) {
+  if (!isMounted || isAuthLoading || !user) {
     return (
       <div className="w-full min-h-screen flex items-center justify-center">
         <div className="w-10 h-10 border-4 border-primary-500/20 border-t-primary-500 rounded-full animate-spin"></div>
@@ -76,16 +83,41 @@ export default function ProfilePage() {
     { id: "settings", label: t("tabs.settings"), icon: Settings },
   ];
 
-  const handleSaveProfile = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSaveProfile = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const formData = new FormData(e.currentTarget);
-    updateProfile({
-      name: formData.get("name") as string,
-      username: formData.get("username") as string,
-      avatar: formData.get("avatar") as string,
-      banner: formData.get("banner") as string,
-    });
-    toast.success(t("updateSuccess"));
+    try {
+      const response = await fetch("/api/user/profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: formData.get("name")?.toString() || "",
+          username: formData.get("username")?.toString() || "",
+          avatar: formData.get("avatar")?.toString() || "",
+          banner: formData.get("banner")?.toString() || "",
+        }),
+      });
+
+      if (!response.ok) throw new Error("Profile update request failed");
+      const result: { user: NonNullable<typeof user> } = await response.json();
+      updateProfile(result.user);
+      toast.success(t("updateSuccess"));
+    } catch (error) {
+      console.error("Profile update error:", error);
+      toast.error(t("updateFailed"));
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (!response.ok) throw new Error("Logout request failed");
+      logout();
+      router.push("/");
+    } catch (error) {
+      console.error("Logout request error:", error);
+      toast.error("Could not sign out. Please try again.");
+    }
   };
 
   return (
@@ -194,10 +226,7 @@ export default function ProfilePage() {
             })}
             <div className="w-full h-px bg-white/5 my-2"></div>
             <button
-              onClick={() => {
-                logout();
-                router.push("/");
-              }}
+              onClick={handleLogout}
               className="flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold text-base-400 hover:bg-rose-500/10 hover:text-rose-400 border border-transparent hover:border-rose-500/30"
             >
               <LogOut size={18} className="rtl:rotate-180" /> {t("signOut")}
@@ -399,7 +428,7 @@ export default function ProfilePage() {
                           </div>
                           <div className="flex items-center gap-4 md:justify-end">
                             <span
-                              className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${order.Status === "Processing" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"}`}
+                              className={`px-3 py-1 rounded-md text-[10px] font-black uppercase tracking-widest border ${order.Status === "Processing" || order.Status === "Pending" ? "bg-amber-500/10 text-amber-400 border-amber-500/20" : "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"}`}
                             >
                               {order.Status}
                             </span>
@@ -479,6 +508,9 @@ export default function ProfilePage() {
                               price: numericPrice,
                               image: item.image,
                             });
+                            toast.success(
+                              tCommon("addedToLoot", { item: item.title }),
+                            );
                             removeWishlistItem(item.id);
                           }}
                           className="grow flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl font-black text-xs text-white bg-primary-600 hover:bg-primary-500 shadow-[0_0_15px_rgba(170,79,255,0.2)] transition-all"
@@ -486,7 +518,14 @@ export default function ProfilePage() {
                           <ShoppingCart size={14} /> {t("moveToCart")}
                         </button>
                         <button
-                          onClick={() => removeWishlistItem(item.id)}
+                          onClick={() => {
+                            removeWishlistItem(item.id);
+                            toast.success(
+                              tCommon("removedFromWishlist", {
+                                item: item.title,
+                              }),
+                            );
+                          }}
                           className="p-2.5 rounded-xl bg-base-950 border border-white/5 text-base-500 hover:text-rose-400 hover:border-rose-500/30 transition-colors"
                           title={t("remove")}
                         >

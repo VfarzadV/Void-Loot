@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
@@ -14,25 +14,110 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
+import { useAuthStore } from "@/store/useAuthStore";
+
+interface SupportTicket {
+  id: number;
+  subject: string;
+  category: string;
+  status: string;
+  createdAt: string;
+}
+
+function getTicketCategoryKey(category: string) {
+  switch (category) {
+    case "account":
+    case "payment":
+    case "tech":
+    case "order":
+    case "other":
+      return category;
+    default:
+      return "other";
+  }
+}
+
+function getTicketStatusKey(status: string) {
+  switch (status.toLowerCase()) {
+    case "open":
+      return "open";
+    case "in progress":
+    case "in_progress":
+      return "inProgress";
+    case "closed":
+      return "closed";
+    default:
+      return "unknown";
+  }
+}
 
 export default function SupportPage() {
   const t = useTranslations("support");
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [tickets, setTickets] = useState<SupportTicket[]>([]);
   const [subject, setSubject] = useState("");
   const [category, setCategory] = useState("");
   const [message, setMessage] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    if (isAuthLoading || !isAuthenticated) return;
+
+    let active = true;
+    fetch("/api/user/support-tickets", { cache: "no-store" })
+      .then(async (response) => {
+        if (!response.ok) throw new Error("SUPPORT_TICKETS_FAILED");
+        return (await response.json()) as { tickets: SupportTicket[] };
+      })
+      .then((data) => {
+        if (active) setTickets(data.tickets);
+      })
+      .catch((error: unknown) => {
+        if (!active) return;
+        console.error("Load support tickets error:", error);
+        toast.error(t("ticketLoadFailed"));
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [isAuthLoading, isAuthenticated, t]);
+
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!isAuthenticated) {
+      toast.error(t("authRequired"));
+      return;
+    }
+
     setIsSubmitting(true);
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      toast.success(t("ticketSuccess"));
+    try {
+      const response = await fetch("/api/user/support-tickets", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ subject, category, message }),
+      });
+      const data = (await response.json()) as {
+        error?: string;
+        ticket?: SupportTicket;
+      };
+      if (!response.ok || !data.ticket) {
+        throw new Error(data.error || "SUPPORT_TICKET_FAILED");
+      }
+
+      const createdTicket = data.ticket;
+      setTickets((current) => [createdTicket, ...current]);
       setSubject("");
       setCategory("");
       setMessage("");
-    }, 1500);
+      toast.success(t("ticketSuccess"));
+    } catch (error) {
+      console.error("Submit support ticket error:", error);
+      toast.error(t("ticketFailed"));
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const CONTACT_METHODS = [
@@ -207,7 +292,7 @@ export default function SupportPage() {
             </div>
 
             <button
-              disabled={isSubmitting}
+              disabled={isSubmitting || isAuthLoading}
               type="submit"
               className="mt-2 group relative w-full sm:w-auto self-end flex justify-center items-center py-4 px-10 border border-transparent text-sm font-black rounded-xl text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all duration-300 disabled:opacity-70 disabled:hover:shadow-none"
             >
@@ -228,6 +313,37 @@ export default function SupportPage() {
           </form>
         </div>
       </div>
+      {isAuthenticated && (
+        <section className="mt-10 max-w-6xl mx-auto w-full">
+          <h2 className="text-xl font-black text-white mb-4">{t("myTickets")}</h2>
+          {tickets.length === 0 ? (
+            <p className="text-sm text-base-400">{t("noTickets")}</p>
+          ) : (
+            <div className="flex flex-col gap-3">
+              {tickets.map((ticket) => (
+                <article
+                  key={ticket.id}
+                  className="flex flex-wrap items-center justify-between gap-3 rounded-xl border border-white/5 bg-base-950/60 p-4"
+                >
+                  <div>
+                    <h3 className="font-bold text-white">{ticket.subject}</h3>
+                    <p className="mt-1 text-xs text-base-400">
+                      #                      {ticket.id} ·{" "}
+                      {t(`categories.${getTicketCategoryKey(ticket.category)}`)} ·{" "}
+                      {new Intl.DateTimeFormat(undefined, {
+                        dateStyle: "medium",
+                      }).format(new Date(ticket.createdAt))}
+                    </p>
+                  </div>
+                  <span className="rounded-lg border border-primary-500/20 bg-primary-500/10 px-3 py-1 text-xs font-bold text-primary-300">
+                    {t(`ticketStatuses.${getTicketStatusKey(ticket.status)}`)}
+                  </span>
+                </article>
+              ))}
+            </div>
+          )}
+        </section>
+      )}
     </div>
   );
 }

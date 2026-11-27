@@ -19,12 +19,16 @@ export interface ActivityLogItem {
 
 interface CartState {
   items: CartItem[];
+  ownerId: number | null;
   isOpen: boolean;
   activityLog: ActivityLogItem[];
   addItem: (item: Omit<CartItem, "quantity">) => void;
   removeItem: (id: number) => void;
   updateQuantity: (id: number, quantity: number) => void;
   clearCart: () => void;
+  hydrateAccountItems: (ownerId: number, items: CartItem[]) => void;
+  setAccountItems: (ownerId: number, items: CartItem[]) => void;
+  clearAccountData: () => void;
   toggleCart: () => void;
 }
 
@@ -32,6 +36,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set) => ({
       items: [],
+      ownerId: null,
       isOpen: false,
       activityLog: [],
 
@@ -52,7 +57,9 @@ export const useCartStore = create<CartState>()(
           if (existing) {
             return {
               items: state.items.map((i) =>
-                i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i,
+                i.id === item.id
+                  ? { ...i, quantity: Math.min(i.quantity + 1, 100) }
+                  : i,
               ),
               activityLog: [logEntry, ...state.activityLog].slice(0, 20),
             };
@@ -90,17 +97,28 @@ export const useCartStore = create<CartState>()(
           items:
             quantity <= 0
               ? state.items.filter((i) => i.id !== id)
-              : state.items.map((i) => (i.id === id ? { ...i, quantity } : i)),
+              : state.items.map((i) =>
+                  i.id === id
+                    ? { ...i, quantity: Math.min(quantity, 100) }
+                    : i,
+                ),
         })),
 
       clearCart: () => set({ items: [] }),
+      hydrateAccountItems: (ownerId, items) =>
+        set({ ownerId, items, activityLog: [] }),
+      setAccountItems: (ownerId, items) =>
+        set({ ownerId, items }),
+      clearAccountData: () =>
+        set({ ownerId: null, items: [], activityLog: [] }),
       toggleCart: () => set((state) => ({ isOpen: !state.isOpen })),
     }),
     {
       name: "void-cart-storage",
       partialize: (state) => ({
-        items: state.items,
-        activityLog: state.activityLog,
+        ownerId: state.ownerId,
+        items: state.ownerId === null ? state.items : [],
+        activityLog: state.ownerId === null ? state.activityLog : [],
       }),
     },
   ),

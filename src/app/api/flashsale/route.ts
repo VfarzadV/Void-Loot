@@ -1,22 +1,13 @@
 import { NextResponse } from "next/server";
-import { prisma } from "@/lib/prisma";
+import { getActivePromotions } from "@/lib/promotions";
 
 export async function GET() {
   try {
-    const products = await prisma.products.findMany({
-      take: 4,
-      orderBy: {
-        Price: "desc",
-      },
-    });
-
-    return NextResponse.json(products);
+    return NextResponse.json(await getActivePromotions());
   } catch (error) {
-    const errorMessage =
-      error instanceof Error ? error.message : "خطای دیتابیس";
-
+    console.error("Fetch active promotions error:", error);
     return NextResponse.json(
-      { error: "Failed to fetch flash sale", details: errorMessage },
+      { error: "PROMOTIONS_FAILED" },
       { status: 500 },
     );
   }

@@ -16,7 +16,6 @@ import {
   Loader2,
 } from "lucide-react";
 import { toast } from "sonner";
-import { useAuthStore } from "@/store/useAuthStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -24,15 +23,14 @@ import * as z from "zod";
 export default function RegisterPage() {
   const t = useTranslations("register");
   const router = useRouter();
-  const registerAccount = useAuthStore((state) => state.registerAccount);
 
   const [showPassword, setShowPassword] = useState(false);
   const [isRegistering, setIsRegistering] = useState(false);
 
   const registerSchema = z.object({
-    username: z.string().min(3, "Minimum 3 characters required"),
+    username: z.string().min(3, "Minimum 3 characters required").max(50),
     email: z.string().email(t("toastInvalidEmail")),
-    password: z.string().min(6, t("toastShortPassword")),
+    password: z.string().min(8, t("toastShortPassword")).max(128),
   });
 
   type RegisterFormValues = z.infer<typeof registerSchema>;
@@ -45,21 +43,38 @@ export default function RegisterPage() {
     resolver: zodResolver(registerSchema),
   });
 
-  const onSubmit = (data: RegisterFormValues) => {
+  const onSubmit = async (data: RegisterFormValues) => {
     setIsRegistering(true);
-    setTimeout(() => {
-      registerAccount({
-        name: data.username,
-        username: data.username,
-        email: data.email,
-        password: data.password,
-        avatar: `https://api.dicebear.com/7.x/avataaars/svg?seed=${data.username}`,
-        level: 1,
+
+    try {
+      const response = await fetch("/api/auth/register", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
       });
-      setIsRegistering(false);
+
+      if (response.status === 409) {
+        const result: { code?: string } = await response.json();
+        toast.error(
+          result.code === "USERNAME_IN_USE"
+            ? t("usernameInUse")
+            : t("emailInUse"),
+        );
+        return;
+      }
+      if (!response.ok) {
+        toast.error(t("registrationFailed"));
+        return;
+      }
+
       toast.success(t("toastSuccess"));
       router.push("/login");
-    }, 1500);
+    } catch (error) {
+      console.error("Registration request error:", error);
+      toast.error(t("registrationFailed"));
+    } finally {
+      setIsRegistering(false);
+    }
   };
 
   return (
@@ -115,6 +130,7 @@ export default function RegisterPage() {
                 <input
                   id="register-username"
                   type="text"
+                  autoComplete="username"
                   placeholder={t("usernamePlaceholder")}
                   {...register("username")}
                   className={`w-full bg-base-900/50 border rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:bg-base-900 transition-all outline-none ${
@@ -145,7 +161,8 @@ export default function RegisterPage() {
                 />
                 <input
                   id="register-email"
-                  type="text"
+                  type="email"
+                  autoComplete="email"
                   placeholder={t("emailPlaceholder")}
                   {...register("email")}
                   className={`w-full bg-base-900/50 border rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:bg-base-900 transition-all outline-none ${

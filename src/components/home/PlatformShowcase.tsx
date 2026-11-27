@@ -11,6 +11,7 @@ import {
 } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 import WishlistButton from "../cart/WishlistButton";
 
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -50,6 +51,7 @@ export default function PlatformShowcase({
   const addItem = useCartStore((state) => state.addItem);
   const IconComponent = icon === "playstation" ? Gamepad : Monitor;
   const t = useTranslations("home.showcase");
+  const tCommon = useTranslations("common");
 
   const { data: games = [], isLoading } = useQuery({
     queryKey: ["platformGames", platformId],
@@ -166,6 +168,7 @@ export default function PlatformShowcase({
                             price: parseFloat(mockPrice),
                             image: gameImage,
                           });
+                          toast.success(tCommon("addedToLoot", { item: gameTitle }));
                         }}
                         className="whitespace-nowrap rounded-lg bg-primary-600 px-2 py-1.5 text-[10px] font-bold text-white shadow-[0_2px_10px_rgba(168,85,247,0.22)] transition-all hover:bg-primary-500 hover:shadow-[0_3px_14px_rgba(168,85,247,0.35)] sm:px-3 sm:py-2 sm:text-xs"
                       >

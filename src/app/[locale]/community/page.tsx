@@ -1,109 +1,221 @@
 "use client";
 
-import { useState } from "react";
+import { FormEvent, useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import {
-  Flame,
+  Hash,
+  Loader2,
+  MessageCircle,
   Plus,
   Search,
-  ThumbsUp,
-  MessageCircle,
   Share2,
+  ThumbsUp,
   Users,
-  Hash,
-  Award,
+  X,
 } from "lucide-react";
+import { toast } from "sonner";
+import { useAuthStore } from "@/store/useAuthStore";
 
-interface Post {
+interface CommunityPost {
   id: number;
   author: string;
   avatar: string;
-  role: string;
-  time: string;
+  createdAt: string;
   title: string;
   content: string;
   category: string;
   tags: string[];
-  upvotes: number;
-  comments: number;
-  hot: boolean;
+  likes: number;
+  commentsCount: number;
+  likedByMe: boolean;
 }
 
-const MOCK_POSTS: Post[] = [
-  {
-    id: 1,
-    author: "NeonNinja",
-    avatar: "https://i.pravatar.cc/150?u=neon",
-    role: "Void Knight",
-    time: "2 hours ago",
-    title: "RTX 5090 Leaked Specs - Is it worth the upgrade?",
-    content:
-      "Just saw the latest leaks regarding the power draw on the new 50-series cards. Are we really going to need 1200W PSUs just to run this thing? Let me know your thoughts.",
-    category: "hardware",
-    tags: ["#GPU", "#NVIDIA", "#PCBuild"],
-    upvotes: 342,
-    comments: 89,
-    hot: true,
-  },
-  {
-    id: 2,
-    author: "ShadowHunter99",
-    avatar: "https://i.pravatar.cc/150?u=farzad",
-    role: "Premium Member",
-    time: "5 hours ago",
-    title: "LFG: Cyberpunk Co-op Mod - Need 2 more players",
-    content:
-      "Running the new multiplayer mod on a private server. We need a netrunner and a solo. Mic required. Drop your discord tags below!",
-    category: "lfg",
-    tags: ["#Cyberpunk", "#Coop", "#LFG"],
-    upvotes: 45,
-    comments: 12,
-    hot: false,
-  },
-  {
-    id: 3,
-    author: "PixelQueen",
-    avatar: "https://i.pravatar.cc/150?u=pixel",
-    role: "Moderator",
-    time: "1 day ago",
-    title: "Official Void Loot Community Guidelines",
-    content:
-      "Welcome to the Void! Please read these rules before posting. 1. Be respectful. 2. No piracy links. 3. Use proper flairs for your posts...",
-    category: "announcements",
-    tags: ["#Rules", "#Welcome"],
-    upvotes: 1205,
-    comments: 42,
-    hot: true,
-  },
-];
+interface PostsResponse {
+  posts?: CommunityPost[];
+  post?: CommunityPost;
+  error?: string;
+}
+
+const categoryIds = [
+  "announcements",
+  "hardware",
+  "lfg",
+  "gamereviews",
+  "support",
+] as const;
+
+function getCategoryTranslationKey(category: string) {
+  switch (category) {
+    case "announcements":
+    case "hardware":
+    case "lfg":
+    case "support":
+      return category;
+    case "gamereviews":
+      return "gameReviews";
+    default:
+      return "allTopics";
+  }
+}
 
 export default function CommunityPage() {
   const t = useTranslations("community");
+  const locale = useLocale();
+  const { isAuthenticated, isLoading: isAuthLoading } = useAuthStore();
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [posts, setPosts] = useState<CommunityPost[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [loadFailed, setLoadFailed] = useState(false);
+  const [isComposerOpen, setIsComposerOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [likingPostId, setLikingPostId] = useState<number | null>(null);
+  const [title, setTitle] = useState("");
+  const [content, setContent] = useState("");
+  const [category, setCategory] =
+    useState<(typeof categoryIds)[number]>("hardware");
+  const [tags, setTags] = useState("");
 
-  const CATEGORIES = [
+  const categories = [
     { id: "all", label: t("allTopics") },
-    { id: "announcements", label: t("announcements") },
-    { id: "hardware", label: t("hardware") },
-    { id: "lfg", label: t("lfg") },
-    { id: "gamereviews", label: t("gameReviews") },
-    { id: "support", label: t("support") },
+    ...categoryIds.map((id) => ({
+      id,
+      label: t(getCategoryTranslationKey(id)),
+    })),
   ];
 
-  const filteredPosts = MOCK_POSTS.filter((post) => {
-    const matchesCategory =
-      activeCategory === "all" ||
-      post.category.toLowerCase() === activeCategory;
+  useEffect(() => {
+    const controller = new AbortController();
+    const timer = setTimeout(async () => {
+      setIsLoading(true);
+      setLoadFailed(false);
+      const params = new URLSearchParams();
+      if (activeCategory !== "all") params.set("category", activeCategory);
+      if (searchQuery.trim()) params.set("search", searchQuery.trim());
 
-    const matchesSearch =
-      post.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      post.content.toLowerCase().includes(searchQuery.toLowerCase());
+      try {
+        const response = await fetch(`/api/community/posts?${params}`, {
+          cache: "no-store",
+          signal: controller.signal,
+        });
+        const data = (await response.json()) as PostsResponse;
+        if (!response.ok || !data.posts) {
+          throw new Error(data.error || "COMMUNITY_POSTS_FAILED");
+        }
+        setPosts(data.posts);
+      } catch (error) {
+        if (controller.signal.aborted) return;
+        console.error("Load community posts error:", error);
+        setLoadFailed(true);
+      } finally {
+        if (!controller.signal.aborted) setIsLoading(false);
+      }
+    }, 200);
 
-    return matchesCategory && matchesSearch;
-  });
+    return () => {
+      clearTimeout(timer);
+      controller.abort();
+    };
+  }, [activeCategory, searchQuery]);
+
+  const handleCreatePost = async (event: FormEvent) => {
+    event.preventDefault();
+    if (!isAuthenticated) {
+      toast.error(t("signInToPost"));
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      const response = await fetch("/api/community/posts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          title,
+          content,
+          category,
+          tags: tags
+            .split(",")
+            .map((tag) => tag.trim())
+            .filter(Boolean),
+        }),
+      });
+      const data = (await response.json()) as PostsResponse;
+      if (!response.ok || !data.post) {
+        throw new Error(data.error || "COMMUNITY_POST_FAILED");
+      }
+      const createdPost = data.post;
+
+      if (activeCategory === "all" || activeCategory === createdPost.category) {
+        setPosts((current) => [createdPost, ...current]);
+      }
+      setTitle("");
+      setContent("");
+      setTags("");
+      setIsComposerOpen(false);
+      toast.success(t("postCreated"));
+    } catch (error) {
+      console.error("Create community post error:", error);
+      toast.error(t("postCreateFailed"));
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleLike = async (post: CommunityPost) => {
+    if (!isAuthenticated) {
+      toast.error(t("signInToPost"));
+      return;
+    }
+
+    setLikingPostId(post.id);
+    try {
+      const response = await fetch("/api/community/likes", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId: post.id }),
+      });
+      const data = (await response.json()) as {
+        liked?: boolean;
+        likes?: number;
+        error?: string;
+      };
+      if (!response.ok || typeof data.liked !== "boolean") {
+        throw new Error(data.error || "COMMUNITY_LIKE_FAILED");
+      }
+      const liked = data.liked;
+      setPosts((current) =>
+        current.map((item) =>
+          item.id === post.id
+            ? {
+                ...item,
+                likedByMe: liked,
+                likes: data.likes ?? item.likes,
+              }
+            : item,
+        ),
+      );
+    } catch (error) {
+      console.error("Like community post error:", error);
+      toast.error(t("likeFailed"));
+    } finally {
+      setLikingPostId(null);
+    }
+  };
+
+  const handleShare = async (postId: number) => {
+    try {
+      await navigator.clipboard.writeText(
+        `${window.location.origin}/${locale}/community/post/${postId}`,
+      );
+      toast.success(t("linkCopied"));
+    } catch (error) {
+      console.error("Copy community post link error:", error);
+      toast.error(t("shareFailed"));
+    }
+  };
 
   return (
     <div className="w-full flex flex-col pb-20 px-6 lg:px-12 pt-10 max-w-[1600px] mx-auto overflow-hidden">
@@ -114,19 +226,23 @@ export default function CommunityPage() {
               <Users size={24} className="text-primary-400" />
             </div>
             <h1 className="text-4xl md:text-5xl font-black text-white tracking-tight">
-              Void{" "}
-              <span className="text-primary-500">
-                {t("title").replace("Void ", "")}
-              </span>
+              Void <span className="text-primary-500">{t("title").replace("Void ", "")}</span>
             </h1>
           </div>
-          <p className="text-sm text-base-400 max-w-2xl mt-2">
-            {t("subtitle")}
-          </p>
+          <p className="text-sm text-base-400 max-w-2xl mt-2">{t("subtitle")}</p>
         </div>
         <button
           type="button"
-          className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] hover:shadow-[0_0_30px_rgba(170,79,255,0.5)] transition-all shrink-0"
+          onClick={() => {
+            if (isAuthLoading) return;
+            if (!isAuthenticated) {
+              toast.error(t("signInToPost"));
+              return;
+            }
+            setIsComposerOpen(true);
+          }}
+          disabled={isAuthLoading}
+          className="flex items-center justify-center gap-2 px-6 py-3.5 rounded-xl font-black text-sm text-white bg-linear-to-r from-primary-600 to-primary-500 hover:from-primary-500 hover:to-primary-400 shadow-[0_0_20px_rgba(170,79,255,0.3)] transition-all shrink-0 disabled:opacity-60"
         >
           <Plus size={18} /> {t("createPost")}
         </button>
@@ -140,26 +256,27 @@ export default function CommunityPage() {
               className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
             />
             <input
-              aria-label="Search community posts"
-              type="text"
+              aria-label={t("searchPlaceholder")}
+              type="search"
               value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
+              onChange={(event) => setSearchQuery(event.target.value)}
               placeholder={t("searchPlaceholder")}
               className="w-full bg-base-950 border border-base-800 rounded-xl py-3 ps-11 pe-4 text-sm text-white focus:outline-none focus:border-primary-500 transition-colors shadow-[inset_0_2px_10px_rgba(0,0,0,0.2)]"
             />
           </div>
 
           <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-4 flex flex-col gap-2">
-            <h3 className="text-xs font-black text-base-500 uppercase tracking-widest ps-2 mb-2">
+            <h2 className="text-xs font-black text-base-500 uppercase tracking-widest ps-2 mb-2">
               {t("spaces")}
-            </h3>
-            {CATEGORIES.map((cat) => (
+            </h2>
+            {categories.map((item) => (
               <button
-                key={cat.id}
-                onClick={() => setActiveCategory(cat.id)}
-                aria-pressed={activeCategory === cat.id}
+                key={item.id}
+                type="button"
+                onClick={() => setActiveCategory(item.id)}
+                aria-pressed={activeCategory === item.id}
                 className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl transition-all duration-300 text-sm font-bold ${
-                  activeCategory === cat.id
+                  activeCategory === item.id
                     ? "bg-primary-500/10 text-primary-400 border border-primary-500/30 shadow-[inset_0_0_15px_rgba(170,79,255,0.1)]"
                     : "text-base-400 hover:bg-base-900 hover:text-white border border-transparent"
                 }`}
@@ -167,85 +284,61 @@ export default function CommunityPage() {
                 <Hash
                   size={16}
                   className={
-                    activeCategory === cat.id
+                    activeCategory === item.id
                       ? "text-primary-400"
                       : "text-base-600"
                   }
                 />
-                {cat.label}
+                {item.label}
               </button>
             ))}
           </div>
         </aside>
 
-        <div className="lg:col-span-6 flex flex-col gap-6">
-          <div className="flex items-center justify-between bg-base-950/40 p-4 rounded-2xl border border-white/5">
-            <div className="flex gap-2">
-              <button
-                type="button"
-                aria-pressed="true"
-                className="px-4 py-2 rounded-lg bg-base-900 text-white text-xs font-bold border border-white/10 flex items-center gap-2"
-              >
-                <Flame size={14} className="text-orange-500" /> {t("hot")}
-              </button>
-              <button
-                type="button"
-                aria-pressed="false"
-                className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors"
-              >
-                {t("new")}
-              </button>
-              <button
-                type="button"
-                aria-pressed="false"
-                className="px-4 py-2 rounded-lg text-base-400 hover:bg-base-900 hover:text-white text-xs font-bold transition-colors"
-              >
-                {t("top")}
-              </button>
+        <section className="lg:col-span-6 flex flex-col gap-6" aria-live="polite">
+          {isLoading ? (
+            <div className="flex justify-center py-20 text-primary-400">
+              <Loader2 className="animate-spin" size={28} />
             </div>
-          </div>
-
-          {filteredPosts.length === 0 ? (
+          ) : loadFailed ? (
+            <p className="text-center py-20 text-rose-300">{t("loadFailed")}</p>
+          ) : posts.length === 0 ? (
             <div className="text-center py-20 text-base-400 font-bold glass-panel bg-base-950/40 rounded-2xl border-white/5">
               {t("noPostsFound")}
             </div>
           ) : (
-            filteredPosts.map((post) => (
-              <div
+            posts.map((post) => (
+              <article
                 key={post.id}
                 className="glass-panel bg-base-950/80 rounded-2xl border border-white/5 p-5 md:p-6 transition-all hover:border-white/10 hover:shadow-[0_10px_30px_rgba(0,0,0,0.5)]"
               >
                 <div className="flex items-center gap-3 mb-4">
                   <Image
                     src={post.avatar}
-                    alt={post.author}
+                    alt=""
                     width={40}
                     height={40}
+                    unoptimized
                     className="rounded-full border border-white/10"
                   />
                   <div className="flex flex-col">
-                    <div className="flex items-center gap-2">
-                      <span className="text-sm font-bold text-white">
-                        {post.author}
-                      </span>
-                      {post.role === "Moderator" && (
-                        <span className="text-[9px] bg-primary-600 text-white px-1.5 py-0.5 rounded uppercase tracking-wider font-black">
-                          MOD
-                        </span>
-                      )}
-                    </div>
+                    <span className="text-sm font-bold text-white">{post.author}</span>
                     <span className="text-xs text-base-500 flex items-center gap-2">
-                      {post.time}{" "}
-                      <span className="w-1 h-1 bg-base-700 rounded-full"></span>{" "}
-                      {post.category.toUpperCase()}
+                      {new Intl.DateTimeFormat(locale, {
+                        dateStyle: "medium",
+                      }).format(new Date(post.createdAt))}
+                      <span className="w-1 h-1 bg-base-700 rounded-full" />
+                      {t(
+                        getCategoryTranslationKey(post.category),
+                      )}
                     </span>
                   </div>
                 </div>
                 <Link href={`/community/post/${post.id}`}>
-                  <h3 className="text-xl font-bold text-white mb-2 hover:text-primary-400 transition-colors">
+                  <h2 className="text-xl font-bold text-white mb-2 hover:text-primary-400 transition-colors">
                     {post.title}
-                  </h3>
-                  <p className="text-sm text-base-300 leading-relaxed line-clamp-3 mb-4">
+                  </h2>
+                  <p className="text-sm text-base-300 leading-relaxed line-clamp-3 mb-4 whitespace-pre-line">
                     {post.content}
                   </p>
                 </Link>
@@ -255,85 +348,160 @@ export default function CommunityPage() {
                       key={tag}
                       className="text-xs font-medium text-primary-400 bg-primary-900/20 px-2 py-1 rounded-md border border-primary-500/20"
                     >
-                      {tag}
+                      #{tag}
                     </span>
                   ))}
                 </div>
                 <div className="flex items-center gap-4 pt-4 border-t border-white/5">
                   <button
                     type="button"
-                    aria-label={`Like ${post.title}; ${post.upvotes} likes`}
-                    className="flex items-center gap-1.5 text-base-400 hover:text-primary-400 transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-primary-500/30"
+                    onClick={() => void handleLike(post)}
+                    disabled={likingPostId === post.id}
+                    aria-pressed={post.likedByMe}
+                    aria-label={`${post.title}: ${post.likes} ${t("likes")}`}
+                    className={`flex items-center gap-1.5 transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border ${
+                      post.likedByMe
+                        ? "text-primary-400 border-primary-500/30"
+                        : "text-base-400 border-transparent hover:text-primary-400"
+                    }`}
                   >
-                    <ThumbsUp size={16} aria-hidden="true" /> {post.upvotes}
+                    <ThumbsUp size={16} aria-hidden="true" /> {post.likes}
                   </button>
+                  <Link
+                    href={`/community/post/${post.id}#comments`}
+                    className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold"
+                  >
+                    <MessageCircle size={16} /> {post.commentsCount}{" "}
+                    {t("comments")}
+                  </Link>
                   <button
                     type="button"
-                    className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold bg-base-900/50 px-3 py-1.5 rounded-lg border border-transparent hover:border-white/10"
-                  >
-                    <MessageCircle size={16} /> {post.comments} {t("comments")}
-                  </button>
-                  <button
-                    type="button"
+                    onClick={() => void handleShare(post.id)}
                     className="flex items-center gap-1.5 text-base-400 hover:text-white transition-colors text-xs font-bold ms-auto"
                   >
                     <Share2 size={16} /> {t("share")}
                   </button>
                 </div>
-              </div>
+              </article>
             ))
           )}
-        </div>
+        </section>
 
-        <aside className="lg:col-span-3 flex flex-col gap-6">
+        <aside className="lg:col-span-3">
           <div className="glass-panel bg-base-950/60 rounded-3xl border border-white/5 p-6">
-            <h3 className="text-sm font-black text-white flex items-center gap-2 border-b border-white/5 pb-3 mb-4">
-              <Award size={18} className="text-yellow-500" />{" "}
-              {t("topContributors")}
-            </h3>
-            <div className="flex flex-col gap-4">
-              {[
-                {
-                  name: "NeonNinja",
-                  pts: "12.4k",
-                  avatar: "https://i.pravatar.cc/150?u=neon",
-                },
-                {
-                  name: "PixelQueen",
-                  pts: "9.2k",
-                  avatar: "https://i.pravatar.cc/150?u=pixel",
-                },
-                {
-                  name: "GhostRider",
-                  pts: "8.1k",
-                  avatar: "https://i.pravatar.cc/150?u=ghost",
-                },
-              ].map((user, idx) => (
-                <div key={idx} className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <span className="text-xs font-black text-base-500 w-3">
-                      {idx + 1}
-                    </span>
-                    <Image
-                      src={user.avatar}
-                      alt={user.name}
-                      width={32}
-                      height={32}
-                      className="rounded-full"
-                    />
-                    <span className="text-sm font-bold text-white">
-                      {user.name}
-                    </span>
-                  </div>
-                  <span className="text-[10px] font-black text-yellow-500 bg-yellow-500/10 px-2 py-1 rounded border border-yellow-500/20">
-                    {user.pts}
-                  </span>
-                </div>
-              ))}
-            </div>
+            <h2 className="text-sm font-black text-white flex items-center gap-2 border-b border-white/5 pb-3 mb-4">
+              <Users size={18} className="text-primary-500" /> {t("communityPosts")}
+            </h2>
+            <p className="text-sm text-base-400 leading-relaxed">
+              {t("communityPostsDescription")}
+            </p>
           </div>
         </aside>
       </div>
+
+      {isComposerOpen && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4 backdrop-blur-sm"
+          role="presentation"
+          onMouseDown={(event) => {
+            if (event.target === event.currentTarget) setIsComposerOpen(false);
+          }}
+        >
+          <form
+            onSubmit={handleCreatePost}
+            className="w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl border border-white/10 bg-base-950 p-6 md:p-8 shadow-2xl"
+            aria-labelledby="community-post-title"
+          >
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <h2 id="community-post-title" className="text-xl font-black text-white">
+                {t("createPostTitle")}
+              </h2>
+              <button
+                type="button"
+                aria-label={t("cancel")}
+                onClick={() => setIsComposerOpen(false)}
+                className="text-base-400 hover:text-white"
+              >
+                <X size={20} />
+              </button>
+            </div>
+            <div className="flex flex-col gap-5">
+              <label className="flex flex-col gap-2 text-sm font-bold text-base-300">
+                {t("postTitle")}
+                <input
+                  required
+                  minLength={3}
+                  maxLength={200}
+                  value={title}
+                  onChange={(event) => setTitle(event.target.value)}
+                  placeholder={t("postTitlePlaceholder")}
+                  className="rounded-xl border border-base-800 bg-base-900 px-4 py-3 text-white outline-none focus:border-primary-500"
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-bold text-base-300">
+                {t("postCategory")}
+                <select
+                  value={category}
+                  onChange={(event) => {
+                    const selected = categoryIds.find(
+                      (id) => id === event.target.value,
+                    );
+                    if (selected) setCategory(selected);
+                  }}
+                  className="rounded-xl border border-base-800 bg-base-900 px-4 py-3 text-white outline-none focus:border-primary-500"
+                >
+                  {categoryIds.map((id) => (
+                    <option key={id} value={id}>
+                      {t(
+                        getCategoryTranslationKey(id),
+                      )}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-bold text-base-300">
+                {t("postContent")}
+                <textarea
+                  required
+                  minLength={10}
+                  maxLength={10000}
+                  rows={7}
+                  value={content}
+                  onChange={(event) => setContent(event.target.value)}
+                  placeholder={t("postContentPlaceholder")}
+                  className="resize-y rounded-xl border border-base-800 bg-base-900 px-4 py-3 text-white outline-none focus:border-primary-500"
+                />
+              </label>
+              <label className="flex flex-col gap-2 text-sm font-bold text-base-300">
+                {t("postTags")}
+                <input
+                  value={tags}
+                  onChange={(event) => setTags(event.target.value)}
+                  placeholder={t("postTagsPlaceholder")}
+                  className="rounded-xl border border-base-800 bg-base-900 px-4 py-3 text-white outline-none focus:border-primary-500"
+                />
+              </label>
+              <div className="flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => setIsComposerOpen(false)}
+                  className="rounded-xl border border-white/10 px-5 py-3 text-sm font-bold text-base-300 hover:text-white"
+                >
+                  {t("cancel")}
+                </button>
+                <button
+                  type="submit"
+                  disabled={isSubmitting}
+                  className="flex items-center gap-2 rounded-xl bg-primary-600 px-5 py-3 text-sm font-black text-white hover:bg-primary-500 disabled:opacity-60"
+                >
+                  {isSubmitting && <Loader2 size={16} className="animate-spin" />}
+                  {t("publishPost")}
+                </button>
+              </div>
+            </div>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

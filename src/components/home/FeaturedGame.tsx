@@ -130,6 +130,12 @@ export default function FeaturedGame() {
                   price: salePrice,
                   image: imageUrl,
                 });
+                toast.success(
+                  tCommon(
+                    isWishlisted ? "removedFromWishlist" : "addedToWishlist",
+                    { item: game.Title },
+                  ),
+                );
               }}
               aria-pressed={isWishlisted}
               className={`group flex items-center gap-3 bg-base-900/50 hover:bg-base-800/80 border border-base-700/50 px-6 py-3 rounded-xl font-bold transition-all duration-300 backdrop-blur-md ${

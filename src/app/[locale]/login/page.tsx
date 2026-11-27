@@ -6,7 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useTranslations } from "next-intl";
 import {
-  Mail,
+  User as UserIcon,
   Lock,
   Eye,
   EyeOff,
@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useAuthStore } from "@/store/useAuthStore";
+import type { User as AuthUser } from "@/store/useAuthStore";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
@@ -23,12 +24,12 @@ import * as z from "zod";
 export default function LoginPage() {
   const t = useTranslations("login");
   const router = useRouter();
-  const { login, registeredAccount } = useAuthStore();
+  const login = useAuthStore((state) => state.login);
   const [showPassword, setShowPassword] = useState(false);
   const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const loginSchema = z.object({
-    email: z.string().email(t("accessDenied")),
+    username: z.string().trim().min(1, t("accessDenied")).max(50),
     password: z.string().min(1, t("accessDenied")),
   });
 
@@ -42,31 +43,37 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
   });
 
-  const onSubmit = (data: LoginFormValues) => {
+  const onSubmit = async (data: LoginFormValues) => {
     setIsLoggingIn(true);
-    setTimeout(() => {
-      setIsLoggingIn(false);
-      if (
-        registeredAccount &&
-        data.email === registeredAccount.email &&
-        data.password === registeredAccount.password
-      ) {
-        login(registeredAccount);
-        toast.success(
-          t("welcomeUser", { username: registeredAccount.username }),
-        );
-        router.push("/");
-      } else if (
-        data.email === "demo@voidloot.com" &&
-        data.password === "demo1234"
-      ) {
-        login();
-        toast.success(t("demoSuccess"));
-        router.push("/");
-      } else {
+    try {
+      const response = await fetch("/api/auth/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(data),
+      });
+
+      if (!response.ok) {
         toast.error(t("accessDenied"));
+        return;
       }
-    }, 1500);
+
+      const result: { user: AuthUser } = await response.json();
+      login(result.user);
+      toast.success(t("welcomeUser", { username: result.user.username }));
+      const redirect = new URLSearchParams(window.location.search).get(
+        "redirect",
+      );
+      const destination =
+        redirect === "/en/checkout" || redirect === "/fa/checkout"
+          ? redirect
+          : "/";
+      router.push(destination);
+    } catch (error) {
+      console.error("Login request error:", error);
+      toast.error(t("accessDenied"));
+    } finally {
+      setIsLoggingIn(false);
+    }
   };
 
   return (
@@ -100,11 +107,7 @@ export default function LoginPage() {
             <h1 className="text-2xl font-black text-white mb-2 tracking-tight">
               {t("title")}
             </h1>
-            <p className="text-sm text-base-400">
-              {t("subtitle")}{" "}
-              <strong className="text-white">demo@voidloot.com</strong> (Pass:
-              demo1234)
-            </p>
+            <p className="text-sm text-base-400">{t("subtitle")}</p>
           </div>
 
           <form
@@ -113,31 +116,32 @@ export default function LoginPage() {
           >
             <div className="flex flex-col gap-1.5">
               <label
-                htmlFor="login-email"
+                htmlFor="login-username"
                 className="text-xs font-bold text-base-300 uppercase tracking-wider ms-1"
               >
-                {t("emailLabel")}
+                {t("usernameLabel")}
               </label>
               <div className="relative group">
-                <Mail
+                <UserIcon
                   size={18}
                   className="absolute inset-s-4 top-1/2 -translate-y-1/2 text-base-500 group-focus-within:text-primary-400 transition-colors"
                 />
                 <input
-                  id="login-email"
+                  id="login-username"
                   type="text"
-                  placeholder={t("emailPlaceholder")}
-                  {...register("email")}
+                  autoComplete="username"
+                  placeholder={t("usernamePlaceholder")}
+                  {...register("username")}
                   className={`w-full bg-base-900/50 border rounded-xl py-3.5 ps-11 pe-4 text-sm text-white focus:bg-base-900 transition-all outline-none ${
-                    errors.email
+                    errors.username
                       ? "border-rose-500 focus:border-rose-500"
                       : "border-base-800 focus:border-primary-500"
                   }`}
                 />
               </div>
-              {errors.email && (
+              {errors.username && (
                 <span className="text-rose-500 text-[10px] ms-1">
-                  {errors.email.message}
+                  {errors.username.message}
                 </span>
               )}
             </div>

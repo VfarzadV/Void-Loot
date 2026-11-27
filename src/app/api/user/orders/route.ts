@@ -1,28 +1,32 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
+import { getAuthenticatedUser } from "@/lib/auth";
 
 export async function GET(request: Request) {
   try {
-    const { searchParams } = new URL(request.url);
-    const email = searchParams.get("email");
-
-    if (!email) {
+    const user = await getAuthenticatedUser();
+    if (!user) {
       return NextResponse.json(
-        { error: "ایمیل ارسال نشده است" },
-        { status: 400 },
+        { error: "Authentication required" },
+        { status: 401 },
       );
     }
 
-    const user = await prisma.users.findFirst({
-      where: { Email: email },
-    });
-
-    if (!user) {
-      return NextResponse.json({ success: true, orders: [] });
+    const url = new URL(request.url);
+    const orderIdValue = url.searchParams.get("orderId");
+    const orderId = orderIdValue ? Number(orderIdValue) : null;
+    if (
+      orderIdValue &&
+      (orderId === null || !Number.isInteger(orderId) || orderId < 1)
+    ) {
+      return NextResponse.json({ error: "INVALID_ORDER_ID" }, { status: 400 });
     }
 
     const userOrders = await prisma.orders.findMany({
-      where: { UserID: user.UserID },
+      where: {
+        UserID: user.id,
+        ...(orderId ? { OrderID: orderId } : {}),
+      },
       orderBy: { OrderID: "desc" },
       include: {
         OrderItems: {

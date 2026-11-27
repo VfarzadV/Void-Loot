@@ -5,7 +5,7 @@ describe("Auth Store Unit Tests", () => {
     useAuthStore.setState({
       user: null,
       isAuthenticated: false,
-      registeredAccount: null,
+      isLoading: false,
     });
   });
 
@@ -19,6 +19,7 @@ describe("Auth Store Unit Tests", () => {
     const { login } = useAuthStore.getState();
 
     login({
+      id: 1,
       name: "Farzad",
       username: "ShadowHunter99",
       email: "demo@voidloot.com",
@@ -35,6 +36,7 @@ describe("Auth Store Unit Tests", () => {
   it("باید بتواند کاربر را خارج کند", () => {
     const { login, logout } = useAuthStore.getState();
     login({
+      id: 1,
       name: "Farzad",
       username: "ShadowHunter99",
       email: "demo@voidloot.com",
@@ -52,6 +54,7 @@ describe("Auth Store Unit Tests", () => {
   it("باید بتواند کاربر را به روز رسانی کند", () => {
     const { login, updateProfile } = useAuthStore.getState();
     login({
+      id: 1,
       name: "Farzad",
       username: "OldName",
       email: "demo@voidloot.com",

@@ -7,6 +7,7 @@ import { useCartStore } from "@/store/useCartStore";
 import { useQuery } from "@tanstack/react-query";
 import { useWishlistStore } from "@/store/useWishlistStore";
 import { useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 interface Product {
   ProductID: number;
@@ -33,6 +34,7 @@ export default function PopularHardware() {
   const addItem = useCartStore((state) => state.addItem);
   const { toggleItem, isInWishlist } = useWishlistStore();
   const t = useTranslations("home.popularHardware");
+  const tCommon = useTranslations("common");
 
   if (isLoading) {
     return (
@@ -105,12 +107,18 @@ export default function PopularHardware() {
                 aria-label={`Add ${product.Title} to wishlist`}
                 onClick={(e) => {
                   e.preventDefault();
+                  const isWished = isInWishlist(product.ProductID || index);
                   toggleItem({
                     id: product.ProductID || index,
                     title: product.Title,
                     price: product.Price,
                     image: product.ImageUrl || "/images/placeholder.jpg",
                   });
+                  toast.success(
+                    tCommon(isWished ? "removedFromWishlist" : "addedToWishlist", {
+                      item: product.Title,
+                    }),
+                  );
                 }}
                 className={`absolute top-3 right-3 w-8 h-8 rounded-lg bg-base-950/60 border flex items-center justify-center backdrop-blur-md z-10 transition-all ${
                   isInWishlist(product.ProductID || index)
@@ -173,6 +181,7 @@ export default function PopularHardware() {
                     price: product.Price,
                     image: product.ImageUrl || "/images/placeholder.jpg",
                   });
+                  toast.success(tCommon("addedToLoot", { item: product.Title }));
                 }}
                 className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
               >

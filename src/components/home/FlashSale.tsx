@@ -3,55 +3,34 @@
 import { useState, useEffect } from "react";
 import Image from "next/image";
 import { useQuery } from "@tanstack/react-query";
-import { Zap, Clock, Star } from "lucide-react";
+import { Zap, Clock } from "lucide-react";
 import { useCartStore } from "@/store/useCartStore";
 import WishlistButton from "../cart/WishlistButton";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
+import { toast } from "sonner";
 
 interface DealProduct {
   id: number;
+  productId: number;
   title: string;
   category: string;
   price: number;
   discountPercentage: number;
-  rating: number;
-  thumbnail: string;
-  stock: number;
-}
-
-interface RawSQLProduct {
-  ProductID: number;
-  Title: string;
-  Category?: string;
-  Price: number;
-  ImageUrl?: string;
-  Stock?: number;
+  image: string;
+  endsAt: string;
 }
 
 const fetchFlashDeals = async (): Promise<DealProduct[]> => {
   const res = await fetch("/api/flashsale");
   if (!res.ok) throw new Error("Failed to fetch flash deals");
-  const data = await res.json();
-  
-  return data.map((item: RawSQLProduct) => ({
-    id: item.ProductID,
-    title: item.Title,
-    category: item.Category || "hardware",
-    price: Number(item.Price) || 0,
-    discountPercentage: 20, 
-    rating: 4.8,
-    thumbnail: item.ImageUrl || "/images/placeholder.jpg",
-    stock: item.Stock || 15,
-  }));
+  return (await res.json()) as DealProduct[];
 };
 
 export default function FlashSale() {
   const t = useTranslations("home.flashSale");
-  const [timeLeft, setTimeLeft] = useState({
-    hours: 8,
-    minutes: 42,
-    seconds: 30,
-  });
+  const tCommon = useTranslations("common");
+  const locale = useLocale();
+  const [currentTime, setCurrentTime] = useState(0);
 
   const addItem = useCartStore((state) => state.addItem);
 
@@ -61,20 +40,24 @@ export default function FlashSale() {
   });
 
   useEffect(() => {
-    const timer = setInterval(() => {
-      setTimeLeft((prev) => {
-        if (prev.seconds > 0) return { ...prev, seconds: prev.seconds - 1 };
-        if (prev.minutes > 0)
-          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
-        if (prev.hours > 0)
-          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
-        return prev;
-      });
-    }, 1000);
+    const timer = setInterval(() => setCurrentTime(Date.now()), 1000);
     return () => clearInterval(timer);
   }, []);
 
   if (isLoading || deals.length === 0) return null;
+
+  const nearestEnd = Math.min(
+    ...deals.map((deal) => new Date(deal.endsAt).getTime()),
+  );
+  const remainingSeconds =
+    currentTime === 0
+      ? 0
+      : Math.max(0, Math.floor((nearestEnd - currentTime) / 1000));
+  const timeLeft = {
+    hours: Math.floor(remainingSeconds / 3600),
+    minutes: Math.floor((remainingSeconds % 3600) / 60),
+    seconds: remainingSeconds % 60,
+  };
 
   return (
     <section className="w-full px-8 lg:px-16 relative z-10 flex flex-col gap-10">
@@ -131,14 +114,14 @@ export default function FlashSale() {
                 </span>
                 <WishlistButton
                   product={{
-                    id: deal.id,
+                    id: deal.productId,
                     title: deal.title,
                     price: salePrice,
-                    image: deal.thumbnail,
+                    image: deal.image,
                   }}
                 />
                 <Image
-                  src={deal.thumbnail}
+                  src={deal.image}
                   alt={deal.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -152,30 +135,14 @@ export default function FlashSale() {
                 <h3 className="text-base font-bold text-white group-hover:text-purple-300 transition-colors line-clamp-1">
                   {deal.title}
                 </h3>
-                <div className="flex items-center gap-1.5 text-xs text-base-300 my-1">
-                  <div className="flex items-center text-yellow-400">
-                    <Star size={14} className="fill-yellow-400" />
-                  </div>
-                  <span className="font-bold text-white">
-                    {deal.rating.toFixed(1)}
-                  </span>
-                </div>
-                <div className="flex flex-col gap-1.5 mt-2">
-                  <div className="flex justify-between text-[10px] text-base-400 font-medium">
-                    <span>
-                      {t("stockLeft")} {deal.stock}
-                    </span>
-                    <span className="text-pink-400">{t("limitedStock")}</span>
-                  </div>
-                  <div className="w-full h-1.5 bg-base-900 rounded-full overflow-hidden border border-purple-500/20">
-                    <div
-                      className="h-full bg-linear-to-r from-purple-500 to-pink-500 rounded-full"
-                      style={{
-                        width: `${Math.min((deal.stock / 100) * 100, 100)}%`,
-                      }}
-                    />
-                  </div>
-                </div>
+                <p className="text-xs text-base-400">
+                  {t("endsAt", {
+                    date: new Intl.DateTimeFormat(locale, {
+                      dateStyle: "medium",
+                      timeStyle: "short",
+                    }).format(new Date(deal.endsAt)),
+                  })}
+                </p>
               </div>
               <div className="pt-4 mt-4 border-t border-purple-500/10 flex items-center justify-between">
                 <div className="flex flex-col">
@@ -190,11 +157,12 @@ export default function FlashSale() {
                   onClick={(e) => {
                     e.preventDefault();
                     addItem({
-                      id: deal.id,
+                      id: deal.productId,
                       title: deal.title,
                       price: salePrice,
-                      image: deal.thumbnail,
+                      image: deal.image,
                     });
+                    toast.success(tCommon("addedToLoot", { item: deal.title }));
                   }}
                   className="bg-purple-600 hover:bg-purple-500 text-white text-xs font-bold px-4 py-2 rounded-xl transition-all shadow-[0_0_15px_rgba(168,85,247,0.3)] hover:shadow-[0_0_20px_rgba(168,85,247,0.6)]"
                 >

@@ -37,15 +37,15 @@ interface SearchResultProduct {
 }
 
 const ICON_MAP = {
-  Package,
-  Tag,
-  ShieldAlert,
-  Info,
+  order_created: Package,
+  order_status: ShieldAlert,
+  promotion: Tag,
 };
 
 export default function Navbar() {
   const tNav = useTranslations("nav");
   const tCommon = useTranslations("common");
+  const tNotifications = useTranslations("notificationMessages");
   const pathname = usePathname();
   const router = useRouter();
 
@@ -53,10 +53,15 @@ export default function Navbar() {
   const { user, isAuthenticated, logout } = useAuthStore();
   const { recentSearches, addSearch, removeSearch, clearSearches } =
     useSearchStore();
-  const { notifications, fetchInitialNotifications, markAllAsRead } =
-    useNotificationStore();
+  const {
+    notifications,
+    fetchInitialNotifications,
+    markAllAsRead,
+    clearNotifications,
+  } = useNotificationStore();
 
   const [isMounted, setIsMounted] = useState(false);
+  const [currentTime, setCurrentTime] = useState<number | null>(null);
 
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
@@ -73,14 +78,35 @@ export default function Navbar() {
   const notifRef = useRef<HTMLDivElement>(null);
   const profileRef = useRef<HTMLDivElement>(null);
 
-  const unreadCount = notifications.filter((n) => n.unread).length;
+  const unreadCount = notifications.filter((notification) => !notification.isRead).length;
   const currentLocale = pathname.startsWith("/fa") ? "fa" : "en";
 
   useEffect(() => {
     const timer = setTimeout(() => setIsMounted(true), 0);
-    fetchInitialNotifications();
+    if (isAuthenticated) {
+      void fetchInitialNotifications().catch((error: unknown) => {
+        console.error("Load notifications error:", error);
+        toast.error(tNotifications("loadFailed"));
+      });
+    } else {
+      clearNotifications();
+    }
     return () => clearTimeout(timer);
-  }, [fetchInitialNotifications]);
+  }, [
+    clearNotifications,
+    fetchInitialNotifications,
+    isAuthenticated,
+    tNotifications,
+  ]);
+
+  useEffect(() => {
+    const initializeTimer = setTimeout(() => setCurrentTime(Date.now()), 0);
+    const timer = setInterval(() => setCurrentTime(Date.now()), 60_000);
+    return () => {
+      clearTimeout(initializeTimer);
+      clearInterval(timer);
+    };
+  }, []);
 
   useEffect(() => {
     if (isSearchOpen && searchInputRef.current) searchInputRef.current.focus();
@@ -128,7 +154,8 @@ export default function Navbar() {
         if (!res.ok) throw new Error("Search failed");
         const data = await res.json();
         setSearchResults(Array.isArray(data.results) ? data.results : []);
-      } catch (err) {
+      } catch (error) {
+        console.error("Search products error:", error);
         setSearchResults([]);
       } finally {
         setIsSearching(false);
@@ -165,11 +192,51 @@ export default function Navbar() {
     }
   };
 
-  const handleLogout = () => {
-    logout();
-    setIsProfileOpen(false);
-    toast.success("Logged out successfully. See you soon in the Void!");
-    router.push("/");
+  const handleLogout = async () => {
+    try {
+      const response = await fetch("/api/auth/logout", { method: "POST" });
+      if (!response.ok) throw new Error("Logout request failed");
+      logout();
+      setIsProfileOpen(false);
+      toast.success("Logged out successfully. See you soon in the Void!");
+      router.push("/");
+    } catch (error) {
+      console.error("Logout request error:", error);
+      toast.error("Could not sign out. Please try again.");
+    }
+  };
+
+  const handleMarkAllAsRead = async () => {
+    try {
+      await markAllAsRead();
+    } catch (error) {
+      console.error("Mark notifications as read error:", error);
+      toast.error(tNotifications("actionFailed"));
+    }
+  };
+
+  const formatRelativeTime = (date: string) => {
+    const timestamp = new Date(date).getTime();
+    if (!Number.isFinite(timestamp)) return "";
+    if (currentTime === null) {
+      return new Intl.DateTimeFormat(currentLocale, {
+        dateStyle: "medium",
+      }).format(timestamp);
+    }
+
+    const seconds = Math.max(
+      0,
+      Math.floor((currentTime - timestamp) / 1000),
+    );
+    const relativeTime = new Intl.RelativeTimeFormat(currentLocale, {
+      numeric: "auto",
+    });
+    if (seconds < 60) return relativeTime.format(-seconds, "second");
+    if (seconds < 3600)
+      return relativeTime.format(-Math.floor(seconds / 60), "minute");
+    if (seconds < 86400)
+      return relativeTime.format(-Math.floor(seconds / 3600), "hour");
+    return relativeTime.format(-Math.floor(seconds / 86400), "day");
   };
 
   const totalItems = items.reduce((total, item) => total + item.quantity, 0);
@@ -402,7 +469,7 @@ export default function Navbar() {
                 </h3>
                 {unreadCount > 0 && (
                   <button
-                    onClick={markAllAsRead}
+                    onClick={() => void handleMarkAllAsRead()}
                     className="flex items-center gap-1 text-[10px] font-bold text-primary-400 hover:text-primary-300 transition-colors uppercase tracking-wider"
                   >
                     <CheckCheck size={12} /> {tNav("markAllRead")}
@@ -417,34 +484,52 @@ export default function Navbar() {
                   </div>
                 ) : (
                   notifications.map((notif) => {
-                    const Icon =
-                      ICON_MAP[notif.iconName as keyof typeof ICON_MAP] || Info;
+                    const Icon = ICON_MAP[notif.type] || Info;
+                    const title =
+                      notif.type === "order_created"
+                        ? tNotifications("orderCreatedTitle")
+                        : notif.type === "order_status"
+                          ? tNotifications("orderStatusTitle")
+                          : tNotifications("promotionTitle");
+                    const description =
+                      notif.type === "order_created"
+                        ? tNotifications("orderCreatedDescription", {
+                            orderId: notif.referenceId ?? "",
+                          })
+                        : notif.type === "order_status"
+                          ? tNotifications("orderStatusDescription", {
+                              orderId: notif.referenceId ?? "",
+                              status: notif.details || "",
+                            })
+                          : tNotifications("promotionDescription", {
+                              product: notif.details || "",
+                            });
                     return (
                       <div
                         key={notif.id}
-                        className={`flex gap-3 p-4 border-b border-white/5 transition-colors hover:bg-base-900/50 cursor-pointer ${notif.unread ? "bg-primary-900/5" : ""}`}
+                        className={`flex gap-3 p-4 border-b border-white/5 transition-colors hover:bg-base-900/50 ${!notif.isRead ? "bg-primary-900/5" : ""}`}
                       >
                         <div
-                          className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notif.bg} ${notif.color}`}
+                          className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${notif.type === "promotion" ? "bg-rose-500/10 text-rose-400" : "bg-primary-500/10 text-primary-400"}`}
                         >
                           <Icon size={18} />
                         </div>
                         <div className="flex flex-col gap-1 grow">
                           <div className="flex items-center justify-between">
                             <span
-                              className={`text-sm font-bold ${notif.unread ? "text-white" : "text-base-300"}`}
+                              className={`text-sm font-bold ${!notif.isRead ? "text-white" : "text-base-300"}`}
                             >
-                              {notif.title}
+                              {title}
                             </span>
-                            {notif.unread && (
+                            {!notif.isRead && (
                               <div className="w-1.5 h-1.5 bg-primary-500 rounded-full shadow-[0_0_5px_rgba(170,79,255,0.8)]"></div>
                             )}
                           </div>
                           <p className="text-xs text-base-400 leading-snug">
-                            {notif.desc}
+                            {description}
                           </p>
                           <span className="text-[10px] text-base-500 font-medium mt-1">
-                            {notif.time}
+                            {formatRelativeTime(notif.createdAt)}
                           </span>
                         </div>
                       </div>

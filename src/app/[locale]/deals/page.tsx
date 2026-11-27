@@ -1,36 +1,28 @@
 import Image from "next/image";
 import Link from "next/link";
-import { Flame, Clock, Tag, ArrowRight, Star } from "lucide-react";
+import { Flame, Clock, Tag, ArrowRight } from "lucide-react";
 import WishlistButton from "@/components/cart/WishlistButton";
 import { getTranslations } from "next-intl/server";
+import { getActivePromotions } from "@/lib/promotions";
 
 interface DealProduct {
   id: number;
+  productId: number;
   title: string;
   price: number;
   discountPercentage: number;
-  rating: number;
-  thumbnail: string;
+  category: string;
+  image: string;
+  endsAt: string;
 }
 
-async function getDeals() {
-  try {
-    const res = await fetch(
-      "https://dummyjson.com/products?limit=12&sortBy=discountPercentage&order=desc",
-      {
-        next: { revalidate: 3600 },
-      },
-    );
-    if (!res.ok) return [];
-    const data = await res.json();
-    return data.products;
-  } catch (error) {
-    return [];
-  }
-}
-
-export default async function DealsPage() {
-  const deals = await getDeals();
+export default async function DealsPage({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}) {
+  const { locale } = await params;
+  const deals = await getActivePromotions();
   const t = await getTranslations("deals");
 
   return (
@@ -49,30 +41,11 @@ export default async function DealsPage() {
             </span>
           </h1>
           <p className="text-sm text-base-300">{t("description")}</p>
-          <div className="flex items-center gap-4 mt-4 bg-black/40 backdrop-blur-md border border-primary-500/30 w-fit px-4 py-2.5 rounded-xl">
-            <Clock size={18} className="text-primary-500 animate-pulse" />
-            <div className="text-white font-mono font-bold text-lg flex items-center gap-2">
-              <span>
-                12
-                <span className="text-xs text-base-400 font-sans mx-1">
-                  {t("hours")}
-                </span>
-              </span>{" "}
-              :
-              <span>
-                45
-                <span className="text-xs text-base-400 font-sans mx-1">
-                  {t("minutes")}
-                </span>
-              </span>{" "}
-              :
-              <span className="text-primary-400">
-                30
-                <span className="text-xs text-primary-400/50 font-sans mx-1">
-                  {t("seconds")}
-                </span>
-              </span>
-            </div>
+          <div className="flex items-center gap-3 mt-4 bg-black/40 backdrop-blur-md border border-primary-500/30 w-fit px-4 py-2.5 rounded-xl">
+            <Clock size={18} className="text-primary-500" />
+            <span className="text-sm text-white font-bold">
+              {t("databasePromotions")}
+            </span>
           </div>
         </div>
       </div>
@@ -81,12 +54,26 @@ export default async function DealsPage() {
           <Tag size={24} className="text-primary-500" /> {t("activePromotions")}
         </h2>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {deals.map((deal: DealProduct) => {
-          const salePrice = (
-            deal.price -
-            (deal.price * deal.discountPercentage) / 100
-          ).toFixed(2);
+      {deals.length === 0 ? (
+        <div className="rounded-2xl border border-white/5 bg-base-950/60 p-10 text-center text-base-400">
+          {t("noActivePromotions")}
+        </div>
+      ) : (
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {deals.map((deal: DealProduct) => {
+            const salePrice = (
+              deal.price -
+              (deal.price * deal.discountPercentage) / 100
+            ).toFixed(2);
+            const expiresAt = new Intl.DateTimeFormat(locale, {
+              dateStyle: "medium",
+              timeStyle: "short",
+            }).format(new Date(deal.endsAt));
+            const productHref =
+              deal.category.toLowerCase() === "games"
+                ? `/games/${deal.productId}`
+                : `/shop/${deal.productId}`;
+
           return (
             <div
               key={deal.id}
@@ -98,14 +85,14 @@ export default async function DealsPage() {
                 </span>
                 <WishlistButton
                   product={{
-                    id: deal.id,
+                    id: deal.productId,
                     title: deal.title,
                     price: parseFloat(salePrice),
-                    image: deal.thumbnail,
+                    image: deal.image,
                   }}
                 />
                 <Image
-                  src={deal.thumbnail}
+                  src={deal.image}
                   alt={deal.title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -116,10 +103,9 @@ export default async function DealsPage() {
                 <h3 className="text-base font-bold text-white line-clamp-1 group-hover:text-primary-400 transition-colors">
                   {deal.title}
                 </h3>
-                <div className="flex items-center gap-2 text-xs">
-                  <Star size={14} className="text-yellow-500 fill-yellow-500" />
-                  <span className="text-white font-bold">{deal.rating}</span>
-                </div>
+                <p className="text-xs text-base-400">
+                  {t("promotionEnds", { date: expiresAt })}
+                </p>
                 <div className="flex items-end justify-between mt-auto pt-4">
                   <div className="flex flex-col">
                     <span className="text-xs text-base-500 line-through">
@@ -130,7 +116,7 @@ export default async function DealsPage() {
                     </span>
                   </div>
                   <Link
-                    href={`/shop/${deal.id}`}
+                    href={productHref}
                     aria-label={`View ${deal.title}`}
                     className="w-10 h-10 rounded-xl bg-base-900 border border-white/10 flex items-center justify-center text-base-300 hover:text-white hover:bg-primary-600 hover:border-primary-500 transition-all"
                   >
@@ -144,8 +130,9 @@ export default async function DealsPage() {
               </div>
             </div>
           );
-        })}
-      </div>
+          })}
+        </div>
+      )}
     </div>
   );
 }

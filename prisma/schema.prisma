@@ -28,20 +28,23 @@ model Orders {
 }
 
 model Products {
-  ProductID   Int          @id(map: "PK__Products__B40CC6ED4E53D2A5") @default(autoincrement())
-  Title       String       @db.NVarChar(150)
-  Price       Decimal      @db.Decimal(10, 2)
-  Stock       Int          @default(0, map: "DF__Products__Stock__286302EC")
-  Category    String?      @db.NVarChar(50)
-  ImageUrl    String?      @db.NVarChar(255)
-  BrandID     Int?
-  Description String?      @db.NVarChar(Max)
-  HeroImage   String?      @db.NVarChar(Max)
-  Metacritic  Int?
-  ReleaseYear String?      @db.NVarChar(10)
-  Genre       String?      @db.NVarChar(100)
-  OrderItems  OrderItems[]
-  Brands      Brands?      @relation(fields: [BrandID], references: [BrandID], onDelete: NoAction, onUpdate: NoAction, map: "FK_Products_Brands")
+  ProductID         Int                 @id(map: "PK__Products__B40CC6ED4E53D2A5") @default(autoincrement())
+  Title             String              @db.NVarChar(150)
+  Price             Decimal             @db.Decimal(10, 2)
+  Stock             Int                 @default(0, map: "DF__Products__Stock__286302EC")
+  Category          String?             @db.NVarChar(50)
+  ImageUrl          String?             @db.NVarChar(255)
+  BrandID           Int?
+  Description       String?             @db.NVarChar(Max)
+  HeroImage         String?             @db.NVarChar(Max)
+  Metacritic        Int?
+  ReleaseYear       String?             @db.NVarChar(10)
+  Genre             String?             @db.NVarChar(100)
+  OrderItems        OrderItems[]
+  Brands            Brands?             @relation(fields: [BrandID], references: [BrandID], onDelete: NoAction, onUpdate: NoAction, map: "FK_Products_Brands")
+  UserCartItems     UserCartItems[]
+  UserWishlistItems UserWishlistItems[]
+  Promotions        Promotions[]
 }
 
 model sysdiagrams {
@@ -55,12 +58,21 @@ model sysdiagrams {
 }
 
 model Users {
-  UserID       Int       @id(map: "PK__Users__1788CCAC1A8E4050") @default(autoincrement())
-  Username     String    @db.NVarChar(50)
-  Email        String    @unique(map: "UQ__Users__A9D105348ECBDF2E") @db.NVarChar(100)
-  PasswordHash String    @db.NVarChar(255)
-  JoinDate     DateTime? @default(now(), map: "DF__Users__JoinDate__25869641") @db.DateTime
-  Orders       Orders[]
+  UserID             Int                  @id(map: "PK__Users__1788CCAC1A8E4050") @default(autoincrement())
+  Username           String               @unique(map: "UQ_Users_Username") @db.NVarChar(50)
+  Email              String               @unique(map: "UQ__Users__A9D105348ECBDF2E") @db.NVarChar(100)
+  PasswordHash       String               @db.NVarChar(255)
+  JoinDate           DateTime?            @default(now(), map: "DF__Users__JoinDate__25869641") @db.DateTime
+  Orders             Orders[]
+  Profile            UserProfiles?
+  Sessions           UserSessions[]
+  CartItems          UserCartItems[]
+  WishlistItems      UserWishlistItems[]
+  Notifications      Notifications[]
+  SupportTickets     SupportTickets[]
+  CommunityPosts     CommunityPosts[]
+  CommunityComments  CommunityComments[]
+  CommunityPostLikes CommunityPostLikes[]
 }
 
 model Brands {
@@ -69,4 +81,127 @@ model Brands {
   Slug     String     @unique(map: "UQ__Brands__BC7B5FB65AEB54A8") @db.NVarChar(100)
   ImageUrl String?    @db.NVarChar(500)
   Products Products[]
+}
+
+model UserProfiles {
+  UserID      Int     @id
+  DisplayName String? @db.NVarChar(100)
+  AvatarUrl   String? @db.NVarChar(1000)
+  BannerUrl   String? @db.NVarChar(1000)
+  Level       Int     @default(1)
+  Users       Users   @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+}
+
+model UserSessions {
+  SessionID String   @id @db.NVarChar(64)
+  UserID    Int
+  ExpiresAt DateTime @db.DateTime2
+  CreatedAt DateTime @default(now()) @db.DateTime2
+  Users     Users    @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([UserID])
+  @@index([ExpiresAt])
+}
+
+model UserCartItems {
+  UserID    Int
+  ProductID Int
+  Quantity  Int      @default(1)
+  AddedAt   DateTime @default(now()) @db.DateTime2
+  Users     Users    @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+  Products  Products @relation(fields: [ProductID], references: [ProductID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([UserID, ProductID])
+  @@index([ProductID])
+}
+
+model UserWishlistItems {
+  UserID    Int
+  ProductID Int
+  AddedAt   DateTime @default(now()) @db.DateTime2
+  Users     Users    @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+  Products  Products @relation(fields: [ProductID], references: [ProductID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([UserID, ProductID])
+  @@index([ProductID])
+}
+
+model Notifications {
+  NotificationID Int      @id @default(autoincrement())
+  UserID         Int
+  EventKey       String   @db.NVarChar(200)
+  Type           String   @db.NVarChar(50)
+  ReferenceID    Int?
+  Details        String?  @db.NVarChar(300)
+  IsRead         Boolean  @default(false)
+  CreatedAt      DateTime @default(now()) @db.DateTime2
+  Users          Users    @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@unique([UserID, EventKey])
+  @@index([UserID, CreatedAt])
+}
+
+model SupportTickets {
+  TicketID  Int      @id @default(autoincrement())
+  UserID    Int
+  Subject   String   @db.NVarChar(200)
+  Category  String   @db.NVarChar(50)
+  Message   String   @db.NVarChar(Max)
+  Status    String   @default("Open") @db.NVarChar(30)
+  CreatedAt DateTime @default(now()) @db.DateTime2
+  Users     Users    @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([UserID, CreatedAt])
+}
+
+model Promotions {
+  PromotionID        Int      @id @default(autoincrement())
+  ProductID          Int
+  Title              String?  @db.NVarChar(200)
+  DiscountPercentage Decimal  @db.Decimal(5, 2)
+  StartsAt           DateTime @db.DateTime2
+  EndsAt             DateTime @db.DateTime2
+  IsActive           Boolean  @default(true)
+  Products           Products @relation(fields: [ProductID], references: [ProductID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@index([ProductID])
+  @@index([IsActive, StartsAt, EndsAt])
+}
+
+model CommunityPosts {
+  PostID    Int                  @id @default(autoincrement())
+  UserID    Int
+  Title     String               @db.NVarChar(200)
+  Content   String               @db.NVarChar(Max)
+  Category  String               @db.NVarChar(50)
+  Tags      String               @default("[]") @db.NVarChar(Max)
+  CreatedAt DateTime             @default(now()) @db.DateTime2
+  Users     Users                @relation(fields: [UserID], references: [UserID], onUpdate: NoAction)
+  Comments  CommunityComments[]
+  Likes     CommunityPostLikes[]
+
+  @@index([CreatedAt])
+}
+
+model CommunityComments {
+  CommentID Int            @id @default(autoincrement())
+  PostID    Int
+  UserID    Int
+  Content   String         @db.NVarChar(Max)
+  CreatedAt DateTime       @default(now()) @db.DateTime2
+  Posts     CommunityPosts @relation(fields: [PostID], references: [PostID], onDelete: Cascade, onUpdate: NoAction)
+  Users     Users          @relation(fields: [UserID], references: [UserID], onUpdate: NoAction)
+
+  @@index([PostID, CreatedAt])
+}
+
+model CommunityPostLikes {
+  PostID    Int
+  UserID    Int
+  CreatedAt DateTime       @default(now()) @db.DateTime2
+  Posts     CommunityPosts @relation(fields: [PostID], references: [PostID], onDelete: Cascade, onUpdate: NoAction)
+  Users     Users          @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction)
+
+  @@id([PostID, UserID])
+  @@index([UserID])
 }
