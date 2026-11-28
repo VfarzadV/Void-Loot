@@ -60,7 +60,7 @@ export default function FeaturedGame() {
 
   const isWishlisted = isInWishlist(game.ProductID);
   const salePrice = Number(game.Price) || 0;
-  const imageUrl = game.ImageUrl || "/images/placeholder.jpg";
+  const imageUrl = game.ImageUrl || "/images/placeholder.svg";
 
   return (
     <section className="relative w-full min-h-87.5 flex items-center border-y border-white/5">

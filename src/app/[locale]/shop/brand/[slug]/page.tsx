@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
 import { prisma } from "@/lib/prisma";
 import { ArrowLeft, PackageSearch, Star } from "lucide-react";
 import AddToCartButton from "@/components/cart/AddToCartButton";
@@ -27,7 +26,7 @@ async function getBrandProducts(brandId: number) {
     category: p.Category || "hardware",
     price: Number(p.Price?.toString() || 0),
     rating: 4.8,
-    thumbnail: p.ImageUrl || "/images/placeholder.jpg",
+    thumbnail: p.ImageUrl || "/images/placeholder.svg",
     availabilityStatus: p.Stock && p.Stock > 0 ? "In Stock" : "Low Stock",
     stock: p.Stock || 0,
   }));
@@ -39,8 +38,6 @@ export default async function BrandProductsPage({
   params: Promise<{ slug: string; locale: string }>;
 }) {
   const resolvedParams = await params;
-  const t = await getTranslations("shop");
-
   const brand = await getBrandInfo(resolvedParams.slug);
 
   if (!brand) {
@@ -66,7 +63,7 @@ export default async function BrandProductsPage({
         <div className="relative z-10 flex items-center gap-6 md:gap-8">
           <div className="w-24 h-24 md:w-32 md:h-32 relative rounded-2xl overflow-hidden bg-white/5 border border-white/10 p-4 shadow-[0_0_30px_rgba(170,79,255,0.2)] backdrop-blur-md flex items-center justify-center">
             <Image
-              src={brand.ImageUrl || "/images/placeholder.jpg"}
+              src={brand.ImageUrl || "/images/placeholder.svg"}
               alt={brand.Name}
               fill
               sizes="128px"

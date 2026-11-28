@@ -57,6 +57,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json(games);
   } catch (error) {
+    console.error("Fetch platform games error:", error);
     return NextResponse.json(
       { error: "Failed to fetch platform games" },
       { status: 500 },

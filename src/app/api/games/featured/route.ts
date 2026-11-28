@@ -14,6 +14,7 @@ export async function GET() {
 
     return NextResponse.json(game);
   } catch (error) {
+    console.error("Fetch featured game error:", error);
     return NextResponse.json(
       { error: "Failed to fetch featured game" },
       { status: 500 },

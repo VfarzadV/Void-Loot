@@ -84,7 +84,7 @@ export default function TrendingGames() {
                 className="relative w-full aspect-video overflow-hidden bg-base-900 block"
               >
                 <Image
-                  src={game.ImageUrl || "/images/placeholder.jpg"}
+                  src={game.ImageUrl || "/images/placeholder.svg"}
                   alt={game.Title}
                   fill
                   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -107,7 +107,7 @@ export default function TrendingGames() {
                   id: game.ProductID,
                   title: game.Title,
                   price: salePrice,
-                  image: game.ImageUrl || "/images/placeholder.jpg",
+                  image: game.ImageUrl || "/images/placeholder.svg",
                 }}
               />
 
@@ -136,7 +136,7 @@ export default function TrendingGames() {
                         id: game.ProductID,
                         title: game.Title,
                         price: salePrice,
-                        image: game.ImageUrl || "/images/placeholder.jpg",
+                        image: game.ImageUrl || "/images/placeholder.svg",
                       });
                       toast.success(
                         tCommon("addedToLoot", { item: game.Title }),

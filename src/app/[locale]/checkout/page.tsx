@@ -302,7 +302,7 @@ export default function CheckoutPage() {
                     <div key={item.id} className="flex gap-4 items-center">
                       <div className="relative w-16 h-16 rounded-xl bg-base-950 border border-white/5 overflow-hidden shrink-0 flex items-center justify-center">
                         <Image
-                          src={item.image || "/images/placeholder.jpg"}
+                          src={item.image || "/images/placeholder.svg"}
                           alt={item.title}
                           fill
                           className="object-cover opacity-80"

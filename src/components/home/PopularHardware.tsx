@@ -112,7 +112,7 @@ export default function PopularHardware() {
                     id: product.ProductID || index,
                     title: product.Title,
                     price: product.Price,
-                    image: product.ImageUrl || "/images/placeholder.jpg",
+                    image: product.ImageUrl || "/images/placeholder.svg",
                   });
                   toast.success(
                     tCommon(isWished ? "removedFromWishlist" : "addedToWishlist", {
@@ -138,7 +138,7 @@ export default function PopularHardware() {
               </button>
 
               <Image
-                src={product.ImageUrl || "/images/placeholder.jpg"}
+                src={product.ImageUrl || "/images/placeholder.svg"}
                 alt={product.Title}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -179,7 +179,7 @@ export default function PopularHardware() {
                     id: Number(product.ProductID || index),
                     title: product.Title,
                     price: product.Price,
-                    image: product.ImageUrl || "/images/placeholder.jpg",
+                    image: product.ImageUrl || "/images/placeholder.svg",
                   });
                   toast.success(tCommon("addedToLoot", { item: product.Title }));
                 }}

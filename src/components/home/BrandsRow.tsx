@@ -43,7 +43,7 @@ export default async function BrandsRow() {
             <div className="relative w-24 h-24 rounded-full bg-base-950 border-2 border-primary-500/30 flex items-center justify-center transition-all duration-500 group-hover:border-primary-500 group-hover:shadow-[0_0_25px_rgba(170,79,255,0.4)] group-hover:-translate-y-2 overflow-hidden">
               <div className="absolute inset-0 bg-primary-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 z-0" />
               <Image
-                src={brand.ImageUrl || "/images/placeholder.jpg"}
+                src={brand.ImageUrl || "/images/placeholder.svg"}
                 alt={brand.Name}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

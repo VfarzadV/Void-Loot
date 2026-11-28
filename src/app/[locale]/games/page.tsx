@@ -1,7 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import Form from "next/form";
-import { Search, Calendar, Gamepad2, Monitor, Star } from "lucide-react";
+import { Search, Gamepad2 } from "lucide-react";
 import WishlistButton from "@/components/cart/WishlistButton";
 import AddToCartButton from "@/components/cart/AddToCartButton";
 import Pagination from "@/components/shared/Pagination";
@@ -61,7 +61,7 @@ async function getGames(
       id: g.ProductID,
       title: g.Title,
       price: Number(g.Price?.toString() || 0),
-      image: g.ImageUrl || "/images/placeholder.jpg",
+      image: g.ImageUrl || "/images/placeholder.svg",
       stock: g.Stock || 0,
     })),
   };

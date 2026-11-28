@@ -64,7 +64,10 @@ export default function LoginPage() {
         "redirect",
       );
       const destination =
-        redirect === "/en/checkout" || redirect === "/fa/checkout"
+        redirect === "/en/checkout" ||
+        redirect === "/fa/checkout" ||
+        redirect === "/en/loot-box" ||
+        redirect === "/fa/loot-box"
           ? redirect
           : "/";
       router.push(destination);
@@ -154,12 +157,9 @@ export default function LoginPage() {
                 >
                   {t("passwordLabel")}
                 </label>
-                <Link
-                  href="#"
-                  className="text-xs font-semibold text-primary-400 hover:text-primary-300 transition-colors"
-                >
-                  {t("forgotPassword")}
-                </Link>
+                <span className="text-xs text-base-500">
+                  {t("passwordRecoveryUnavailable")}
+                </span>
               </div>
               <div className="relative group">
                 <Lock

@@ -31,7 +31,7 @@ export async function getActivePromotions() {
     category: promotion.Products.Category || "",
     price: Number(promotion.Products.Price.toString()),
     discountPercentage: Number(promotion.DiscountPercentage.toString()),
-    image: promotion.Products.ImageUrl || "/images/placeholder.jpg",
+    image: promotion.Products.ImageUrl || "/images/placeholder.svg",
     endsAt: promotion.EndsAt.toISOString(),
   }));
 }

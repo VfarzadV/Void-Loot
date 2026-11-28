@@ -72,7 +72,7 @@ async function getProducts(
     category: p.Category || "uncategorized",
     price: Number(p.Price?.toString() || 0),
     rating: 4.8,
-    thumbnail: p.ImageUrl || "/images/placeholder.jpg",
+    thumbnail: p.ImageUrl || "/images/placeholder.svg",
     availabilityStatus: p.Stock && p.Stock > 0 ? "In Stock" : "Low Stock",
     stock: p.Stock || 0,
   }));

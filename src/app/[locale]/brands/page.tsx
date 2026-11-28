@@ -78,7 +78,7 @@ export default async function BrandsPage() {
 
             <div className="relative w-full aspect-square rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center p-6 overflow-hidden group-hover:border-primary-500/30 transition-colors">
               <Image
-                src={brand.ImageUrl || "/images/placeholder.jpg"}
+                src={brand.ImageUrl || "/images/placeholder.svg"}
                 alt={brand.Name}
                 fill
                 sizes="(max-width: 768px) 50vw, (max-width: 1200px) 25vw, 15vw"

@@ -88,7 +88,7 @@ export default function GamingNews() {
             className="group lg:col-span-2 relative h-70 sm:h-85 rounded-3xl overflow-hidden bg-base-950 border border-base-800/60 transition-all duration-500 hover:border-primary-500/60 hover:shadow-[0_15px_40px_rgba(170,79,255,0.25)] hover:-translate-y-1 block"
           >
             <Image
-              src={featuredNews.background_image || "/images/placeholder.jpg"}
+              src={featuredNews.background_image || "/images/placeholder.svg"}
               alt={featuredNews.name}
               fill
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
@@ -138,7 +138,7 @@ export default function GamingNews() {
               className="group relative h-32.5 sm:h-39.5 rounded-3xl overflow-hidden bg-base-950 border border-base-800/60 transition-all duration-500 hover:border-primary-500/50 hover:shadow-[0_10px_30px_rgba(170,79,255,0.2)] hover:-translate-y-1 block"
             >
               <Image
-                src={newsItem.background_image || "/images/placeholder.jpg"}
+                src={newsItem.background_image || "/images/placeholder.svg"}
                 alt={newsItem.name}
                 fill
                 sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

@@ -59,7 +59,7 @@ export async function POST(request: Request) {
           createdAt: comment.CreatedAt.toISOString(),
           author: comment.Users.Profile?.DisplayName || comment.Users.Username,
           avatar:
-            comment.Users.Profile?.AvatarUrl || "/images/placeholder.jpg",
+            comment.Users.Profile?.AvatarUrl || "/images/placeholder.svg",
         },
       },
       { status: 201 },

@@ -160,7 +160,7 @@ export async function generateMetadata({
       images: [
         localGame.ImageUrl ||
           game?.background_image ||
-          "/images/placeholder.jpg",
+          "/images/placeholder.svg",
       ],
       type: "website",
     },
@@ -225,7 +225,7 @@ export default async function GameDetailsPage({
   // قیمت واقعی و قطعی از دیتابیس SQL
   const realPrice = Number(localGame.Price?.toString() || 0).toFixed(2);
   const mainImage =
-    localGame.ImageUrl || game?.background_image || "/images/placeholder.jpg";
+    localGame.ImageUrl || game?.background_image || "/images/placeholder.svg";
   const gameTitle = localGame.Title;
 
   const pcPlatform = game?.platforms?.find(
@@ -554,7 +554,7 @@ export default async function GameDetailsPage({
               >
                 <div className="relative aspect-3/4 rounded-xl overflow-hidden border border-white/10 transition-colors">
                   <Image
-                    src={rg.background_image || "/images/placeholder.jpg"}
+                    src={rg.background_image || "/images/placeholder.svg"}
                     alt={rg.name}
                     fill
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

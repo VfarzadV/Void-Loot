@@ -1,143 +1,126 @@
-<div align="center">
-  <img src="public/android-chrome-192x192.png" alt="Void Loot Logo" width="120" />
-  
-  # 🎮 Void Loot
-  
-  **A next-gen gaming platform and digital storefront featuring PWA capabilities, an interactive 3D showcase, and full internationalization.**
-  
-  [![Deploy with Vercel](https://vercelbadge.vercel.app/api/VfarzadV/my-gaming-site)](https://vercel.com/new/clone?repository-url=https://github.com/VfarzadV/my-gaming-site)
-  <br />
-  [![Next.js](https://img.shields.io/badge/Next.js_16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
-  [![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-  [![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
-  [![Zustand](https://img.shields.io/badge/Zustand-443E38?style=for-the-badge&logo=redux&logoColor=white)](https://github.com/pmndrs/zustand)
-  [![Three.js](https://img.shields.io/badge/Three.js-000000?style=for-the-badge&logo=three.js&logoColor=white)](https://threejs.org/)
-  [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](#)
+![Void Loot logo](public/android-chrome-192x192.png)
 
-### 🚀 [**Live Demo**](https://my-gaming-site.vercel.app/)
+# Void Loot
 
-</div>
+**A bilingual gaming storefront and community demo built with Next.js.**
+
+[![Next.js](https://img.shields.io/badge/Next.js_16-black?style=for-the-badge&logo=next.js&logoColor=white)](https://nextjs.org/)
+[![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS_4-38BDF8?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com/)
+
+[Source repository](https://github.com/VfarzadV/Void-Loot)
 
 ---
 
-## 📋 Table of Contents
+## About
 
-- [About the Project](#-about-the-project)
-- [Key Features](#-key-features)
-- [Architecture & Under The Hood](#-architecture--under-the-hood)
-- [Tech Stack](#-tech-stack)
-- [Folder Structure](#-folder-structure)
-- [Getting Started](#-getting-started)
-- [Roadmap](#-roadmap)
-- [Developer](#-developer)
+Void Loot is a test/demo gaming storefront built with Next.js 16, React 19, and TypeScript. It includes English and Persian interfaces, game discovery, hardware and brand catalogs, user accounts, community features, and a 3D Loot Box experience.
 
----
+This project is intended for local development and demonstration, not as a production store.
 
-## 📖 About the Project
+## Features
 
-**Void Loot** is a modern, scalable gaming platform and digital storefront engineered with **Next.js 16 (App Router)** and powered by **Turbopack**. Integrated with the **RAWG API**, it allows users to explore thousands of games, inspect Metacritic scores, view hardware system requirements, and enjoy immersive e-commerce features including dynamic cart management, wishlists, and interactive 3D loot boxes.
+- Game discovery using the RAWG API, including search, filters, and game details.
+- Product and brand storefront backed by SQL Server and Prisma.
+- User registration, login, profile, cart, wishlist, and order history.
+- Community posts, comments, likes, notifications, and support tickets.
+- English and Persian localization with RTL and LTR layouts.
+- Interactive 3D Loot Box. Rewards are demo-only, have no cash or redemption value, and are limited to one draw per signed-in user per UTC day.
+- Live page with simulated streams, viewer counts, and chat.
+- PWA manifest and installable app icons.
 
----
+### Demo limitations
 
-## ✨ Key Features
+- Checkout records a pending order; it does not collect payment.
+- Loot Box rewards are not redeemable.
+- Live streams and chat are simulated.
+- Password recovery and email newsletter signup are not connected to an email service.
 
-- **🎮 RAWG Video Games API Integration:** Advanced game discovery with platform filters (PC, PlayStation, Xbox), genre sorting, and rich game details.
-- **🧊 Interactive 3D Loot Box:** High-performance in-browser 3D rendering using `Three.js`, `React Three Fiber`, and `@react-three/drei`.
-- **🛒 Digital Storefront & Hardware:** Comprehensive cart management and persistent wishlist handling backed by Zustand and simulated checkout flows.
-- **🌐 Full Internationalization (i18n):** Seamless bilingual experience supporting English (`en`) and Persian (`fa`) with full RTL and LTR directional layouts.
-- **📱 Progressive Web App (PWA):** Fully installable on desktop and mobile devices equipped with custom multi-resolution icons and a `manifest.json` configuration.
-- **⚡ Advanced SEO & Performance:** Optimized with dynamic metadata generation, OpenGraph tags, and Schema.org (`JSON-LD`) structured data.
+## Tech stack
 
----
+- Next.js 16 App Router and React 19
+- TypeScript, Tailwind CSS 4, and Lucide
+- Prisma with SQL Server
+- Zustand and TanStack Query
+- next-intl, Zod, React Hook Form
+- Three.js, React Three Fiber, Drei, and Framer Motion
 
-## 🧠 Architecture & Under The Hood
+## Requirements
 
-- **Global State Management:** Leverages `Zustand` with `persist` middleware for robust synchronization of carts and wishlists across sessions via `localStorage`.
-- **Safe Hydration Handling:** Custom mounting safeguards to prevent server/client rendering discrepancies in Next.js.
-- **Performance Optimization:** Dynamic imports for heavy 3D components and optimized network queries powered by `TanStack React Query`.
-- **App Router Architecture:** Strict separation between server-rendered components (for maximum SEO) and interactive client components.
+- Node.js 20.9 or newer
+- npm
+- A SQL Server database
+- A RAWG API key for RAWG-powered game data
 
----
+## Run locally
 
-## 💻 Tech Stack
+1. Clone the repository and install dependencies:
 
-- **Framework:** Next.js 16 (App Router, Turbopack)
-- **Languages:** TypeScript, JavaScript
-- **Styling & Icons:** Tailwind CSS v4, Lucide React
-- **State Management:** Zustand
-- **3D Graphics & Animation:** Framer Motion, Three.js, React Three Fiber, `@react-three/drei`
-- **Forms & Validation:** React Hook Form, Zod
-- **Internationalization:** next-intl
-- **Rendering:** React 19, Server & Client Components
-- **Data Sources:** RAWG Video Games Database API, DummyJSON REST API
+   ```bash
+   git clone https://github.com/VfarzadV/Void-Loot.git
+   cd Void-Loot
+   npm install
+   ```
 
----
+2. Create a root `.env` file:
 
-## 📂 Folder Structure
+   ```env
+   DATABASE_URL=your_sql_server_connection_string
+   NEXT_PUBLIC_RAWG_API_KEY=your_rawg_api_key
+   ```
+
+   Prisma CLI reads `DATABASE_URL` from `.env`. The `NEXT_PUBLIC_` prefix means the RAWG key is available to client-side code; do not put private credentials in that variable. Environment files are ignored by Git.
+
+3. Set up the database:
+
+   For a new, empty database, apply all migrations:
+
+   ```bash
+   npx prisma migrate deploy
+   ```
+
+   The existing-database baseline (`0_init`) was generated from the project's original SQL Server schema. If using an existing Void Loot database with no Prisma migration history, first confirm its schema matches that baseline. Then mark the baseline as applied once and deploy the Loot Box migration:
+
+   ```bash
+   npx prisma migrate resolve --applied 0_init
+   npx prisma migrate deploy
+   ```
+
+   `migrate resolve` only records migration history; it does not create the baseline tables. Do not mark `0_init` as applied on an empty database.
+
+4. Start the development server:
+
+   ```bash
+   npm run dev
+   ```
+
+   Open [http://localhost:3000](http://localhost:3000).
+
+## Project structure
 
 ```text
 src/
-├── app/                  # Next.js App Router root & pages
-│   ├── [locale]/         # Internationalized routes (en / fa)
-│   │   ├── cart/         # Shopping cart drawer/page
-│   │   ├── checkout/     # Simulated secure checkout
-│   │   ├── games/        # Game catalog and dynamic details
-│   │   ├── loot-box/     # Interactive 3D chamber
-│   │   ├── profile/      # User dashboard & order history
-│   │   └── shop/         # Tech hardware & accessories store
-├── components/           # Modular UI, 3D canvases, and layout components
-├── store/                # Zustand global state stores
-└── public/               # Static assets, icons, GLB models, and PWA manifest
-
-🚀 Getting Started
-
-To run this project locally on your machine, follow these steps:
-Prerequisites
-
-    Node.js (v18 or higher recommended)
-
-    npm or yarn package manager
-
-Setup Instructions
-
-1. Clone the repository:
-Bash
-
-git clone [https://github.com/VfarzadV/my-gaming-site.git](https://github.com/VfarzadV/my-gaming-site.git)
-cd game-store
-
-2. Install dependencies:
-Bash
-
-npm install
-
-3. Set up environment variables:
-Create a .env.local file in the root directory and add your RAWG API key:
-Code snippet
-
-NEXT_PUBLIC_RAWG_API_KEY=your_rawg_api_key_here
-
-4. Run the development server:
-Bash
-
-npm run dev
-
-Open http://localhost:3000 in your browser.
-🗺️ Roadmap
-
-    [x] Initialize Next.js 16 App Router architecture with Turbopack
-
-    [x] Integrate RAWG API with real-time filtering and search
-
-    [x] Implement interactive 3D loot box using Three.js and React Three Fiber
-
-    [x] Add next-intl localization with full RTL/LTR switching
-
-    [x] Configure PWA manifest and multi-platform icons
-
-👤 Developer
-
-Farzad Vatandoust
-
-    GitHub: VfarzadV
+├── app/
+│   ├── [locale]/     # English and Persian pages
+│   └── api/          # Route handlers
+├── components/       # Layout, storefront, community, and 3D UI
+├── lib/              # Prisma, auth, and shared server helpers
+└── store/            # Zustand state stores
+messages/             # en/fa translations
+prisma/               # SQL Server schema and migrations
+public/               # Icons, images, PWA assets, and 3D model
 ```
+
+## Useful commands
+
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the development server |
+| `npm run build` | Create a production build |
+| `npm start` | Serve a previously built app |
+| `npm run lint` | Run ESLint |
+| `npm test -- --runInBand` | Run Jest tests |
+
+## Developer
+
+[Farzad Vatandoust](https://github.com/VfarzadV)

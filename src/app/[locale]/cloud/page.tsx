@@ -73,7 +73,7 @@ export default async function CloudGamingPage() {
               >
                 <div className="relative w-full aspect-video overflow-hidden bg-base-900">
                   <Image
-                    src={game.ImageUrl || "/images/placeholder.jpg"}
+                    src={game.ImageUrl || "/images/placeholder.svg"}
                     alt={game.Title}
                     fill
                     unoptimized

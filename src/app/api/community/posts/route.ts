@@ -64,7 +64,7 @@ function serializePost(post: PostRecord) {
     tags: parseTags(post.Tags),
     createdAt: post.CreatedAt.toISOString(),
     author: post.Users.Profile?.DisplayName || post.Users.Username,
-    avatar: post.Users.Profile?.AvatarUrl || "/images/placeholder.jpg",
+    avatar: post.Users.Profile?.AvatarUrl || "/images/placeholder.svg",
     likes: post._count.Likes,
     commentsCount: post._count.Comments,
     likedByMe: post.Likes.length > 0,
@@ -76,7 +76,7 @@ function serializePost(post: PostRecord) {
         author:
           comment.Users.Profile?.DisplayName || comment.Users.Username,
         avatar:
-          comment.Users.Profile?.AvatarUrl || "/images/placeholder.jpg",
+          comment.Users.Profile?.AvatarUrl || "/images/placeholder.svg",
       })) || [],
   };
 }

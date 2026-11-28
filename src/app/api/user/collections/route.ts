@@ -79,14 +79,14 @@ async function getCollections(userId: number) {
       id: row.Products.ProductID,
       title: row.Products.Title,
       price: Number(row.Products.Price.toString()),
-      image: row.Products.ImageUrl || "/images/placeholder.jpg",
+      image: row.Products.ImageUrl || "/images/placeholder.svg",
       quantity: row.Quantity,
     })),
     wishlist: wishlistRows.map((row) => ({
       id: row.Products.ProductID,
       title: row.Products.Title,
       price: Number(row.Products.Price.toString()),
-      image: row.Products.ImageUrl || "/images/placeholder.jpg",
+      image: row.Products.ImageUrl || "/images/placeholder.svg",
     })),
   };
 }

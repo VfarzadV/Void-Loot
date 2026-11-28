@@ -36,7 +36,7 @@ async function getProduct(id: number) {
     id: product.ProductID,
     title: product.Title,
     price: Number(product.Price?.toString() || 0),
-    image: product.ImageUrl || "/images/placeholder.jpg",
+    image: product.ImageUrl || "/images/placeholder.svg",
     stock: product.Stock || 0,
     category: product.Category || "uncategorized",
     description:
@@ -60,7 +60,7 @@ async function getRelatedProducts(category: string, excludeId: number) {
     id: p.ProductID,
     title: p.Title,
     price: Number(p.Price?.toString() || 0),
-    image: p.ImageUrl || "/images/placeholder.jpg",
+    image: p.ImageUrl || "/images/placeholder.svg",
     category: p.Category || "uncategorized",
   }));
 }

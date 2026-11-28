@@ -106,7 +106,7 @@ export default function PlatformShowcase({
             const gameImage =
               game.ImageUrl ||
               game.background_image ||
-              "/images/placeholder.jpg";
+              "/images/placeholder.svg";
             const mockPrice = game.Price
               ? Number(game.Price).toFixed(2)
               : ((gameId % 40) + 19.99).toFixed(2);

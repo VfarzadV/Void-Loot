@@ -73,6 +73,7 @@ model Users {
   CommunityPosts     CommunityPosts[]
   CommunityComments  CommunityComments[]
   CommunityPostLikes CommunityPostLikes[]
+  LootBoxClaims      LootBoxClaims[]
 }
 
 model Brands {
@@ -204,4 +205,16 @@ model CommunityPostLikes {
 
   @@id([PostID, UserID])
   @@index([UserID])
+}
+
+model LootBoxClaims {
+  ClaimID   Int      @id(map: "PK_LootBoxClaims") @default(autoincrement())
+  UserID    Int
+  RewardKey String   @db.NVarChar(50)
+  DrawDate  DateTime @db.Date
+  CreatedAt DateTime @default(now()) @db.DateTime2
+  Users     Users    @relation(fields: [UserID], references: [UserID], onDelete: Cascade, onUpdate: NoAction, map: "FK_LootBoxClaims_Users")
+
+  @@unique([UserID, DrawDate], map: "UQ_LootBoxClaims_UserID_DrawDate")
+  @@index([UserID, CreatedAt], map: "IX_LootBoxClaims_UserID_CreatedAt")
 }

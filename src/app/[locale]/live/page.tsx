@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useRef, FormEvent } from "react";
 import Image from "next/image";
-import Link from "next/link";
 import { useTranslations } from "next-intl";
 import {
   Radio,
@@ -283,6 +282,10 @@ export default function LivePage() {
         </div>
       </div>
 
+      <p className="mb-6 rounded-xl border border-amber-500/30 bg-amber-500/10 px-4 py-3 text-sm text-amber-200">
+        {t("demoNotice")}
+      </p>
+
       <section
         className={`w-full grid ${isTheater ? "grid-cols-1" : "lg:grid-cols-4"} gap-6 mb-12 transition-all duration-500`}
       >
@@ -322,8 +325,10 @@ export default function LivePage() {
           <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 z-10">
             <button
               type="button"
+              disabled
               aria-label={`Play ${FEATURED_STREAM.title}`}
-              className="w-16 h-16 rounded-full bg-red-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(220,38,38,0.5)] hover:scale-110 transition-transform"
+              title={t("demoNotice")}
+              className="w-16 h-16 rounded-full bg-red-600/90 text-white flex items-center justify-center backdrop-blur-md shadow-[0_0_30px_rgba(220,38,38,0.5)] disabled:cursor-not-allowed"
             >
               <Play
                 size={24}
@@ -464,8 +469,7 @@ export default function LivePage() {
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
             {filteredStreams.map((stream) => (
-              <Link
-                href="#"
+              <article
                 key={stream.id}
                 className="group flex flex-col gap-3"
               >
@@ -510,7 +514,7 @@ export default function LivePage() {
                     </span>
                   </div>
                 </div>
-              </Link>
+              </article>
             ))}
           </div>
         )}
